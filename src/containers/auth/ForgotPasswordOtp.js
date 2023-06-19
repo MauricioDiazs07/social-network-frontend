@@ -31,7 +31,8 @@ const ForgotPasswordOtp = props => {
   const onOtpChange = code => setOtp(code);
   const onPressVerify = () => navigation.navigate(StackNav.CreateNewPassword);
 
-  const onFinishTimer = () => setIsTimeOver(true);
+  // const onFinishTimer = () => setIsTimeOver(true);
+  const onFinishTimer = () => console.log("HOLA");
 
   const onPressResend = () => {
     setCounter(counter + 5);

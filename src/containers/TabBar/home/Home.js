@@ -62,7 +62,7 @@ const RightHeaderIcons = React.memo(() => {
 
   const onPressLikeIcon = () => navigation.navigate(StackNav.Inbox);
   const onPressChatIcon = () => navigation.navigate(StackNav.Message);
-  const onPressProfileIcon = () => navigation.navigate(StackNav.Setting);
+  // const onPressProfileIcon = () => navigation.navigate(StackNav.Setting);
 
   return (
     <View style={localStyles.headerLikeIcon}>

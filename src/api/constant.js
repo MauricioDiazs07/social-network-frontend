@@ -1669,7 +1669,6 @@ export {
   recenltyDataList,
   soundTrendingData,
   hashtagTreandingData,
-  chatData,
   userDetail,
   savedStorys,
   searchVideoData,
