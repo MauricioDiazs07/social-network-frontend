@@ -1,14 +1,16 @@
 // Libraries import
-import { StyleSheet,
-         View,
-         Image,
-         TouchableOpacity,
-         Pressable } from 'react-native';
-import React, { createRef, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
+import React, {createRef, useState, useEffect} from 'react';
+import {useSelector} from 'react-redux';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Dropdown } from 'react-native-element-dropdown';
+import {Dropdown} from 'react-native-element-dropdown';
 import ImagePicker from 'react-native-image-crop-picker';
 import CountryPicker, {
   FlagButton,
@@ -22,23 +24,30 @@ import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import ZHeader from '../../components/common/ZHeader';
 import strings from '../../i18n/strings';
 import images from '../../assets/images';
-import { styles } from '../../themes';
-import { GenderData, getHeight, moderateScale } from '../../common/constants';
+import {styles} from '../../themes';
+import {GenderData, getHeight, moderateScale} from '../../common/constants';
 import ZInput from '../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
-import { StackNav } from '../../navigation/NavigationKeys';
+import {StackNav} from '../../navigation/NavigationKeys';
 import ProfilePicture from '../../components/models/ProfilePicture';
 import ZButton from '../../components/common/ZButton';
-import { validateNotEmptyContact, validateNotEmptyField } from '../../utils/validators';
-import { checkPlatform } from '../../utils/helpers';
-import { translateBirthday, 
-         getStates,
-         getMunicipalities } from '../../utils/_support_functions';
+import {
+  validateNotEmptyContact,
+  validateNotEmptyField,
+} from '../../utils/validators';
+import {checkPlatform} from '../../utils/helpers';
+import {
+  translateBirthday,
+  getStates,
+  getMunicipalities,
+} from '../../utils/_support_functions';
 
 const SetUpProfile = props => {
-  const { navigation } = props;
+  const {navigation} = props;
   const headerTitle = props.route.params.title;
-  const emailRegister = props.route.params.email ? props.route.params.email : '';
+  const emailRegister = props.route.params.email
+    ? props.route.params.email
+    : '';
 
   const colors = useSelector(state => state.theme.theme);
   const ProfilePictureSheetRef = createRef();
@@ -95,8 +104,7 @@ const SetUpProfile = props => {
       gender.length > 0 &&
       state_.length > 0 &&
       municipality.length > 0 &&
-      (email.length > 0 ||
-      phoneNo.length > 0) &&
+      (email.length > 0 || phoneNo.length > 0) &&
       !contactError
     ) {
       setIsSubmitDisabled(false);
@@ -104,16 +112,16 @@ const SetUpProfile = props => {
       setIsSubmitDisabled(true);
     }
   }, [
-      fullName,
-      nameError,
-      birthday,
-      gender,
-      state_,
-      municipality,
-      email,
-      phoneNo,
-      contactError
-    ]);
+    fullName,
+    nameError,
+    birthday,
+    gender,
+    state_,
+    municipality,
+    email,
+    phoneNo,
+    contactError,
+  ]);
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -154,7 +162,8 @@ const SetUpProfile = props => {
     const municipalityList_ = getMunicipalities(text);
     setMunicipalityList(municipalityList_);
   };
-  const onChangedMunicipality = text => setMunicipality(text.value.toLowerCase());
+  const onChangedMunicipality = text =>
+    setMunicipality(text.value.toLowerCase());
   const onChangedEmail = text => {
     const {msg} = validateNotEmptyContact(text.trim(), phoneNo);
     setEmail(text);
@@ -166,11 +175,11 @@ const SetUpProfile = props => {
     setContactError(msg);
   };
 
-  const onChangeDatePicker = ({ type },  selectedDate) => {
+  const onChangeDatePicker = ({type}, selectedDate) => {
     if (type == 'set') {
       const currentDate = selectedDate;
       setDate(currentDate);
-      
+
       if (checkPlatform() === 'android') {
         const finalDate = translateBirthday(currentDate);
 
@@ -238,7 +247,7 @@ const SetUpProfile = props => {
     );
   };
 
-  const onPressUpdate = () => { };
+  const onPressUpdate = () => {};
 
   const onPressContinue = () => navigation.navigate(StackNav.FollowSomeone);
 
@@ -248,14 +257,13 @@ const SetUpProfile = props => {
     <ZSafeAreaView>
       <ZHeader title={headerTitle} />
       <ZKeyBoardAvoidWrapper containerStyle={[styles.p20]}>
-
         {/* user picture */}
         <TouchableOpacity
           onPress={onPressProfilePic}
           style={[styles.selfCenter, styles.mb20]}>
           {!!selectImage?.path ? (
             <Image
-              source={{ uri: selectImage?.path }}
+              source={{uri: selectImage?.path}}
               style={localStyles.userImage}
             />
           ) : (
@@ -280,7 +288,7 @@ const SetUpProfile = props => {
           autoCapitalize={'none'}
           toGetTextFieldValue={onChangedFullName}
           inputContainerStyle={[
-            { backgroundColor: colors.inputBg },
+            {backgroundColor: colors.inputBg},
             localStyles.inputContainerStyle,
             fullNameInputStyle,
           ]}
@@ -297,16 +305,14 @@ const SetUpProfile = props => {
           />
         )}
 
-        <Pressable
-          onPress={toggleDatePicker}
-        >
+        <Pressable onPress={toggleDatePicker}>
           <ZInput
             placeHolder={strings.birthday}
             keyBoardType={'number-pad'}
             _value={birthday}
             toGetTextFieldValue={onChangedBirthday}
             inputContainerStyle={[
-              { backgroundColor: colors.inputBg },
+              {backgroundColor: colors.inputBg},
               localStyles.inputContainerStyle,
               birthdayInputStyle,
             ]}
@@ -325,7 +331,7 @@ const SetUpProfile = props => {
               color: colors.white,
             },
           ]}
-          placeholderStyle={{ color: colors.grayScale5 }}
+          placeholderStyle={{color: colors.grayScale5}}
           data={GenderData}
           maxHeight={moderateScale(180)}
           labelField="label"
@@ -355,7 +361,7 @@ const SetUpProfile = props => {
               color: colors.white,
             },
           ]}
-          placeholderStyle={{ color: colors.grayScale5 }}
+          placeholderStyle={{color: colors.grayScale5}}
           data={statesList}
           maxHeight={moderateScale(180)}
           labelField="label"
@@ -376,19 +382,48 @@ const SetUpProfile = props => {
           activeColor={colors.inputBg}
         />
 
-        <ZInput
-          placeHolder={strings.municipality}
-          _value={municipality}
-          _errorText={municipalityError}
-          autoCapitalize={'none'}
-          toGetTextFieldValue={onChangedMunicipality}
-          inputContainerStyle={[
-            { backgroundColor: colors.inputBg },
-            localStyles.inputContainerStyle,
-            municipalityInputStyle,
+        {/* <ZInput
+   placeHolder={strings.municipality}
+   _value={municipality}
+   _errorText={municipalityError}
+   autoCapitalize={'none'}
+   toGetTextFieldValue={onChangedMunicipality}
+   inputContainerStyle={[
+     { backgroundColor: colors.inputBg },
+     localStyles.inputContainerStyle,
+     municipalityInputStyle,
+   ]}
+   _onFocus={onFocusMunicipality}
+   onBlur={onBlurMunicipality}
+ /> */}
+        <Dropdown
+          style={[
+            localStyles.dropdownStyle,
+            {
+              backgroundColor: colors.inputBg,
+              borderColor: colors.inputBg,
+              color: colors.white,
+            },
           ]}
-          _onFocus={onFocusMunicipality}
-          onBlur={onBlurMunicipality}
+          placeholderStyle={{color: colors.grayScale5}}
+          data={municipalityList}
+          maxHeight={moderateScale(180)}
+          labelField="label"
+          valueField="value"
+          placeholder={strings.municipality}
+          value={municipality}
+          itemTextStyle={{
+            color: colors.textColor,
+            fontSize: moderateScale(16),
+          }}
+          onChange={onChangedMunicipality}
+          selectedTextStyle={{
+            color: colors.textColor,
+          }}
+          itemContainerStyle={{
+            backgroundColor: colors.inputBg,
+          }}
+          activeColor={colors.inputBg}
         />
 
         <ZInput
@@ -400,7 +435,7 @@ const SetUpProfile = props => {
           toGetTextFieldValue={onChangedEmail}
           rightAccessory={() => <EmailIcon />}
           inputContainerStyle={[
-            { backgroundColor: colors.inputBg },
+            {backgroundColor: colors.inputBg},
             localStyles.inputContainerStyle,
             emailInputStyle,
           ]}
@@ -417,7 +452,7 @@ const SetUpProfile = props => {
           toGetTextFieldValue={onChangedPhoneNo}
           insideLeftIcon={countryIcon}
           inputContainerStyle={[
-            { backgroundColor: colors.inputBg },
+            {backgroundColor: colors.inputBg},
             localStyles.inputContainerStyle,
             phoneNoInputStyle,
           ]}
@@ -425,7 +460,7 @@ const SetUpProfile = props => {
           onBlur={onBlurPhoneNo}
         />
 
-      {/* form inputs */}
+        {/* form inputs */}
       </ZKeyBoardAvoidWrapper>
       {!!(headerTitle === strings.editProfile) ? (
         <ZButton
@@ -443,7 +478,7 @@ const SetUpProfile = props => {
             color={colors.white}
             containerStyle={[
               localStyles.skipBtnContainer,
-              isSubmitDisabled && {opacity: 0.5}
+              isSubmitDisabled && {opacity: 0.5},
             ]}
             onPress={onPressContinue}
             disabled={isSubmitDisabled}
