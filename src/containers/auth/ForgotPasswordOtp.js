@@ -1,9 +1,9 @@
 // Library import
 import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
-import CountDown from 'react-native-countdown-component';
+import CountDownTimer from 'react-native-countdown-timer-hooks';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -31,11 +31,12 @@ const ForgotPasswordOtp = props => {
   const onOtpChange = code => setOtp(code);
   const onPressVerify = () => navigation.navigate(StackNav.CreateNewPassword);
 
-  // const onFinishTimer = () => setIsTimeOver(true);
-  const onFinishTimer = () => console.log("HOLA");
+  const onFinishTimer = () => setIsTimeOver(true);
+
+  const refTimer = useRef();
 
   const onPressResend = () => {
-    setCounter(counter + 5);
+    setCounter(counter + 20);
     setCounterId(counterId + '1');
     setIsTimeOver(false);
     setOtp('');
@@ -84,17 +85,15 @@ const ForgotPasswordOtp = props => {
                 <ZText type={'m18'} align={'center'}>
                   {strings.resendCodeIn}
                 </ZText>
-                <CountDown
-                  id={counterId}
-                  until={counter}
-                  onFinish={onFinishTimer}
-                  digitStyle={{backgroundColor: colors.backgroundColor}}
-                  digitTxtStyle={[
+                <CountDownTimer
+                  ref={refTimer}
+                  timestamp={counter}
+                  timerCallback={onFinishTimer}
+                  containerStyle={{backgroundColor: colors.backgroundColor}}
+                  textStyle={[
                     localStyles.digitStyle,
                     {color: colors.primary},
                   ]}
-                  timeToShow={['S']}
-                  timeLabels={{m: null, s: null}}
                 />
                 <ZText type={'m18'} align={'center'}>
                   {strings.second}
@@ -113,7 +112,6 @@ const ForgotPasswordOtp = props => {
             otp.length < 4 && {opacity: 0.5}
           ]}
           disabled={otp.length === 4 ? false : true}
-          // bgColor={otp.length !== 4 && colors.primary4}
         />
       </ZKeyBoardAvoidWrapper>
     </ZSafeAreaView>
@@ -144,5 +142,7 @@ const localStyles = StyleSheet.create({
   digitStyle: {
     fontSize: moderateScale(18),
     ...typography.fontWeights.Regular,
+    ...styles.ml5,
+    ...styles.mr5,
   },
 });

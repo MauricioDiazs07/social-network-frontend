@@ -29,6 +29,7 @@
     "react-native": "0.71.3",
     "react-native-actions-sheet": "0.8.21",
     "react-native-countdown-component": "2.7.1",
+    "react-native-countdown-timer-hooks": "^1.0.3",
     "react-native-country-picker-modal": "2.0.0",
     "react-native-device-info": "10.4.0",
     "react-native-element-dropdown": "2.6.0",
