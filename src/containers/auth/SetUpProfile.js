@@ -41,6 +41,7 @@ import {
   getStates,
   getMunicipalities,
 } from '../../utils/_support_functions';
+import ZText from '../../components/common/ZText';
 
 const SetUpProfile = props => {
   const {navigation} = props;
@@ -191,6 +192,11 @@ const SetUpProfile = props => {
     }
   };
 
+  const confirmIOSDate = () => {
+    setBirthday(date.toDateString());
+    toggleDatePicker();
+  };
+
   useEffect(() => {
     ProfilePictureSheetRef?.current?.hide();
   }, [selectImage]);
@@ -302,7 +308,42 @@ const SetUpProfile = props => {
             display="spinner"
             value={date}
             onChange={onChangeDatePicker}
+            style={localStyles.dateContainer}
           />
+        )}
+
+        {showPicker && checkPlatform() === 'ios' && (
+          <View
+            style={localStyles.iosBtns}
+          >
+            <TouchableOpacity style={[
+                localStyles.button,
+                localStyles.pickerBtn,
+                { backgroundColor: "#11182711" }
+              ]}
+              onPress={toggleDatePicker}
+            >
+              <ZText
+                style={[
+                  localStyles.btnText,
+                  { color: "#075985" }
+                ]}
+              >Cancel</ZText>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[
+                localStyles.button,
+                localStyles.pickerBtn,
+              ]}
+              onPress={confirmIOSDate}
+            >
+              <ZText
+                style={[
+                  localStyles.btnText,
+                ]}
+              >Confirm</ZText>
+            </TouchableOpacity>
+          </View>
         )}
 
         <Pressable onPress={toggleDatePicker}>
@@ -319,6 +360,7 @@ const SetUpProfile = props => {
             _onFocus={onFocusBirthday}
             onBlur={onBlurBirthday}
             _editable={false}
+            oPressIn={toggleDatePicker}
           />
         </Pressable>
 
@@ -381,21 +423,7 @@ const SetUpProfile = props => {
           }}
           activeColor={colors.inputBg}
         />
-
-        {/* <ZInput
-   placeHolder={strings.municipality}
-   _value={municipality}
-   _errorText={municipalityError}
-   autoCapitalize={'none'}
-   toGetTextFieldValue={onChangedMunicipality}
-   inputContainerStyle={[
-     { backgroundColor: colors.inputBg },
-     localStyles.inputContainerStyle,
-     municipalityInputStyle,
-   ]}
-   _onFocus={onFocusMunicipality}
-   onBlur={onBlurMunicipality}
- /> */}
+        
         <Dropdown
           style={[
             localStyles.dropdownStyle,
@@ -546,5 +574,30 @@ const localStyles = StyleSheet.create({
   countryPickerButton: {
     ...styles.alignStart,
     ...styles.justifyCenter,
+  },
+  button: {
+    width: moderateScale(100),
+    height: getHeight(50),
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 50,
+    ...styles.mt10,
+    ...styles.mb15,
+    backgroundColor: "#075985"
+  },
+  btnText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#fff",
+  },
+  dateContainer: {
+    height: 120,
+    ...styles.mt_5,
+  },
+  iosBtns: {
+    ...styles.rowSpaceAround,
+  },
+  pickerBtn: {
+    ...styles.ph20,
   },
 });

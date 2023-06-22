@@ -1,17 +1,17 @@
-const months = {
-    'Jan': 'Enero',
-    'Feb': 'Febrero',
-    'Mar': 'Marzo',
-    'Apr': 'Abril',
-    'May': 'Mayo',
-    'Jun': 'Junio',
-    'Jul': 'Julio',
-    'Aug': 'Agosto',
-    'Sep': 'Septiembre',
-    'Oct': 'Octubre',
-    'Nov': 'Noviembre',
-    'Dec': 'Diciembre'
-};
+const months = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre'
+]
 
 const states = {
   "Aguascalientes": [
@@ -3044,10 +3044,11 @@ const states = {
 };  
 
 const translateBirthday = (date) => {
-    const birthday = date.toDateString();
-    const day = birthday.slice(8, 10);
-    const month = months[birthday.slice(4, 7)];
-    const year = birthday.slice(-4);
+    let day = date.getDate();
+    let month = months[date.getMonth()];
+    let year = date.getFullYear();
+
+    day = day < 10 ? `0${day}` : day;
 
     return `${day}/${month}/${year}`;
 };

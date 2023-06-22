@@ -59,10 +59,8 @@ const UserProfile = React.memo(() => {
 const RightHeaderIcons = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-
-  const onPressLikeIcon = () => navigation.navigate(StackNav.Inbox);
-  const onPressChatIcon = () => navigation.navigate(StackNav.Message);
-  // const onPressProfileIcon = () => navigation.navigate(StackNav.Setting);
+  
+  const onPressProfileIcon = () => navigation.navigate(StackNav.Setting);
 
   return (
     <View style={localStyles.headerLikeIcon}>
@@ -81,29 +79,6 @@ const RightHeaderIcons = React.memo(() => {
           />
         )}
       </TouchableOpacity>
-      {/* <TouchableOpacity onPress={onPressLikeIcon}>
-        {colors.dark ? (
-          <HeartIcon_Dark
-            width={moderateScale(28)}
-            height={moderateScale(28)}
-          />
-        ) : (
-          <HeartIcon_Light
-            width={moderateScale(28)}
-            height={moderateScale(28)}
-          />
-        )}
-      </TouchableOpacity> */}
-      {/* <TouchableOpacity onPress={onPressChatIcon}>
-        {colors.dark ? (
-          <ChatIcon_Dark width={moderateScale(28)} height={moderateScale(28)} />
-        ) : (
-          <ChatIcon_Light
-            width={moderateScale(28)}
-            height={moderateScale(28)}
-          />
-        )}
-      </TouchableOpacity> */}
     </View>
   );
 });

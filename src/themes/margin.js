@@ -153,6 +153,9 @@ export default StyleSheet.create({
   mt100: {
     marginTop: getHeight(100),
   },
+  mt_5: {
+    marginTop: getHeight(-5),
+  },
   mv10: {
     marginVertical: getHeight(10),
   },
