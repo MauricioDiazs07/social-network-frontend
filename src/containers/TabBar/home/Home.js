@@ -106,7 +106,6 @@ const LeftHeaderIcon = React.memo(() => {
 
 const Home = () => {
   const navigation = useNavigation();
-  const onPressExitIcon = () => navigation.navigate(StackNav.Auth);
   const rightHeaderIcon = useMemo(() => <RightHeaderIcons />, []);
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
 
@@ -115,14 +114,12 @@ const Home = () => {
       await AsyncStorage.removeItem(ACCESS_TOKEN);
       await AsyncStorage.removeItem(USER_LEVEL);
       LogOutSheetRef?.current?.hide();
-      console.log("HOLA");
-      // setTimeout(() => {
-      //   navigation.reset({
-      //     index: 0,
-      //     routes: [{name: StackNav.Auth}],
-      //   });
-      // }, 500);
-      onPressExitIcon();
+      setTimeout(() => {
+        navigation.reset({
+          index: 0,
+          routes: [{name: StackNav.Auth}],
+        });
+      }, 500);
       return true;
     } catch (exception) {
       return false;
