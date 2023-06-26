@@ -16,7 +16,7 @@ import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import {colors, styles} from '../../../themes';
-import {ACCESS_TOKEN, moderateScale, THEME} from '../../../common/constants';
+import {ACCESS_TOKEN, USER_LEVEL, moderateScale, THEME } from '../../../common/constants';
 import ZText from '../../../components/common/ZText';
 import {ProfileSetting} from '../../../api/constant';
 import {changeThemeAction} from '../../../redux/action/themeAction';
@@ -60,6 +60,7 @@ export default Setting = ({navigation}) => {
   const onPressYesLogOut = async () => {
     try {
       await AsyncStorage.removeItem(ACCESS_TOKEN);
+      await AsyncStorage.removeItem(USER_LEVEL);
       LogOutSheetRef?.current?.hide();
       setTimeout(() => {
         navigation.reset({

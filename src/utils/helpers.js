@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Platform} from 'react-native';
+import { USER_LEVEL } from '../common/constants';
 
 // Check App Platform
 const checkPlatform = () => {
@@ -31,6 +32,12 @@ const getAsyncStorageData = async key => {
   return JSON.parse(data);
 };
 
+// get user level
+const getUserLevel = async () => {
+  const user_level = await getAsyncStorageData(USER_LEVEL);
+  return user_level;
+}
+
 // Debounce
 function debounce(func, timeout = 300) {
   let timer;
@@ -51,6 +58,7 @@ export {
   setAsyncStorageData,
   getDeviceType,
   checkPlatform,
+  getUserLevel,
   debounce,
   secondsToMilliseconds,
 };

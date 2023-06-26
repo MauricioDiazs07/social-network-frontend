@@ -1,18 +1,16 @@
 import {View, TouchableOpacity, StyleSheet} from 'react-native';
-import React, {useMemo} from 'react';
+import React, {useMemo, createRef} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import FastImage from 'react-native-fast-image';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import {moderateScale} from '../../../common/constants';
 import {
   App_Logo,
-  HeartIcon_Dark,
-  HeartIcon_Light,
-  ChatIcon_Light,
-  ChatIcon_Dark,
   StoryAddIcon,
   Profile_Dark,
   Profile_Light
@@ -22,15 +20,20 @@ import {styles} from '../../../themes';
 import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import {StackNav} from '../../../navigation/NavigationKeys';
-// import {StackRoute, TabRoute} from '../NavigationRoutes';
-import { StackRoute, TabRoute } from '../../../navigation/NavigationRoutes';
 import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
 import {postData, userDetail} from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
+import LogOut from '../../../components/models/LogOut';
+import { ACCESS_TOKEN, USER_LEVEL } from '../../../common/constants';
+  
+const LogOutSheetRef = createRef();
+const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
+const onPressCancel = () => LogOutSheetRef?.current?.hide();
 
 const UserProfile = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
+
   return (
     <View style={localStyles.itemContainer}>
       <View style={localStyles.itemInnerContainer}>
@@ -50,7 +53,7 @@ const UserProfile = React.memo(() => {
         />
       </View>
       <ZText type={'s14'} style={localStyles.itemUsername} color={colors.white}>
-        {'Tú'}
+        {strings.you}
       </ZText>
     </View>
   );
@@ -63,7 +66,7 @@ const RightHeaderIcons = React.memo(() => {
   const onPressProfileIcon = () => navigation.navigate(StackNav.Setting);
 
   return (
-    <View style={localStyles.headerLikeIcon}>
+    <View style={localStyles.headerRightIcon}>
       <TouchableOpacity 
         onPress={onPressProfileIcon}
       >
@@ -78,6 +81,16 @@ const RightHeaderIcons = React.memo(() => {
             height={moderateScale(28)}
           />
         )}
+
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={onPressLogOutBtn}
+        style={localStyles.settingsContainer}>
+        <Ionicons
+          name={'log-out-outline'}
+          size={moderateScale(30)}
+          color={colors.dark ? colors.white : colors.darkColor}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -92,8 +105,29 @@ const LeftHeaderIcon = React.memo(() => {
 });
 
 const Home = () => {
+  const navigation = useNavigation();
+  const onPressExitIcon = () => navigation.navigate(StackNav.Auth);
   const rightHeaderIcon = useMemo(() => <RightHeaderIcons />, []);
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
+
+  const onPressYesLogOut = async () => {
+    try {
+      await AsyncStorage.removeItem(ACCESS_TOKEN);
+      await AsyncStorage.removeItem(USER_LEVEL);
+      LogOutSheetRef?.current?.hide();
+      console.log("HOLA");
+      // setTimeout(() => {
+      //   navigation.reset({
+      //     index: 0,
+      //     routes: [{name: StackNav.Auth}],
+      //   });
+      // }, 500);
+      onPressExitIcon();
+      return true;
+    } catch (exception) {
+      return false;
+    }
+  };
 
   const headerStory = () => {
     return (
@@ -115,6 +149,11 @@ const Home = () => {
         renderItem={({item}) => <UserPost item={item} />}
         ListHeaderComponent={headerStory}
         showsVerticalScrollIndicator={false}
+      />
+      <LogOut
+        SheetRef={LogOutSheetRef}
+        onPressLogOut={onPressYesLogOut}
+        onPressCancel={onPressCancel}
       />
     </ZSafeAreaView>
   );

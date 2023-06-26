@@ -8,27 +8,25 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {StackRoute, TabRoute} from '../NavigationRoutes';
 import {StackNav, TabNav} from '../NavigationKeys';
 import {checkPlatform} from '../../utils/helpers';
-import {getHeight, getWidth, moderateScale} from '../../common/constants';
+import {getHeight, moderateScale} from '../../common/constants';
 import ZText from '../../components/common/ZText';
 import strings from '../../i18n/strings';
 import {
   Add_Icon,
-  Discover_Dark,
-  Discover_Light,
   Home_Dark,
   Home_Light,
   Inbox_Dark,
   Inbox_Light,
-  Profile_Dark,
-  Profile_Light,
 } from '../../assets/svgs';
 import {styles} from '../../themes';
 import ProfilePicture from '../../components/models/ProfilePicture';
+import {getUserLevel} from '../../utils/helpers';
 
 export default function TabBarNavigation({navigation}) {
   const colors = useSelector(state => state.theme.theme);
   const Tab = createBottomTabNavigator();
   const ProfilePictureSheetRef = React.createRef();
+  const user_level = getUserLevel();
 
   const TabText = ({text, focused, icon}) => (
     <View style={localStyles.tabViewContainer}>
@@ -93,7 +91,9 @@ export default function TabBarNavigation({navigation}) {
             <TouchableOpacity
               onPress={onPressAdd}
               style={localStyles.tabViewContainer}>
-              <Add_Icon style={localStyles.add_icon} />
+              {user_level == 'admin' && (
+                <Add_Icon style={localStyles.add_icon} />
+              )}
               <ProfilePicture
                 SheetRef={ProfilePictureSheetRef}
                 post={true}

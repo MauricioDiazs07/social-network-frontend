@@ -44,6 +44,7 @@ export const androidReelHeight = screenFullHeight - getHeight(70);
 export const THEME = 'THEME';
 export const APP_OPEN_FIRST_TIME = 'APP_OPEN_FIRST_TIME';
 export const ACCESS_TOKEN = 'ACCESS_TOKEN';
+export const USER_LEVEL = 'USER_LEVEL';
 
 export const GenderData = [
   {label: strings.male, value: 'male'},

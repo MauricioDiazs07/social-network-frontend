@@ -1,14 +1,15 @@
 // Library Imports
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
+import {Button, StyleSheet, View, TouchableOpacity} from 'react-native';
 import React, {memo, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Snackbar } from '@react-native-material/core';
 
 // Local Imports
 import strings from '../../i18n/strings';
 import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
-import {ACCESS_TOKEN, getHeight, moderateScale} from '../../common/constants';
+import {ACCESS_TOKEN, USER_LEVEL, getHeight, moderateScale} from '../../common/constants';
 import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import {
@@ -23,6 +24,7 @@ import {validateEmail, validatePassword} from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 import {setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
+import {authUser} from '../../api/auth/auth';
 
 const Login = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -39,21 +41,6 @@ const Login = ({navigation}) => {
   const BlurredIconStyle = colors.grayScale5;
   const FocusedIconStyle = colors.primary;
 
-  const socialIcon = [
-    {
-      icon: <Facebook_Icon />,
-      // onPress: () => onPressSignWithPassword(),
-    },
-    {
-      icon: <Google_Icon />,
-      // onPress: () => onPressSignWithPassword(),
-    },
-    {
-      icon: colors.dark === 'dark' ? <Apple_Light /> : <Apple_Dark />,
-      // onPress: () => onPressSignWithPassword(),
-    },
-  ];
-
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [emailError, setEmailError] = React.useState('');
@@ -65,7 +52,7 @@ const Login = ({navigation}) => {
   const [passwordInputStyle, setPasswordInputStyle] =
     React.useState(BlurredStyle);
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(true);
-  // const [isCheck, setIsCheck] = React.useState(false);
+  const [snackVisible, setSnackVisible] = React.useState(false);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -155,6 +142,14 @@ const Login = ({navigation}) => {
   );
 
   const onPressSignWithPassword = async () => {
+    const user = authUser(email, password);
+
+    if (!('level' in user)) {
+      setSnackVisible(true);
+      return;
+    }
+
+    await setAsyncStorageData(USER_LEVEL, user.level);
     await setAsyncStorageData(ACCESS_TOKEN, 'access_token');
     navigation.reset({
       index: 0,
@@ -166,6 +161,8 @@ const Login = ({navigation}) => {
   const onPressForgotPassword = () =>
     navigation.navigate(StackNav.ForgotPassword);
 
+  const closeSnackBar = () => setSnackVisible(false);
+
   return (
     <ZSafeAreaView style={localStyles.root}>
       <ZHeader />
@@ -174,6 +171,17 @@ const Login = ({navigation}) => {
           <ZText type={'b36'} align={'left'} style={styles.mv40}>
             {strings.loginYourAccount}
           </ZText>
+
+          {snackVisible && (<View style={{ flex: 1 }}>
+            <Snackbar
+              message={strings.WrongCredentials}
+              action={<Button 
+                        variant="text"
+                        title={strings.close}
+                        color={colors.primary}
+                        compact onPress={closeSnackBar}/>}
+            />
+          </View>)}
 
           <ZInput
             placeHolder={strings.email}
@@ -212,19 +220,6 @@ const Login = ({navigation}) => {
             onBlur={onBlurPassword}
             rightAccessory={() => <RightPasswordEyeIcon />}
           />
-
-          {/* <TouchableOpacity
-            onPress={() => setIsCheck(!isCheck)}
-            style={localStyles.checkboxContainer}>
-            <Ionicons
-              name={isCheck ? 'square-outline' : 'checkbox'}
-              size={moderateScale(26)}
-              color={colors.primary}
-            />
-            <ZText type={'s14'} style={styles.mh10}>
-              {strings.rememberMe}
-            </ZText>
-          </TouchableOpacity> */}
 
           <ZButton
             title={strings.signIn}

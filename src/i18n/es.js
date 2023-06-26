@@ -21,6 +21,8 @@ export default {
     AlreadyHaveAccount: '¿Ya tienes una cuenta?',
     signIn: 'Ingresar',
     loginYourAccount: 'Ingresar con tu cuenta',
+    WrongCredentials: 'Correo electrónico o contraseña incorrectos',
+    close: 'CERRAR',
     forgotPassword: '¿Olvidaste la contraseña?',
     thisFieldIsMandatory: 'Este campo es requerido',
     plsEnterEmail: 'Por favor, ingrese su email',
@@ -206,4 +208,5 @@ export default {
     followSomeoneDescription:
       'Suscribirse a alguien que puedas conocer o puedes saltar este segmento.',
     shorts: 'Shorts',
+    you: 'Tú',
   };  

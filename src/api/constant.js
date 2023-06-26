@@ -3,7 +3,7 @@ import strings from '../i18n/strings';
 import {StackNav} from '../navigation/NavigationKeys';
 
 /* Users DB */
-const userAccounts = [
+const users = [
   {
     id: 1,
     email: 'user@brita.ai',
@@ -21,6 +21,27 @@ const userAccounts = [
     email: 'master@brita.ai',
     password: 'Brita1234,',
     level: 'master',
+  },
+];
+
+const usersLogin = [
+  {
+    id: 1,
+    email: 'user@brita.ai',
+    userName: '',
+    access: 'user',
+  },
+  {
+    id: 2,
+    email: 'admin@brita.ai',
+    userName: '',
+    access: 'admin',
+  },
+  {
+    id: 3,
+    email: 'master@brita.ai',
+    userName: '',
+    access: 'master',
   },
 ];
 
@@ -1650,8 +1671,9 @@ const commentData = [
 ];
 
 export {
+  users,
+  usersLogin,
   interestsList,
-  userAccounts,
   renderChips,
   ProfileSetting,
   helperCategoryData,

@@ -10,12 +10,6 @@ import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
 import {getHeight, moderateScale} from '../../common/constants';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
-import {
-  Apple_Dark,
-  Apple_Light,
-  Facebook_Icon,
-  Google_Icon,
-} from '../../assets/svgs';
 import images from '../../assets/images';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZButton from '../../components/common/ZButton';
