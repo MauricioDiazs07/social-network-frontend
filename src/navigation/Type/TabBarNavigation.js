@@ -119,19 +119,6 @@ export default function TabBarNavigation({navigation}) {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name={TabNav.Profile}
-        component={TabRoute.Profile}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <TabText
-              text={strings.profile}
-              focused={focused}
-              icon={focused ? <Profile_Dark /> : <Profile_Light />}
-            />
-          ),
-        }}
-      /> */}
     </Tab.Navigator>
   );
 }

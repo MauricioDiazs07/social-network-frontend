@@ -56,6 +56,7 @@ import FindFriends from '../containers/TabBar/profile/FindFriends';
 import Live from '../containers/TabBar/home/Live';
 import FollowSomeone from '../containers/auth/FollowSomeone';
 import StoryView from '../containers/TabBar/home/UserStory/StoryView';
+import UserProfile from '../containers/TabBar/profile/UserProfile';
 
 export const TabRoute = {
   Home,
@@ -117,4 +118,5 @@ export const StackRoute = {
   FollowSomeone,
   Inbox,
   StoryView,
+  UserProfile,
 };

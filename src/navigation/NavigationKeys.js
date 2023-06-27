@@ -59,4 +59,5 @@ export const StackNav = {
   FollowSomeone: 'FollowSomeone',
   Inbox: 'Inbox',
   StoryView: 'StoryView',
+  UserProfile: 'UserProfile',
 };

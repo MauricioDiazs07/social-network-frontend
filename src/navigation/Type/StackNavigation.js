@@ -186,6 +186,10 @@ export default function StackNavigation() {
         name={StackNav.StoryView}
         component={StackRoute.StoryView}
       />
+      <Stack.Screen
+        name={StackNav.UserProfile}
+        component={StackRoute.UserProfile}
+      />
     </Stack.Navigator>
   );
 }

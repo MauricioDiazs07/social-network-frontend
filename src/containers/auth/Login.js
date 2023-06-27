@@ -12,12 +12,6 @@ import ZText from '../../components/common/ZText';
 import {ACCESS_TOKEN, USER_LEVEL, getHeight, moderateScale} from '../../common/constants';
 import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
-import {
-  Google_Icon,
-  Facebook_Icon,
-  Apple_Light,
-  Apple_Dark,
-} from '../../assets/svgs';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZInput from '../../components/common/ZInput';
 import {validateEmail, validatePassword} from '../../utils/validators';
@@ -82,23 +76,6 @@ const Login = ({navigation}) => {
     setPassword(val.trim());
     setPasswordError(msg);
   };
-
-  const RenderSocialBtn = memo(({item, index}) => {
-    return (
-      <TouchableOpacity
-        key={index}
-        onPress={item.onPress}
-        style={[
-          localStyles.socialBtn,
-          {
-            backgroundColor: colors.inputBg,
-            borderColor: colors.bColor,
-          },
-        ]}>
-        {item.icon}
-      </TouchableOpacity>
-    );
-  });
 
   const EmailIcon = () => {
     return <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />;

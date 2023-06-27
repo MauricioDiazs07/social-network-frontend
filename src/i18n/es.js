@@ -209,4 +209,6 @@ export default {
       'Suscribirse a alguien que puedas conocer o puedes saltar este segmento.',
     shorts: 'Shorts',
     you: 'Tú',
+    profileEdit: 'Edita tu perfil',
+    userInfo: 'Información de usuario',
   };  

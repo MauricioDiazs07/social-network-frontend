@@ -84,6 +84,22 @@ const validateEmail = email => {
   }
 };
 
+const validateNotNecessatyEmail = email => {
+  if (!email) {
+    return {
+      status: true,
+      msg: '',
+    };
+  } else {
+    return emailRegex.test(email)
+      ? {status: true, msg: ''}
+      : {
+          status: false,
+          msg: strings.validEmail,
+        };
+  }
+};
+
 //Password validation
 const validatePassword = (pass, isConfrimPass, password) => {
   if (!pass) {
@@ -198,6 +214,7 @@ const validateNotEmptyContact = (email, phoneNo) => {
 
 export {
   validateEmail,
+  validateNotNecessatyEmail,
   validatePassword,
   validateConfirmPassword,
   validateName,

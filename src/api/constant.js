@@ -3,6 +3,17 @@ import strings from '../i18n/strings';
 import {StackNav} from '../navigation/NavigationKeys';
 
 /* Users DB */
+const userProfile = {
+  img: 'https://cdn.pixabay.com/photo/2015/05/31/13/40/book-791824_1280.jpg',
+  username: 'Lorena Vázquez',
+  birthdate: '20/06/1986',
+  gender: 'Femenino',
+  state: 'Querétaro',
+  municipality: 'Querétaro',
+  email: 'lorena@example.com',
+  phoneNo: '4435653686'
+}
+
 const users = [
   {
     id: 1,
@@ -12,14 +23,32 @@ const users = [
   },
   {
     id: 2,
+    email: 'user@vemasmas.mx',
+    password: 'Vemas1234,',
+    level: 'user',
+  },
+  {
+    id: 3,
     email: 'admin@brita.ai',
     password: 'Brita1234,',
     level: 'admin',
   },
   {
-    id: 3,
+    id: 4,
+    email: 'admin@vemasmas.mx',
+    password: 'Vemas1234,',
+    level: 'admin',
+  },
+  {
+    id: 5,
     email: 'master@brita.ai',
     password: 'Brita1234,',
+    level: 'master',
+  },
+  {
+    id: 6,
+    email: 'master@vemasmas.mx',
+    password: 'Vemas1234,',
     level: 'master',
   },
 ];
@@ -1671,6 +1700,7 @@ const commentData = [
 ];
 
 export {
+  userProfile,
   users,
   usersLogin,
   interestsList,

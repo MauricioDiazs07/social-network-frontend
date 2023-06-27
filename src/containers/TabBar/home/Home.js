@@ -62,8 +62,8 @@ const UserProfile = React.memo(() => {
 const RightHeaderIcons = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  
-  const onPressProfileIcon = () => navigation.navigate(StackNav.Setting);
+
+  const onPressProfileIcon = () => navigation.navigate(StackNav.UserProfile);
 
   return (
     <View style={localStyles.headerRightIcon}>
