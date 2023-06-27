@@ -128,33 +128,6 @@ export default function Profile({navigation}) {
         bounces={false}
         showsVerticalScrollIndicator={false}
         style={localStyles.root}>
-        <View style={localStyles.headerContainer}>
-          <TouchableOpacity onPress={onPressFindFriend}>
-            <Ionicons
-              name="person-add-outline"
-              size={moderateScale(26)}
-              color={colors.dark ? colors.white : colors.darkColor}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={onPressSwitchAccount}
-            style={styles.rowCenter}>
-            <ZText type="b24">{'Andrew..'}</ZText>
-            <Ionicons
-              name="chevron-down-outline"
-              size={moderateScale(24)}
-              style={styles.ml5}
-              color={colors.dark ? colors.white : colors.darkColor}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onPressSetting}>
-            <Ionicons
-              name="settings-outline"
-              size={moderateScale(30)}
-              color={colors.dark ? colors.white : colors.darkColor}
-            />
-          </TouchableOpacity>
-        </View>
         <View style={styles.itemsCenter}>
           <TouchableOpacity onPress={onPressEditProfile} style={styles.mt40}>
             <Image

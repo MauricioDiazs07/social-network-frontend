@@ -45,10 +45,6 @@ export default function StackNavigation() {
           name={StackNav.TermsAndConditions}
           component={StackRoute.TermsAndConditions}
         />
-        <Stack.Screen
-          name={StackNav.Profile}
-          component={StackRoute.Profile}
-        />
       </Stack.Navigator>
     );
   }
@@ -189,6 +185,10 @@ export default function StackNavigation() {
       <Stack.Screen
         name={StackNav.UserProfile}
         component={StackRoute.UserProfile}
+      />
+      <Stack.Screen
+          name={StackNav.Profile}
+          component={StackRoute.Profile}
       />
     </Stack.Navigator>
   );

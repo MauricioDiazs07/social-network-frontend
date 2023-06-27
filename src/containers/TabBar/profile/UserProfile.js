@@ -324,7 +324,7 @@ const UserProfile = props => {
 
         {/* form inputs */}
       </ZKeyBoardAvoidWrapper>
-      <View style={localStyles.btnContainer}>
+      {!isSubmitDisabled && (<View style={localStyles.btnContainer}>
           <ZButton
             title={strings.update}
             textType={'b18'}
@@ -336,7 +336,7 @@ const UserProfile = props => {
             onPress={onPressContinue}
             disabled={isSubmitDisabled}
           />
-      </View>
+      </View>)}
       <ProfilePicture
         onPressCamera={onPressCamera}
         onPressGallery={onPressGallery}

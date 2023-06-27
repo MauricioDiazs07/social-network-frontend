@@ -26,10 +26,22 @@ import {postData, userDetail} from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
 import { ACCESS_TOKEN, USER_LEVEL } from '../../../common/constants';
-  
+
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
 const onPressCancel = () => LogOutSheetRef?.current?.hide();
+let user_access = '';
+
+const getUserLevel = async () => {
+  try {
+    const value = await AsyncStorage.getItem(USER_LEVEL)
+      .then((data) => {
+        user_access = JSON.parse(data);
+      });
+  } catch (error) {
+    
+  }
+};
 
 const UserProfile = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
@@ -62,8 +74,16 @@ const UserProfile = React.memo(() => {
 const RightHeaderIcons = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
+  getUserLevel();
 
-  const onPressProfileIcon = () => navigation.navigate(StackNav.UserProfile);
+  const onPressProfileIcon = () => {
+    if (user_access == 'user') {
+      navigation.navigate(StackNav.UserProfile);
+    }
+    else if (user_access == 'admin') {
+      navigation.navigate(StackNav.Profile);
+    }
+  };
 
   return (
     <View style={localStyles.headerRightIcon}>
