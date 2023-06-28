@@ -34,9 +34,15 @@ const getAsyncStorageData = async key => {
 
 // get user level
 const getUserLevel = async () => {
-  const user_level = await getAsyncStorageData(USER_LEVEL);
-  return user_level;
-}
+  try {
+    const value = await AsyncStorage.getItem(USER_LEVEL);
+    if (value !== null) {
+        return JSON.parse(value);
+    }
+  } catch (error) {
+    
+  }
+};
 
 // Debounce
 function debounce(func, timeout = 300) {
@@ -47,11 +53,11 @@ function debounce(func, timeout = 300) {
       func.apply(this, args);
     }, timeout);
   };
-}
+};
 
 function secondsToMilliseconds(seconds) {
   return seconds * 1000;
-}
+};
 
 export {
   getAsyncStorageData,

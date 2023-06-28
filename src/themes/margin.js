@@ -90,9 +90,6 @@ export default StyleSheet.create({
   ml30: {
     marginLeft: moderateScale(30),
   },
-  ml5: {
-    marginLeft: moderateScale(5),
-  },
   ml8: {
     marginLeft: moderateScale(8),
   },
