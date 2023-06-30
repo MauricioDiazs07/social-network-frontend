@@ -278,7 +278,7 @@ const states = {
     { "label": "Uruachi", "value": "uruachi" },
     { "label": "Valle de Zaragoza", "value": "valle de zaragoza" }
   ],
-  "Ciudad De México": [
+  "Ciudad de México": [
     { "label": "Álvaro Obregón", "value": "álvaro obregón" },
     { "label": "Azcapotzalco", "value": "azcapotzalco" },
     { "label": "Benito Juárez", "value": "benito juárez" },
@@ -3078,7 +3078,9 @@ const toPascalCase = (text) => {
   const textList = text.split(" ");
 
   for (let i = 0; i < textList.length; i++) {
-    textList[i] = textList[i][0].toUpperCase() + textList[i].substr(1);
+    if (textList[i].length >= 3) {
+      textList[i] = textList[i][0].toUpperCase() + textList[i].substr(1);
+    }
   }
 
   return textList.join(" ");
