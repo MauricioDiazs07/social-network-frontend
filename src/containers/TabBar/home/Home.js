@@ -1,11 +1,12 @@
 import {View, TouchableOpacity, StyleSheet} from 'react-native';
-import React, {useMemo, createRef} from 'react';
+import React, {useMemo, createRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import {moderateScale} from '../../../common/constants';
@@ -25,7 +26,10 @@ import UserPost from './UserPostFeed/UserPost';
 import {postData, userDetail} from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
-import { ACCESS_TOKEN, USER_LEVEL } from '../../../common/constants';
+import { ACCESS_TOKEN, USER_LEVEL, THEME } from '../../../common/constants';
+import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
+import { changeThemeAction } from '../../../redux/action/themeAction';
+import { colors as clr } from '../../../themes';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -74,6 +78,9 @@ const UserProfile = React.memo(() => {
 const RightHeaderIcons = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const [isDark, setIsDark] = useState(false);
+
   getUserLevel();
 
   const onPressProfileIcon = () => {
@@ -85,10 +92,23 @@ const RightHeaderIcons = React.memo(() => {
     }
   };
 
+  const onPressThemeBtn = async () => {
+    if (isDark) {
+      await setAsyncStorageData(THEME, 'dark');
+      dispatch(changeThemeAction(clr.dark));
+    } else {
+      await setAsyncStorageData(THEME, 'light');
+      dispatch(changeThemeAction(clr.light));
+    }
+
+    setIsDark(!isDark);
+  };
+
   return (
     <View style={localStyles.headerRightIcon}>
       <TouchableOpacity 
         onPress={onPressProfileIcon}
+        style={localStyles.rightBtns}
       >
         {colors.dark ? (
           <Profile_Dark
@@ -103,9 +123,21 @@ const RightHeaderIcons = React.memo(() => {
         )}
 
       </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={onPressThemeBtn}
+        style={localStyles.rightBtns}>
+        <MaterialIcon
+            name="theme-light-dark"
+            size={moderateScale(30)}
+            color={colors.dark ? colors.white : colors.darkColor}
+            style={localStyles.editIcon}
+        />
+      </TouchableOpacity>
+
       <TouchableOpacity
         onPress={onPressLogOutBtn}
-        style={localStyles.settingsContainer}>
+        style={localStyles.rightBtns}>
         <Ionicons
           name={'log-out-outline'}
           size={moderateScale(30)}
@@ -186,6 +218,7 @@ const localStyles = StyleSheet.create({
   headerRightIcon: {
     ...styles.rowSpaceBetween,
     width: '20%',
+    ...styles.mr20,
   },
   itemContainer: {
     alignItems: 'center',
@@ -208,6 +241,9 @@ const localStyles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
+  },
+  rightBtns: {
+    ...styles.mr10,
   },
 });
 
