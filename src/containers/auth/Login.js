@@ -18,7 +18,7 @@ import {validateEmail, validatePassword} from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 import {setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
-import {authUser} from '../../api/auth/auth';
+import {authUser, getAuthData, getAuthToken} from '../../api/auth/auth';
 
 const Login = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -133,6 +133,37 @@ const Login = ({navigation}) => {
       routes: [{name: StackNav.TabBar}],
     });
   };
+
+  const onPressSignWithPassword2 = async () => {
+
+    console.log("---------------------------------------------------------")
+    console.log(email)
+    console.log(password)
+
+    const token = await getAuthToken(email, password);
+    console.log(token);
+    console.log("------------------------------------------------------");
+    await setAsyncStorageData(ACCESS_TOKEN, token);
+
+    console.log(token)
+
+    const user = await getAuthData(email)
+    console.log(user)
+    console.log("------------------------------------------------------");
+
+    if (!('level' in user)) {
+      setSnackVisible(true); // Mostrar credenciales incorrectas
+      return;
+    }
+
+    await setAsyncStorageData(USER_LEVEL, user.level);
+    
+    navigation.reset({
+      index: 0,
+      routes: [{name: StackNav.TabBar}],
+    });
+  };
+
   const onPressPasswordEyeIcon = () => setIsPasswordVisible(!isPasswordVisible);
   const onPressSignUp = () => navigation.navigate(StackNav.Register);
   const onPressForgotPassword = () =>
@@ -206,7 +237,7 @@ const Login = ({navigation}) => {
               localStyles.signBtnContainer,
               isSubmitDisabled && {opacity: 0.5},
             ]}
-            onPress={onPressSignWithPassword}
+            onPress={onPressSignWithPassword2}
             disabled={isSubmitDisabled}
           />
           <TouchableOpacity
