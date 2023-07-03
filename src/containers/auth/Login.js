@@ -119,49 +119,24 @@ const Login = ({navigation}) => {
   );
 
   const onPressSignWithPassword = async () => {
-    const user = authUser(email, password);
 
-    if (!('level' in user)) {
+    const token = await getAuthToken(email, password);
+    
+    if (token['success'] === true) {
+
+      navigation.reset({
+        index: 0,
+        routes: [{name: StackNav.TabBar}],
+      });
+    
+      await setAsyncStorageData(ACCESS_TOKEN, token);
+      const user = await getAuthData(email)
+      await setAsyncStorageData(USER_LEVEL, user.level);
+
+    } else {
       setSnackVisible(true);
       return;
     }
-
-    await setAsyncStorageData(USER_LEVEL, user.level);
-    await setAsyncStorageData(ACCESS_TOKEN, 'access_token');
-    navigation.reset({
-      index: 0,
-      routes: [{name: StackNav.TabBar}],
-    });
-  };
-
-  const onPressSignWithPassword2 = async () => {
-
-    console.log("---------------------------------------------------------")
-    console.log(email)
-    console.log(password)
-
-    const token = await getAuthToken(email, password);
-    console.log(token);
-    console.log("------------------------------------------------------");
-    await setAsyncStorageData(ACCESS_TOKEN, token);
-
-    console.log(token)
-
-    const user = await getAuthData(email)
-    console.log(user)
-    console.log("------------------------------------------------------");
-
-    if (!('level' in user)) {
-      setSnackVisible(true); // Mostrar credenciales incorrectas
-      return;
-    }
-
-    await setAsyncStorageData(USER_LEVEL, user.level);
-    
-    navigation.reset({
-      index: 0,
-      routes: [{name: StackNav.TabBar}],
-    });
   };
 
   const onPressPasswordEyeIcon = () => setIsPasswordVisible(!isPasswordVisible);
@@ -237,7 +212,7 @@ const Login = ({navigation}) => {
               localStyles.signBtnContainer,
               isSubmitDisabled && {opacity: 0.5},
             ]}
-            onPress={onPressSignWithPassword2}
+            onPress={onPressSignWithPassword}
             disabled={isSubmitDisabled}
           />
           <TouchableOpacity
