@@ -18,7 +18,7 @@ import {validateEmail, validatePassword} from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 import {setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
-import {authUser} from '../../api/auth/auth';
+import {authUser, getAuthData, getAuthToken} from '../../api/auth/auth';
 
 const Login = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -119,20 +119,26 @@ const Login = ({navigation}) => {
   );
 
   const onPressSignWithPassword = async () => {
-    const user = authUser(email, password);
 
-    if (!('level' in user)) {
+    const token = await getAuthToken(email, password);
+    
+    if (token['success'] === true) {
+
+      await setAsyncStorageData(ACCESS_TOKEN, token);
+      const user = await getAuthData(email)
+      await setAsyncStorageData(USER_LEVEL, user.level);
+      console.log(user.level);
+      navigation.reset({
+        index: 0,
+        routes: [{name: StackNav.TabBar}],
+      });
+
+    } else {
       setSnackVisible(true);
       return;
     }
-
-    await setAsyncStorageData(USER_LEVEL, user.level);
-    await setAsyncStorageData(ACCESS_TOKEN, 'access_token');
-    navigation.reset({
-      index: 0,
-      routes: [{name: StackNav.TabBar}],
-    });
   };
+
   const onPressPasswordEyeIcon = () => setIsPasswordVisible(!isPasswordVisible);
   const onPressSignUp = () => navigation.navigate(StackNav.Register);
   const onPressForgotPassword = () =>
