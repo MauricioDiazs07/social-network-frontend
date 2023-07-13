@@ -1,11 +1,7 @@
-const URL_API = ''
-const LOGIN = '/api/auth/login'
-const SIGNUP = '/api/auth/signup'
-const USER_DATA = '/api/user/self'
-
+import { URL_API, LOGIN, SIGNUP, USER_DATA } from "../../utils/constants";
 
 const getAuthToken = async (email, password) => {
-    
+
     const response = await fetch(URL_API + LOGIN, {
         method: "POST", 
         body: JSON.stringify({
