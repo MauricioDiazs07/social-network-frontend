@@ -1,4 +1,4 @@
-const URL_API = 'https://762d-2806-2f0-a361-f356-214b-5128-b367-59b5.ngrok-free.app'
+const URL_API = ''
 const LOGIN = '/api/auth/login'
 const SIGNUP = '/api/auth/signup'
 const USER_DATA = '/api/user/self'
@@ -39,7 +39,7 @@ const getAuthData = async (email) => {
         }
     })
 
-    resp = await response.json()
+    resp = await response.json();
     if (response.ok){
         return resp
     }
@@ -76,7 +76,6 @@ const signup = async (email, password, name,gender,state,municipality,colony,str
 }
 
 export {
-    authUser,
     getAuthToken,
     getAuthData,
     signup

@@ -126,8 +126,7 @@ const Login = ({navigation}) => {
 
       await setAsyncStorageData(ACCESS_TOKEN, token);
       const user = await getAuthData(email)
-      await setAsyncStorageData(USER_LEVEL, user.level);
-      console.log(user.level);
+      // await setAsyncStorageData(USER_LEVEL, user.level);
       navigation.reset({
         index: 0,
         routes: [{name: StackNav.TabBar}],
