@@ -1,6 +1,6 @@
 // Library Imports
 import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import React, {memo, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -11,12 +11,6 @@ import ZText from '../../components/common/ZText';
 import {getHeight, moderateScale} from '../../common/constants';
 import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
-import {
-  Google_Icon,
-  Facebook_Icon,
-  Apple_Light,
-  Apple_Dark,
-} from '../../assets/svgs';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZInput from '../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
@@ -36,21 +30,6 @@ const Register = ({navigation}) => {
   };
   const BlurredIconStyle = colors.grayScale5;
   const FocusedIconStyle = colors.primary;
-
-  const socialIcon = [
-    {
-      icon: <Facebook_Icon />,
-      // onPress: () => onPressSignWithPassword(),
-    },
-    {
-      icon: <Google_Icon />,
-      // onPress: () => onPressSignWithPassword(),
-    },
-    {
-      icon: colors.dark === 'dark' ? <Apple_Light /> : <Apple_Dark />,
-      // onPress: () => onPressSignWithPassword(),
-    },
-  ];
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -94,28 +73,14 @@ const Register = ({navigation}) => {
     setPasswordError(msg);
   };
 
-  const RenderSocialBtn = memo(({item, index}) => {
-    return (
-      <TouchableOpacity
-        key={index}
-        onPress={item.onPress}
-        style={[
-          localStyles.socialBtn,
-          {
-            backgroundColor: colors.inputBg,
-            borderColor: colors.bColor,
-          },
-        ]}>
-        {item.icon}
-      </TouchableOpacity>
-    );
-  });
   const onPressSignWithPassword = () => {
     navigation.navigate(StackNav.SetUpProfile, {
       title: strings.fillYourProfile,
-      email: email
+      email: email,
+      password: password
     });
   };
+
 
   const onPressTermsAndConditions = () => 
                 navigation.navigate(StackNav.TermsAndConditions);
@@ -255,10 +220,14 @@ const Register = ({navigation}) => {
           <TouchableOpacity
             onPress={onPressSignIn}
             style={localStyles.signUpContainer}>
-            <ZText type={'r14'}>{strings.AlreadyHaveAccount}{"\t"}</ZText>
-            <ZText type={'s14'} color={colors.primary}>
-              {strings.signIn}
-            </ZText>
+            <View
+              style={styles.center}
+            >
+              <ZText type={'r14'}>{strings.AlreadyHaveAccount}{"\t"}</ZText>
+              <ZText type={'s14'} color={colors.primary}>
+                {strings.signIn}
+              </ZText>
+            </View>
           </TouchableOpacity>
         </View>
       </ZKeyBoardAvoidWrapper>

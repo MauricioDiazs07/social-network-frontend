@@ -3050,7 +3050,17 @@ const translateBirthday = (date) => {
 
     day = day < 10 ? `0${day}` : day;
 
-    return `${day}/${month}/${year}`;
+    return `${day}-${month}-${year}`;
+};
+
+const getFormateDate = (date) => {
+  let day = date.getDate();
+  let month = date.getMonth() + 1;
+  let year = date.getFullYear();
+
+  day = day < 10 ? `0${day}` : day;
+
+  return `${year}-${month}-${day}`;
 };
 
 const getStates = () => {
@@ -3088,6 +3098,7 @@ const toPascalCase = (text) => {
 
 export {
     translateBirthday,
+    getFormateDate,
     getStates,
     getMunicipalities
 }

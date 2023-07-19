@@ -41,8 +41,40 @@ const getAuthData = async (email) => {
     }
 }
 
+/* method to send INE pic and get the information */
+const readINE = async (ine_pic) => {
+    const response = await fetch(URL_API, {
+        method: "POST",
+        body: JSON.stringify({
+            ine_pic
+        }),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+
+    resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
+}
+
 /* Falta probar este metodo :D JY */
-const signup = async (email, password, name,gender,state,municipality,colony,street,int_number,ext_number,birthday,curp,identification_photo) =>{
+const signUp = async (
+    email,
+    password,
+    name,
+    gender,
+    state,
+    municipality,
+    colony,
+    street,
+    int_number,
+    ext_number,
+    birthday,
+    curp,
+    identification_photo
+) => {
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: JSON.stringify({
@@ -63,16 +95,17 @@ const signup = async (email, password, name,gender,state,municipality,colony,str
         headers: {
             'Content-type': 'application/json'
         }
-    })
+    });
 
-    resp = await response.json()
+    resp = await response.json();
     if (response.ok){
-        return resp
+        return resp;
     }
 }
 
 export {
     getAuthToken,
     getAuthData,
-    signup
+    signUp,
+    readINE,
 };

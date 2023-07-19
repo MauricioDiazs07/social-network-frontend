@@ -38,17 +38,18 @@ import {
 import {checkPlatform} from '../../utils/helpers';
 import {
   translateBirthday,
+  getFormateDate,
   getStates,
   getMunicipalities,
 } from '../../utils/_support_functions';
 import ZText from '../../components/common/ZText';
+import { signUp } from '../../api/auth/auth';
 
 const SetUpProfile = props => {
   const {navigation} = props;
   const headerTitle = props.route.params.title;
-  const emailRegister = props.route.params.email
-    ? props.route.params.email
-    : '';
+  const emailRegister = props.route.params.email;
+  const password = props.route.params.password;
 
   const colors = useSelector(state => state.theme.theme);
   const ProfilePictureSheetRef = createRef();
@@ -88,6 +89,7 @@ const SetUpProfile = props => {
   const [nameError, setNameError] = useState(false);
   const [contactError, setContactError] = useState(false);
   const [date, setDate] = React.useState(new Date());
+  const [formatedDate, setFormatedDate] = React.useState('');
   const [showPicker, setShowPicker] = React.useState(false);
 
   const [municipalityList, setMunicipalityList] = useState([]);
@@ -183,9 +185,11 @@ const SetUpProfile = props => {
 
       if (checkPlatform() === 'android') {
         const finalDate = translateBirthday(currentDate);
+        const formatedDate = getFormateDate(currentDate);
 
         toggleDatePicker();
         setBirthday(finalDate);
+        setFormatedDate(formatedDate);
       }
     } else {
       toggleDatePicker();
@@ -253,9 +257,50 @@ const SetUpProfile = props => {
     );
   };
 
-  const onPressUpdate = () => {};
+  /* FUNCTION ONLY FOR TESTING */
+  /* DELETE WHEN INE MODEL IS IN PROJECT */
+  const createFakeCURP = () => {
+    const LENGTH = 18;
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const charactersLength = characters.length;
+    const numbersLength = numbers.length;
+    let curp = '';
 
-  const onPressContinue = () => navigation.navigate(StackNav.FollowSomeone);
+    for (let i=0; i<LENGTH; i++) {
+      if ((i > 3 && i >= 9) || (i > LENGTH - 2)) {
+        curp += numbers.charAt(Math.floor(Math.random() * numbersLength));
+      } else {
+        curp += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+    }
+
+    return curp;
+  };
+
+    /* AT THE END OF THE REGISTER; LOGIN AUTOMATICALLY */
+  const onPressContinue = async () => {
+    const CURP = createFakeCURP();
+    /* Add missing parameters with INE picture */
+    const signup = await signUp(
+      email,
+      password,
+      fullName,
+      gender[0],
+      state_,
+      municipality,
+      'colony',
+      'street',
+      'int_number',
+      'ext_number',
+      formatedDate,
+      CURP,
+      CURP
+    );
+    if (signUp) {
+      navigation.navigate(StackNav.FollowSomeone);
+    }
+  };
 
   const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
 
@@ -490,15 +535,6 @@ const SetUpProfile = props => {
 
         {/* form inputs */}
       </ZKeyBoardAvoidWrapper>
-      {!!(headerTitle === strings.editProfile) ? (
-        <ZButton
-          textType={'b18'}
-          color={colors.white}
-          title={strings.update}
-          onPress={onPressUpdate}
-          containerStyle={styles.m20}
-        />
-      ) : (
         <View style={localStyles.btnContainer}>
           <ZButton
             title={strings.continue}
@@ -512,28 +548,28 @@ const SetUpProfile = props => {
             disabled={isSubmitDisabled}
           />
         </View>
-      )}
-      <ProfilePicture
-        onPressCamera={onPressCamera}
-        onPressGallery={onPressGallery}
-        SheetRef={ProfilePictureSheetRef}
-      />
-      <CountryPicker
-        countryCode={'MX'}
-        withFilter={true}
-        visible={visiblePiker}
-        withFlag={true}
-        withFlagButton={true}
-        onSelect={country => onSelectCountry(country)}
-        withCallingCode={true}
-        withAlphaFilter={true}
-        withCountryNameButton={true}
-        onClose={closeCountryPicker}
-        renderFlagButton={() => {
-          return null;
-        }}
-        theme={colors.dark ? DARK_THEME : DEFAULT_THEME}
-      />
+        
+        <ProfilePicture
+          onPressCamera={onPressCamera}
+          onPressGallery={onPressGallery}
+          SheetRef={ProfilePictureSheetRef}
+        />
+        <CountryPicker
+          countryCode={'MX'}
+          withFilter={true}
+          visible={visiblePiker}
+          withFlag={true}
+          withFlagButton={true}
+          onSelect={country => onSelectCountry(country)}
+          withCallingCode={true}
+          withAlphaFilter={true}
+          withCountryNameButton={true}
+          onClose={closeCountryPicker}
+          renderFlagButton={() => {
+            return null;
+          }}
+          theme={colors.dark ? DARK_THEME : DEFAULT_THEME}
+        />
     </ZSafeAreaView>
   );
 };

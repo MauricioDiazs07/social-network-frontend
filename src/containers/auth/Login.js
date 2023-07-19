@@ -1,6 +1,6 @@
 // Library Imports
 import {Button, StyleSheet, View, TouchableOpacity} from 'react-native';
-import React, {memo, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Snackbar } from '@react-native-material/core';
@@ -9,7 +9,7 @@ import { Snackbar } from '@react-native-material/core';
 import strings from '../../i18n/strings';
 import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
-import {ACCESS_TOKEN, USER_LEVEL, getHeight, moderateScale} from '../../common/constants';
+import {ACCESS_TOKEN, getHeight, moderateScale} from '../../common/constants';
 import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import {StackNav} from '../../navigation/NavigationKeys';
@@ -18,7 +18,7 @@ import {validateEmail, validatePassword} from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 import {setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
-import {authUser, getAuthData, getAuthToken} from '../../api/auth/auth';
+import {getAuthData, getAuthToken} from '../../api/auth/auth';
 
 const Login = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -125,7 +125,7 @@ const Login = ({navigation}) => {
     if (token['success'] === true) {
 
       await setAsyncStorageData(ACCESS_TOKEN, token);
-      const user = await getAuthData(email)
+      const user = await getAuthData(email);
       // await setAsyncStorageData(USER_LEVEL, user.level);
       navigation.reset({
         index: 0,
@@ -232,10 +232,14 @@ const Login = ({navigation}) => {
           <TouchableOpacity
             onPress={onPressSignUp}
             style={localStyles.signUpContainer}>
-            <ZText type={'r14'}>{strings.dontHaveAccount}{"\t"}</ZText>
-            <ZText type={'s14'} color={colors.primary}>
-              {strings.signUp}
-            </ZText>
+            <View
+              style={styles.center}
+            >
+              <ZText type={'r14'}>{strings.dontHaveAccount}{"\t"}</ZText>
+              <ZText type={'s14'} color={colors.primary}>
+                {strings.signUp}
+              </ZText>
+            </View>
           </TouchableOpacity>
         </View>
       </ZKeyBoardAvoidWrapper>

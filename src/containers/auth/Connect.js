@@ -44,11 +44,15 @@ export default Connect = ({navigation}) => {
       <TouchableOpacity
         onPress={onPressSignUp}
         style={localStyles.signUpContainer}>
-        <ZText type={'r14'}>{strings.dontHaveAccount}{"\t"}</ZText>
+        <View
+          style={styles.center}  
+        >
+          <ZText type={'r14'}>{strings.dontHaveAccount}{"\t"}</ZText>
 
-        <ZText type={'s14'} color={colors.primary}>
-          {strings.signUp}
-        </ZText>
+          <ZText type={'s14'} color={colors.primary}>
+            {strings.signUp}
+          </ZText>
+        </View>
       </TouchableOpacity>
     </ZSafeAreaView>
   );
@@ -86,11 +90,11 @@ const localStyles = StyleSheet.create({
     ...styles.mv30,
   },
   logoImageDark: {
-    width: moderateScale(220),
+    width: moderateScale(250),
     height: getHeight(80)
   },
   logoImageLight: {
-    width: moderateScale(220),
+    width: moderateScale(250),
     height: getHeight(80)
   }
 });
