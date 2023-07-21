@@ -49,6 +49,10 @@ export default function StackNavigation() {
           name={StackNav.CameraRegister}
           component={StackRoute.CameraRegister}
         />
+        <Stack.Screen
+          name={StackNav.FinishProfile}
+          component={StackRoute.FinishProfile}
+        />
       </Stack.Navigator>
     );
   }

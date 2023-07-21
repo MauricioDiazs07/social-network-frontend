@@ -3043,6 +3043,15 @@ const states = {
   ]
 };  
 
+const extractBirthday = (date) => {
+  let year = date.substr(0, 4);
+  let month = date.substr(5, 2);
+  month = months[parseInt(month) - 1];
+  let day = date.substr(8, 2);
+
+  return `${day}-${month}-${year}`;
+}
+
 const translateBirthday = (date) => {
     let day = date.getDate();
     let month = months[date.getMonth()];
@@ -3096,9 +3105,27 @@ const toPascalCase = (text) => {
   return textList.join(" ");
 }
 
+const getGender = userInfo => {
+  let gender_ = userInfo['gender'];
+  if (gender_ === 'H') {
+    return 'male';
+  } else if (gender_ === 'M') {
+    return 'female';
+  }
+
+  return '';
+}
+
+const isNotEmptyString = str_ => {
+  return str_.length > 0;
+}
+
 export {
+    extractBirthday,
     translateBirthday,
     getFormateDate,
     getStates,
-    getMunicipalities
+    getMunicipalities,
+    getGender,
+    isNotEmptyString,
 }

@@ -2,58 +2,47 @@
 import {
   StyleSheet,
   View,
-  Image,
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-import React, {createRef, useState, useEffect} from 'react';
-import {useSelector} from 'react-redux';
-import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Dropdown} from 'react-native-element-dropdown';
-import ImagePicker from 'react-native-image-crop-picker';
-import CountryPicker, {
-  FlagButton,
-  DARK_THEME,
-  DEFAULT_THEME,
-} from 'react-native-country-picker-modal';
+import { Dropdown } from 'react-native-element-dropdown';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import ZHeader from '../../components/common/ZHeader';
 import strings from '../../i18n/strings';
-import images from '../../assets/images';
-import {styles} from '../../themes';
-import {GenderData, getHeight, moderateScale} from '../../common/constants';
+import { styles } from '../../themes';
+import { GenderData, getHeight, moderateScale } from '../../common/constants';
 import ZInput from '../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
-import {StackNav} from '../../navigation/NavigationKeys';
-import ProfilePicture from '../../components/models/ProfilePicture';
+import { StackNav } from '../../navigation/NavigationKeys';
 import ZButton from '../../components/common/ZButton';
 import {
-  validateNotEmptyContact,
   validateNotEmptyField,
 } from '../../utils/validators';
-import {checkPlatform} from '../../utils/helpers';
+import { checkPlatform } from '../../utils/helpers';
 import {
+  extractBirthday,
   translateBirthday,
   getFormateDate,
-  getStates,
-  getMunicipalities,
+  // getStates,
+  // getMunicipalities,
+  getGender,
+  isNotEmptyString
 } from '../../utils/_support_functions';
 import ZText from '../../components/common/ZText';
-import { signUp } from '../../api/auth/auth';
 
 const SetUpProfile = props => {
   const {navigation} = props;
-  const headerTitle = props.route.params.title;
-  const emailRegister = props.route.params.email;
-  const password = props.route.params.password;
+  const userCred = props.route.params.userCred;
+  const userInfo = props.route.params.user;
 
   const colors = useSelector(state => state.theme.theme);
-  const ProfilePictureSheetRef = createRef();
-  const statesList = getStates();
+  // const statesList = getStates();
 
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
@@ -63,52 +52,51 @@ const SetUpProfile = props => {
     backgroundColor: colors.inputFocusColor,
     borderColor: colors.primary,
   };
-  const BlurredIconStyle = colors.grayScale5;
-  const FocusedIconStyle = colors.primary;
 
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState(emailRegister);
-  const [birthday, setBirthday] = useState('');
-  const [phoneNo, setPhoneNo] = useState('');
-  const [gender, setGender] = useState('');
-  const [state_, setState] = useState('');
-  const [municipality, setMunicipality] = useState('');
+  const [fullName, setFullName] = useState(userInfo['name']);
+  const [birthday, setBirthday] = useState(extractBirthday(userInfo['birthday']));
+  const [gender, setGender] = useState(getGender(userInfo));
+  const [address, setAddress] = useState(userInfo['address']);
+  const [state_, setState] = useState(userInfo['state']);
+  const [municipality, setMunicipality] = useState(userInfo['municipality']);
+  const [curp, setCurp] = useState(userInfo['curp']);
 
   const [fullNameInputStyle, setFullNameInputStyle] = useState(BlurredStyle);
-  const [emailInputStyle, setEmailInputStyle] = useState(BlurredStyle);
   const [birthdayInputStyle, setBirthdayInputStyle] = useState(BlurredStyle);
-  const [phoneNoInputStyle, setPhoneNoInputStyle] = useState(BlurredStyle);
-  const [emailIcon, setEmailIcon] = useState(BlurredIconStyle);
-  const [chevronDown, setChevronDown] = useState(BlurredIconStyle);
+  const [addressInputStyle, setAddressInputStyle] = useState(BlurredStyle);
+  const [stateInputStyle, setStateInputStyle] = useState(BlurredStyle);
+  const [municipalityInputStyle, setMunicipalityInputStyle] = useState(BlurredStyle);
+  const [curpInputStyle, setCurpInputStyle] = useState(BlurredStyle);
 
-  const [selectImage, setSelectImage] = useState('');
-  const [callingCodeLib, setCallingCodeLib] = useState(+91);
-  const [countryCodeLib, setCountryCodeLib] = useState('MX');
-  const [visiblePiker, setVisiblePiker] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [nameError, setNameError] = useState(false);
-  const [contactError, setContactError] = useState(false);
+  const [addressError, setAddressError] = useState(false);
+  const [stateError, setStateError] = useState(false);
+  const [municipalityError, setMunicipalityError] = useState(false);
+  const [curpError, setCurpError] = useState(false);
   const [date, setDate] = React.useState(new Date());
-  const [formatedDate, setFormatedDate] = React.useState('');
   const [showPicker, setShowPicker] = React.useState(false);
 
-  const [municipalityList, setMunicipalityList] = useState([]);
+  // const [municipalityList, setMunicipalityList] = useState([]);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
-  const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
   const onBlurInput = onUnHighlight => onUnHighlight(BlurredStyle);
-  const onBlurIcon = onUnHighlight => onUnHighlight(BlurredIconStyle);
 
   useEffect(() => {
     if (
-      fullName.length > 0 &&
+      isNotEmptyString(fullName) &&
       !nameError &&
-      birthday.length > 0 &&
-      gender.length > 0 &&
-      state_.length > 0 &&
-      municipality.length > 0 &&
-      (email.length > 0 || phoneNo.length > 0) &&
-      !contactError
+      isNotEmptyString(birthday) &&
+      isNotEmptyString(gender) &&
+      isNotEmptyString(address) &&
+      !addressError &&
+      isNotEmptyString(state_) &&
+      !stateError &&
+      isNotEmptyString(municipality) &&
+      !municipalityError &&
+      isNotEmptyString(curp) &&
+      !curpError
+      // true
     ) {
       setIsSubmitDisabled(false);
     } else {
@@ -119,39 +107,33 @@ const SetUpProfile = props => {
     nameError,
     birthday,
     gender,
+    address,
+    addressError,
     state_,
+    stateError,
     municipality,
-    email,
-    phoneNo,
-    contactError,
+    municipalityError,
+    curp,
+    curpError
   ]);
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
   };
 
-  const onFocusEmail = () => {
-    onFocusInput(setEmailInputStyle);
-    onFocusIcon(setEmailIcon);
-  };
-  const onBlurEmail = () => {
-    onBlurInput(setEmailInputStyle);
-    onBlurIcon(setEmailIcon);
-  };
-
   const onFocusBirthday = () => onFocusInput(setBirthdayInputStyle);
   const onFocusFullName = () => onFocusInput(setFullNameInputStyle);
-  const onFocusPhoneNo = () => {
-    onFocusInput(setPhoneNoInputStyle);
-    onFocusIcon(setChevronDown);
-  };
+  const onFocusAddress = () => onFocusInput(setAddressInputStyle);
+  const onFocusState = () => onFocusInput(setStateInputStyle);
+  const onFocusMunicipality = () => onFocusInput(setMunicipalityInputStyle);
+  const onFocusCurp = () => onFocusInput(setCurpInputStyle);
 
   const onBlurBirthday = () => onBlurInput(setBirthdayInputStyle);
   const onBlurFullName = () => onBlurInput(setFullNameInputStyle);
-  const onBlurPhoneNo = () => {
-    onBlurInput(setPhoneNoInputStyle);
-    onBlurIcon(setChevronDown);
-  };
+  const onBlurAddress = () => onBlurInput(setAddressInputStyle);
+  const onBlurState = () => onBlurInput(setStateInputStyle);
+  const onBlurMunicipality = () => onBlurInput(setMunicipalityInputStyle);
+  const onBlurCurp = () => onBlurInput(setCurpInputStyle);
 
   const onChangedFullName = text => {
     const {msg} = validateNotEmptyField(text.trim());
@@ -160,22 +142,32 @@ const SetUpProfile = props => {
   };
   const onChangedBirthday = text => setBirthday(text);
   const onChangedGender = text => setGender(text.value.toLowerCase());
+  // const onChangedState = text => {
+  //   setState(text.value.toLowerCase());
+  //   const municipalityList_ = getMunicipalities(text);
+  //   setMunicipalityList(municipalityList_);
+  // };
+  // const onChangedMunicipality = text =>
+    // setMunicipality(text.value.toLowerCase());
+  const onChangedAddress = text => {
+    const {msg} = validateNotEmptyField(text.trim());
+    setAddress(text);
+    setAddressError(msg);
+  };
   const onChangedState = text => {
-    setState(text.value.toLowerCase());
-    const municipalityList_ = getMunicipalities(text);
-    setMunicipalityList(municipalityList_);
+    const {msg} = validateNotEmptyField(text.trim());
+    setState(text);
+    setStateError(msg);
   };
-  const onChangedMunicipality = text =>
-    setMunicipality(text.value.toLowerCase());
-  const onChangedEmail = text => {
-    const {msg} = validateNotEmptyContact(text.trim(), phoneNo);
-    setEmail(text);
-    setContactError(msg);
+  const onChangedMunicipality = text => {
+    const {msg} = validateNotEmptyField(text.trim());
+    setMunicipality(text);
+    setMunicipalityError(msg);
   };
-  const onChangedPhoneNo = text => {
-    const {msg} = validateNotEmptyContact(email, text.trim());
-    setPhoneNo(text);
-    setContactError(msg);
+  const onChangedCurp = text => {
+    const {msg} = validateNotEmptyField(text.trim());
+    setCurp(text);
+    setCurpError(msg);
   };
 
   const onChangeDatePicker = ({type}, selectedDate) => {
@@ -185,11 +177,9 @@ const SetUpProfile = props => {
 
       if (checkPlatform() === 'android') {
         const finalDate = translateBirthday(currentDate);
-        const formatedDate = getFormateDate(currentDate);
 
         toggleDatePicker();
         setBirthday(finalDate);
-        setFormatedDate(formatedDate);
       }
     } else {
       toggleDatePicker();
@@ -201,137 +191,41 @@ const SetUpProfile = props => {
     toggleDatePicker();
   };
 
-  useEffect(() => {
-    ProfilePictureSheetRef?.current?.hide();
-  }, [selectImage]);
+  const onPressContinue = () => {
+    const userInfo_ = {
+        name: fullName,
+        birthday: birthday,
+        gender: gender,
+        address: address,
+        state: state_,
+        municipality: municipality,
+        curp: curp
+    };
 
-  const onSelectCountry = country => {
-    setCountryCodeLib(country.cca2);
-    setCallingCodeLib('+' + country.callingCode[0]);
-    closeCountryPicker();
-  };
-
-  const openCountryPicker = () => setVisiblePiker(true);
-  const closeCountryPicker = () => setVisiblePiker(false);
-
-  const onPressCamera = () => {
-    ImagePicker.openCamera({
-      // cropping: true,
-      mediaType: 'photo',
-      includeBase64: true,
-    }).then(image => {
-      setSelectImage(image);
+    console.log(userInfo_);
+    navigation.navigate(StackNav.FinishProfile, {
+      userCred: userCred,
+      userInfo: userInfo_
     });
   };
-
-  const onPressGallery = () => {
-    ImagePicker.openPicker({
-      mediaType: 'photo',
-      includeBase64: true,
-    }).then(images => {
-      setSelectImage(images);
-    });
-  };
-
-  const EmailIcon = () => (
-    <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />
-  );
-
-  const countryIcon = () => {
-    return (
-      <View style={styles.rowSpaceBetween}>
-        <FlagButton
-          value={callingCodeLib}
-          onOpen={openCountryPicker}
-          withEmoji={true}
-          countryCode={countryCodeLib}
-          withCallingCodeButton={true}
-          containerButtonStyle={localStyles.countryPickerButton}
-        />
-        <Ionicons
-          name="chevron-down-outline"
-          size={moderateScale(20)}
-          color={chevronDown}
-        />
-      </View>
-    );
-  };
-
-  /* FUNCTION ONLY FOR TESTING */
-  /* DELETE WHEN INE MODEL IS IN PROJECT */
-  const createFakeCURP = () => {
-    const LENGTH = 18;
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    const numbers = '0123456789';
-    const charactersLength = characters.length;
-    const numbersLength = numbers.length;
-    let curp = '';
-
-    for (let i=0; i<LENGTH; i++) {
-      if ((i > 3 && i >= 9) || (i > LENGTH - 2)) {
-        curp += numbers.charAt(Math.floor(Math.random() * numbersLength));
-      } else {
-        curp += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-    }
-
-    return curp;
-  };
-
-    /* AT THE END OF THE REGISTER; LOGIN AUTOMATICALLY */
-  const onPressContinue = async () => {
-    const CURP = createFakeCURP();
-    /* Add missing parameters with INE picture */
-    const signup = await signUp(
-      email,
-      password,
-      fullName,
-      gender[0],
-      state_,
-      municipality,
-      'colony',
-      'street',
-      'int_number',
-      'ext_number',
-      formatedDate,
-      CURP,
-      CURP
-    );
-    if (signUp) {
-      navigation.navigate(StackNav.FollowSomeone);
-    }
-  };
-
-  const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
 
   return (
     <ZSafeAreaView>
-      <ZHeader title={headerTitle} />
+      <ZHeader title={strings.confirmInfo} />
       <ZKeyBoardAvoidWrapper containerStyle={[styles.p20]}>
-        {/* user picture */}
-        <TouchableOpacity
-          onPress={onPressProfilePic}
-          style={[styles.selfCenter, styles.mb20]}>
-          {!!selectImage?.path ? (
-            <Image
-              source={{uri: selectImage?.path}}
-              style={localStyles.userImage}
-            />
-          ) : (
-            <Image
-              source={colors.dark ? images.userDark : images.userLight}
-              style={localStyles.userImage}
-            />
-          )}
-          <MaterialIcon
-            name="pencil-box"
-            size={moderateScale(30)}
-            color={colors.primary}
-            style={localStyles.editIcon}
+        <View style={localStyles.warningBox}>
+          <Ionicons
+            name="warning-outline"
+            size={moderateScale(60)}
+            color='#fcba03'
           />
-        </TouchableOpacity>
+          <ZText type={'r18'} style={localStyles.warningText}>
+            {strings.warningInfo}
+          </ZText>
+        </View>
 
         {/* form inputs */}
+        <ZText type={'r12'}>{strings.fullName}</ZText>
         <ZInput
           placeHolder={strings.fullName}
           _value={fullName}
@@ -347,6 +241,7 @@ const SetUpProfile = props => {
           onBlur={onBlurFullName}
         />
 
+        <ZText type={'r12'}>{strings.birthday}</ZText>
         {showPicker && (
           <DateTimePicker
             mode="date"
@@ -409,6 +304,7 @@ const SetUpProfile = props => {
           />
         </Pressable>
 
+        <ZText type={'r12'}>{strings.gender}</ZText>
         <Dropdown
           style={[
             localStyles.dropdownStyle,
@@ -439,7 +335,23 @@ const SetUpProfile = props => {
           activeColor={colors.inputBg}
         />
 
-        <Dropdown
+        <ZText type={'r12'}>{strings.address}</ZText>
+        <ZInput
+          placeHolder={strings.address}
+          _value={address}
+          _errorText={addressError}
+          autoCapitalize={'none'}
+          toGetTextFieldValue={onChangedAddress}
+          inputContainerStyle={[
+            {backgroundColor: colors.inputBg},
+            localStyles.inputContainerStyle,
+            addressInputStyle,
+          ]}
+          _onFocus={onFocusAddress}
+          onBlur={onBlurAddress}
+        />
+
+        {/* <Dropdown
           style={[
             localStyles.dropdownStyle,
             {
@@ -467,9 +379,25 @@ const SetUpProfile = props => {
             backgroundColor: colors.inputBg,
           }}
           activeColor={colors.inputBg}
+        /> */}
+
+        <ZText type={'r12'}>{strings.state}</ZText>
+        <ZInput
+          placeHolder={strings.state}
+          _value={state_}
+          _errorText={stateError}
+          autoCapitalize={'none'}
+          toGetTextFieldValue={onChangedState}
+          inputContainerStyle={[
+            {backgroundColor: colors.inputBg},
+            localStyles.inputContainerStyle,
+            stateInputStyle,
+          ]}
+          _onFocus={onFocusState}
+          onBlur={onBlurState}
         />
         
-        <Dropdown
+        {/* <Dropdown
           style={[
             localStyles.dropdownStyle,
             {
@@ -497,79 +425,54 @@ const SetUpProfile = props => {
             backgroundColor: colors.inputBg,
           }}
           activeColor={colors.inputBg}
-        />
+        /> */}
 
+        <ZText type={'r12'}>{strings.municipality}</ZText>
         <ZInput
-          placeHolder={strings.email}
-          keyBoardType={'email-address'}
-          _value={email}
-          _errorText={contactError}
+          placeHolder={strings.municipality}
+          _value={municipality}
+          _errorText={municipalityError}
           autoCapitalize={'none'}
-          toGetTextFieldValue={onChangedEmail}
-          rightAccessory={() => <EmailIcon />}
+          toGetTextFieldValue={onChangedMunicipality}
           inputContainerStyle={[
             {backgroundColor: colors.inputBg},
             localStyles.inputContainerStyle,
-            emailInputStyle,
+            municipalityInputStyle,
           ]}
-          _onFocus={onFocusEmail}
-          onBlur={onBlurEmail}
+          _onFocus={onFocusMunicipality}
+          onBlur={onBlurMunicipality}
         />
 
+        <ZText type={'r12'}>{strings.curp}</ZText>
         <ZInput
-          placeHolder={strings.phoneNumber}
-          keyBoardType={'number-pad'}
-          _value={phoneNo}
-          _errorText={contactError}
-          _maxLength={10}
-          toGetTextFieldValue={onChangedPhoneNo}
-          insideLeftIcon={countryIcon}
+          placeHolder={strings.curp}
+          _value={curp}
+          _errorText={curpError}
+          autoCapitalize={'none'}
+          toGetTextFieldValue={onChangedCurp}
           inputContainerStyle={[
             {backgroundColor: colors.inputBg},
             localStyles.inputContainerStyle,
-            phoneNoInputStyle,
+            curpInputStyle,
           ]}
-          _onFocus={onFocusPhoneNo}
-          onBlur={onBlurPhoneNo}
+          _onFocus={onFocusCurp}
+          onBlur={onBlurCurp}
         />
-
         {/* form inputs */}
       </ZKeyBoardAvoidWrapper>
-        <View style={localStyles.btnContainer}>
-          <ZButton
-            title={strings.continue}
-            textType={'b18'}
-            color={colors.white}
-            containerStyle={[
-              localStyles.skipBtnContainer,
-              isSubmitDisabled && {opacity: 0.5},
-            ]}
-            onPress={onPressContinue}
-            disabled={isSubmitDisabled}
-          />
-        </View>
-        
-        <ProfilePicture
-          onPressCamera={onPressCamera}
-          onPressGallery={onPressGallery}
-          SheetRef={ProfilePictureSheetRef}
+      <View style={localStyles.btnContainer}>
+        <ZButton
+          title={strings.continue}
+          textType={'b18'}
+          color={colors.white}
+          containerStyle={[
+            localStyles.skipBtnContainer,
+            isSubmitDisabled && {opacity: 0.5},
+          ]}
+          onPress={onPressContinue}
+          disabled={isSubmitDisabled}
         />
-        <CountryPicker
-          countryCode={'MX'}
-          withFilter={true}
-          visible={visiblePiker}
-          withFlag={true}
-          withFlagButton={true}
-          onSelect={country => onSelectCountry(country)}
-          withCallingCode={true}
-          withAlphaFilter={true}
-          withCountryNameButton={true}
-          onClose={closeCountryPicker}
-          renderFlagButton={() => {
-            return null;
-          }}
-          theme={colors.dark ? DARK_THEME : DEFAULT_THEME}
-        />
+      </View>
     </ZSafeAreaView>
   );
 };
@@ -577,16 +480,6 @@ const SetUpProfile = props => {
 export default SetUpProfile;
 
 const localStyles = StyleSheet.create({
-  userImage: {
-    width: moderateScale(100),
-    height: moderateScale(100),
-    borderRadius: moderateScale(50),
-  },
-  editIcon: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-  },
   inputContainerStyle: {
     height: getHeight(60),
     borderRadius: moderateScale(12),
@@ -599,17 +492,14 @@ const localStyles = StyleSheet.create({
     borderWidth: moderateScale(1),
     ...styles.ph25,
     ...styles.mt15,
+    ...styles.mb10,
   },
   btnContainer: {
-    ...styles.p20,
+    ...styles.p10,
     ...styles.rowSpaceAround,
   },
   skipBtnContainer: {
     width: '90%',
-  },
-  countryPickerButton: {
-    ...styles.alignStart,
-    ...styles.justifyCenter,
   },
   button: {
     width: moderateScale(100),
@@ -636,4 +526,11 @@ const localStyles = StyleSheet.create({
   pickerBtn: {
     ...styles.ph20,
   },
+  warningBox: {
+    ...styles.rowSpaceAround,
+    ...styles.mb20,
+  },
+  warningText: {
+    width: moderateScale(250),
+  }
 });

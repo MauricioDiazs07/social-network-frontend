@@ -3,7 +3,8 @@ import React from "react";
 import { StyleSheet,
          View,
          TouchableOpacity,
-         ActivityIndicator } from "react-native";
+         ActivityIndicator,
+         Alert } from "react-native";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -18,6 +19,7 @@ import strings from "../../i18n/strings";
 import { getHeight, moderateScale } from "../../common/constants";
 import { UserResearch } from '../../assets/svgs';
 import { readINE } from "../../api/auth/auth";
+import { StackNav } from "../../navigation/NavigationKeys";
 
 const CameraRegister = props => {
     const {navigation} = props;
@@ -29,6 +31,24 @@ const CameraRegister = props => {
 
     const [isLoading, setIsLoading] = React.useState(false);
     const [isSnackbarVisible, setIsSnackbarVisible] = React.useState(false);
+
+    const showCameraAlert = () =>
+        Alert.alert('',
+                    strings.cutCamera, [
+            {
+                text: strings.accept,
+                onPress: () => onPressCamera(),
+            }
+        ]);
+
+    const showGalleryAlert = () =>
+        Alert.alert('',
+                    strings.cutImage, [
+            {
+                text: strings.accept,
+                onPress: () => onPressGallery(),
+            }
+        ]);
 
     const onPressCamera = () => {
         ImagePicker.openCamera({
@@ -53,11 +73,23 @@ const CameraRegister = props => {
     const readINE_ = img => {
         setIsLoading(true);
 
-        const ine = readINE(img)
+        readINE(img)
         .then(resp => {
             console.log(resp);
-            console.log('name' in resp);
             setIsLoading(false);
+            if (!('name' in resp)) {
+                setIsSnackbarVisible(true);
+                return;
+            }
+
+            navigation.navigate(StackNav.SetUpProfile, {
+                title: headerTitle,
+                userCred: {
+                    email: emailRegister,
+                    password: passwordRegister,
+                },
+                user: resp,
+              });
         })
         .catch(err => {
             setIsLoading(false);
@@ -88,7 +120,7 @@ const CameraRegister = props => {
                             localStyles.contextContainer,
                             {borderColor: colors.textColor},
                         ]}
-                        onPress={onPressCamera}>
+                        onPress={showCameraAlert}>
                         <Ionicons
                             name={'ios-camera'}
                             size={moderateScale(26)}
@@ -105,7 +137,7 @@ const CameraRegister = props => {
                             localStyles.contextContainer,
                             {borderColor: colors.textColor},
                         ]}
-                        onPress={onPressGallery}>
+                        onPress={showGalleryAlert}>
                         <Ionicons
                             name={'ios-images'}
                             size={moderateScale(26)}
