@@ -74,7 +74,7 @@ const Register = ({navigation}) => {
   };
 
   const onPressSignWithPassword = () => {
-    navigation.navigate(StackNav.SetUpProfile, {
+    navigation.navigate(StackNav.CameraRegister, {
       title: strings.fillYourProfile,
       email: email,
       password: password

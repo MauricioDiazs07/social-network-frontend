@@ -45,6 +45,10 @@ export default function StackNavigation() {
           name={StackNav.TermsAndConditions}
           component={StackRoute.TermsAndConditions}
         />
+        <Stack.Screen
+          name={StackNav.CameraRegister}
+          component={StackRoute.CameraRegister}
+        />
       </Stack.Navigator>
     );
   }

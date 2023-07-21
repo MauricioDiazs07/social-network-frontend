@@ -57,6 +57,7 @@ import Live from '../containers/TabBar/home/Live';
 import FollowSomeone from '../containers/auth/FollowSomeone';
 import StoryView from '../containers/TabBar/home/UserStory/StoryView';
 import UserProfile from '../containers/TabBar/profile/UserProfile';
+import CameraRegister from '../containers/auth/CameraRegister';
 
 export const TabRoute = {
   Home,
@@ -119,4 +120,5 @@ export const StackRoute = {
   Inbox,
   StoryView,
   UserProfile,
+  CameraRegister,
 };

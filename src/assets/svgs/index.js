@@ -46,6 +46,7 @@ import HeartIcon_Dark from './heart_dark.svg';
 import ChatIcon_Light from './chat_icon_light.svg';
 import ChatIcon_Dark from './chat_icon_dark.svg';
 import StoryAddIcon from './story_add_icon.svg';
+import UserResearch from './user-research.svg';
 
 export {
   Home_Light,
@@ -93,4 +94,5 @@ export {
   ChatIcon_Light,
   ChatIcon_Dark,
   StoryAddIcon,
+  UserResearch,
 };

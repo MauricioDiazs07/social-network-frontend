@@ -60,4 +60,5 @@ export const StackNav = {
   Inbox: 'Inbox',
   StoryView: 'StoryView',
   UserProfile: 'UserProfile',
+  CameraRegister: 'CameraRegister',
 };

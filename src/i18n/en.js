@@ -193,4 +193,9 @@ export default {
   followSomeoneDescription:
     'Follow someone you might know or you can skip them too.',
   shorts: 'Shorts',
+  you: 'Tú',
+  profileEdit: 'Edita tu perfil',
+  userInfo: 'User information',
+  cameraRegister: 'Para continuar con el registro, obtenemos la información de la INE.',
+  INEFailed: 'Couldn\'t read picture\'s information, please upload another photo.'
 };

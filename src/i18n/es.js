@@ -209,4 +209,6 @@ export default {
     you: 'Tú',
     profileEdit: 'Edita tu perfil',
     userInfo: 'Información de usuario',
+    cameraRegister: 'Para continuar con el registro, obtenemos la información de la INE. Elige el método para subir la identificación.',
+    INEFailed: 'No se pudo leer la foto. Por favor, toma o elige otra.',
   };  

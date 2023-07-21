@@ -1,4 +1,9 @@
-import { URL_API, LOGIN, SIGNUP, USER_DATA } from "../../utils/constants";
+import { 
+    URL_API,
+    LOGIN,
+    SIGNUP,
+    USER_DATA,
+    READ_INE } from "../../utils/api_constants";
 
 const getAuthToken = async (email, password) => {
 
@@ -43,13 +48,14 @@ const getAuthData = async (email) => {
 
 /* method to send INE pic and get the information */
 const readINE = async (ine_pic) => {
-    const response = await fetch(URL_API, {
+    const formData = new FormData();
+    formData.append("INE", ine_pic, ine_pic.path);
+    
+    const response = await fetch(URL_API + READ_INE, {
         method: "POST",
-        body: JSON.stringify({
-            ine_pic
-        }),
+        body: JSON.stringify({INE: ine_pic}),
         headers: {
-            'Content-type': 'application/json'
+            'Content-Type': 'application/json',
         }
     });
 
@@ -106,6 +112,6 @@ const signUp = async (
 export {
     getAuthToken,
     getAuthData,
-    signUp,
     readINE,
+    signUp,
 };
