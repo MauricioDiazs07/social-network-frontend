@@ -81,7 +81,6 @@ const Register = ({navigation}) => {
     });
   };
 
-
   const onPressTermsAndConditions = () => 
                 navigation.navigate(StackNav.TermsAndConditions);
 

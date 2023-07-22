@@ -65,38 +65,14 @@ const readINE = async (ine_pic) => {
     }
 }
 
-/* Falta probar este metodo :D JY */
+/* method to signup to the app */
 const signUp = async (
-    email,
-    password,
-    name,
-    gender,
-    state,
-    municipality,
-    colony,
-    street,
-    int_number,
-    ext_number,
-    birthday,
-    curp,
-    identification_photo
+    user
 ) => {
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: JSON.stringify({
-            email,
-            password,
-            name,
-            gender,
-            state,
-            municipality,
-            colony,
-            street,
-            int_number,
-            ext_number,
-            birthday,
-            curp,
-            identification_photo
+            ...user
         }),
         headers: {
             'Content-type': 'application/json'

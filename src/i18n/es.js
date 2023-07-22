@@ -217,6 +217,9 @@ export default {
     cutCamera: 'Por favor, al tomar la foto, recórtela para dejar únicamente la credencial',
     cutImage: 'Por favor, al elegir la imagen, recórtela para dejar únicamente la credencial',
     confirmInfo: 'Confirma la información',
-    warningInfo: 'Revisa que la información sea correcta. Estos campos no podrán editarse una vez que sean aceptados.',
+    warningInfo: 'Revisa que la información sea correcta. Estos campos no podrán editarse una vez que sean aceptados.\nAsegúrate de que la iluminación sea buena para evitar errores de lectura.',
     finishProfile: 'Termina tu perfil',
-  };  
+    validCurp: 'Por favor, introduce un CURP válido',
+    userExists: 'El usuario ya está registrado. Por favor, inicie sesión.',
+    loginRedirect: 'Ir a inicio de sesión',
+  };

@@ -208,6 +208,9 @@ export default {
   cutCamera: 'When taking the photo, please crop it to leave only the credential.',
   cutImage: 'Please, when choosing the image, crop it to leave only the credential.',
   confirmInfo: 'Confirm the information',
-  warningInfo: 'Check that the information is correct. These fields can not be edited when they are accepted.',
+  warningInfo: 'Check that the information is correct. These fields can not be edited when they are accepted.\nMake sure the lighting is good to avoid reading errors.',
   finishProfile: 'Finish your profile',
+  validCurp: 'Please enter a valid CURP',
+  userExists: 'User already exists. Please, log in.',
+  loginRedirect: 'Go to Login',
 };

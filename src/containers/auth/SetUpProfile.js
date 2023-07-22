@@ -23,6 +23,7 @@ import { StackNav } from '../../navigation/NavigationKeys';
 import ZButton from '../../components/common/ZButton';
 import {
   validateNotEmptyField,
+  validateINE
 } from '../../utils/validators';
 import { checkPlatform } from '../../utils/helpers';
 import {
@@ -43,6 +44,13 @@ const SetUpProfile = props => {
 
   const colors = useSelector(state => state.theme.theme);
   // const statesList = getStates();
+
+  // init states
+  const nameInitState = validateNotEmptyField(userInfo['name']);
+  const addressInitState = validateNotEmptyField(userInfo['address']);
+  const stateInitState = validateNotEmptyField(userInfo['state']);
+  const municipalityInitState = validateNotEmptyField(userInfo['municipality']);
+  const curpInitState = validateINE(userInfo['curp']);
 
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
@@ -69,11 +77,11 @@ const SetUpProfile = props => {
   const [curpInputStyle, setCurpInputStyle] = useState(BlurredStyle);
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-  const [nameError, setNameError] = useState(false);
-  const [addressError, setAddressError] = useState(false);
-  const [stateError, setStateError] = useState(false);
-  const [municipalityError, setMunicipalityError] = useState(false);
-  const [curpError, setCurpError] = useState(false);
+  const [nameError, setNameError] = useState(nameInitState['msg']);
+  const [addressError, setAddressError] = useState(addressInitState['msg']);
+  const [stateError, setStateError] = useState(stateInitState['msg']);
+  const [municipalityError, setMunicipalityError] = useState(municipalityInitState['msg']);
+  const [curpError, setCurpError] = useState(curpInitState['msg']);
   const [date, setDate] = React.useState(new Date());
   const [showPicker, setShowPicker] = React.useState(false);
 
@@ -96,7 +104,6 @@ const SetUpProfile = props => {
       !municipalityError &&
       isNotEmptyString(curp) &&
       !curpError
-      // true
     ) {
       setIsSubmitDisabled(false);
     } else {
@@ -165,7 +172,7 @@ const SetUpProfile = props => {
     setMunicipalityError(msg);
   };
   const onChangedCurp = text => {
-    const {msg} = validateNotEmptyField(text.trim());
+    const {msg} = validateINE(text.trim());
     setCurp(text);
     setCurpError(msg);
   };
@@ -202,7 +209,6 @@ const SetUpProfile = props => {
         curp: curp
     };
 
-    console.log(userInfo_);
     navigation.navigate(StackNav.FinishProfile, {
       userCred: userCred,
       userInfo: userInfo_

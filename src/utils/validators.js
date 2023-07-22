@@ -16,6 +16,9 @@ const cvvRegex = /^[0-9]{3}$/;
 // regex for age
 const ageRegex = /^[0-9]*$/;
 
+// regex for curp
+const curpRegex = /^[A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}\d{2}$/;
+
 // Name validation
 const validateName = name => {
   if (!name) {
@@ -212,6 +215,22 @@ const validateNotEmptyContact = (email, phoneNo) => {
   }
 }
 
+const validateINE = (ine_) => {
+  if (!ine_) {
+    return {
+      status: false,
+      msg: strings.thisFieldIsMandatory,
+    };
+  } else {
+    return curpRegex.test(ine_)
+      ? {status: true, msg: ''}
+      : {
+          status: false,
+          msg: strings.validCurp,
+        };
+  }
+}
+
 export {
   validateEmail,
   validateNotNecessatyEmail,
@@ -223,4 +242,5 @@ export {
   validateAge,
   validateNotEmptyField,
   validateNotEmptyContact,
+  validateINE,
 };
