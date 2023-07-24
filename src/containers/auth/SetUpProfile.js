@@ -16,7 +16,7 @@ import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import ZHeader from '../../components/common/ZHeader';
 import strings from '../../i18n/strings';
 import { styles } from '../../themes';
-import { GenderData, getHeight, moderateScale } from '../../common/constants';
+import { getHeight, moderateScale } from '../../common/constants';
 import ZInput from '../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 import { StackNav } from '../../navigation/NavigationKeys';
@@ -26,12 +26,11 @@ import {
   validateINE
 } from '../../utils/validators';
 import { checkPlatform } from '../../utils/helpers';
+import { GenderData } from '../../utils/constants';
 import {
-  extractBirthday,
   translateBirthday,
-  getFormateDate,
-  // getStates,
-  // getMunicipalities,
+  getStates,
+  getMunicipalities,
   getGender,
   isNotEmptyString
 } from '../../utils/_support_functions';
@@ -43,7 +42,7 @@ const SetUpProfile = props => {
   const userInfo = props.route.params.user;
 
   const colors = useSelector(state => state.theme.theme);
-  // const statesList = getStates();
+  const statesList = getStates();
 
   // init states
   const nameInitState = validateNotEmptyField(userInfo['name']);
@@ -60,10 +59,13 @@ const SetUpProfile = props => {
     backgroundColor: colors.inputFocusColor,
     borderColor: colors.primary,
   };
+  
+  const [municipalityList, setMunicipalityList] = 
+                        useState(getMunicipalities(userInfo['state']));
 
   const [fullName, setFullName] = useState(userInfo['name']);
-  const [birthday, setBirthday] = useState(extractBirthday(userInfo['birthday']));
-  const [gender, setGender] = useState(getGender(userInfo));
+  const [birthday, setBirthday] = useState(userInfo['birthday']);
+  const [gender, setGender] = useState(getGender(userInfo['gender']));
   const [address, setAddress] = useState(userInfo['address']);
   const [state_, setState] = useState(userInfo['state']);
   const [municipality, setMunicipality] = useState(userInfo['municipality']);
@@ -72,20 +74,15 @@ const SetUpProfile = props => {
   const [fullNameInputStyle, setFullNameInputStyle] = useState(BlurredStyle);
   const [birthdayInputStyle, setBirthdayInputStyle] = useState(BlurredStyle);
   const [addressInputStyle, setAddressInputStyle] = useState(BlurredStyle);
-  const [stateInputStyle, setStateInputStyle] = useState(BlurredStyle);
-  const [municipalityInputStyle, setMunicipalityInputStyle] = useState(BlurredStyle);
   const [curpInputStyle, setCurpInputStyle] = useState(BlurredStyle);
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [nameError, setNameError] = useState(nameInitState['msg']);
   const [addressError, setAddressError] = useState(addressInitState['msg']);
-  const [stateError, setStateError] = useState(stateInitState['msg']);
-  const [municipalityError, setMunicipalityError] = useState(municipalityInitState['msg']);
   const [curpError, setCurpError] = useState(curpInitState['msg']);
   const [date, setDate] = React.useState(new Date());
   const [showPicker, setShowPicker] = React.useState(false);
 
-  // const [municipalityList, setMunicipalityList] = useState([]);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onBlurInput = onUnHighlight => onUnHighlight(BlurredStyle);
@@ -99,9 +96,7 @@ const SetUpProfile = props => {
       isNotEmptyString(address) &&
       !addressError &&
       isNotEmptyString(state_) &&
-      !stateError &&
       isNotEmptyString(municipality) &&
-      !municipalityError &&
       isNotEmptyString(curp) &&
       !curpError
     ) {
@@ -117,9 +112,7 @@ const SetUpProfile = props => {
     address,
     addressError,
     state_,
-    stateError,
     municipality,
-    municipalityError,
     curp,
     curpError
   ]);
@@ -131,15 +124,11 @@ const SetUpProfile = props => {
   const onFocusBirthday = () => onFocusInput(setBirthdayInputStyle);
   const onFocusFullName = () => onFocusInput(setFullNameInputStyle);
   const onFocusAddress = () => onFocusInput(setAddressInputStyle);
-  const onFocusState = () => onFocusInput(setStateInputStyle);
-  const onFocusMunicipality = () => onFocusInput(setMunicipalityInputStyle);
   const onFocusCurp = () => onFocusInput(setCurpInputStyle);
 
   const onBlurBirthday = () => onBlurInput(setBirthdayInputStyle);
   const onBlurFullName = () => onBlurInput(setFullNameInputStyle);
   const onBlurAddress = () => onBlurInput(setAddressInputStyle);
-  const onBlurState = () => onBlurInput(setStateInputStyle);
-  const onBlurMunicipality = () => onBlurInput(setMunicipalityInputStyle);
   const onBlurCurp = () => onBlurInput(setCurpInputStyle);
 
   const onChangedFullName = text => {
@@ -149,27 +138,17 @@ const SetUpProfile = props => {
   };
   const onChangedBirthday = text => setBirthday(text);
   const onChangedGender = text => setGender(text.value.toLowerCase());
-  // const onChangedState = text => {
-  //   setState(text.value.toLowerCase());
-  //   const municipalityList_ = getMunicipalities(text);
-  //   setMunicipalityList(municipalityList_);
-  // };
-  // const onChangedMunicipality = text =>
-    // setMunicipality(text.value.toLowerCase());
+  const onChangedState = text => {
+    setState(text.value.toLowerCase());
+    const municipalityList_ = getMunicipalities(text);
+    setMunicipalityList(municipalityList_);
+  };
+  const onChangedMunicipality = text =>
+    setMunicipality(text.value.toLowerCase());
   const onChangedAddress = text => {
     const {msg} = validateNotEmptyField(text.trim());
     setAddress(text);
     setAddressError(msg);
-  };
-  const onChangedState = text => {
-    const {msg} = validateNotEmptyField(text.trim());
-    setState(text);
-    setStateError(msg);
-  };
-  const onChangedMunicipality = text => {
-    const {msg} = validateNotEmptyField(text.trim());
-    setMunicipality(text);
-    setMunicipalityError(msg);
   };
   const onChangedCurp = text => {
     const {msg} = validateINE(text.trim());
@@ -357,7 +336,8 @@ const SetUpProfile = props => {
           onBlur={onBlurAddress}
         />
 
-        {/* <Dropdown
+        <ZText type={'r12'}>{strings.state}</ZText>
+        <Dropdown
           style={[
             localStyles.dropdownStyle,
             {
@@ -385,25 +365,10 @@ const SetUpProfile = props => {
             backgroundColor: colors.inputBg,
           }}
           activeColor={colors.inputBg}
-        /> */}
-
-        <ZText type={'r12'}>{strings.state}</ZText>
-        <ZInput
-          placeHolder={strings.state}
-          _value={state_}
-          _errorText={stateError}
-          autoCapitalize={'none'}
-          toGetTextFieldValue={onChangedState}
-          inputContainerStyle={[
-            {backgroundColor: colors.inputBg},
-            localStyles.inputContainerStyle,
-            stateInputStyle,
-          ]}
-          _onFocus={onFocusState}
-          onBlur={onBlurState}
         />
         
-        {/* <Dropdown
+        <ZText type={'r12'}>{strings.municipality}</ZText>
+        <Dropdown
           style={[
             localStyles.dropdownStyle,
             {
@@ -431,22 +396,6 @@ const SetUpProfile = props => {
             backgroundColor: colors.inputBg,
           }}
           activeColor={colors.inputBg}
-        /> */}
-
-        <ZText type={'r12'}>{strings.municipality}</ZText>
-        <ZInput
-          placeHolder={strings.municipality}
-          _value={municipality}
-          _errorText={municipalityError}
-          autoCapitalize={'none'}
-          toGetTextFieldValue={onChangedMunicipality}
-          inputContainerStyle={[
-            {backgroundColor: colors.inputBg},
-            localStyles.inputContainerStyle,
-            municipalityInputStyle,
-          ]}
-          _onFocus={onFocusMunicipality}
-          onBlur={onBlurMunicipality}
         />
 
         <ZText type={'r12'}>{strings.curp}</ZText>
