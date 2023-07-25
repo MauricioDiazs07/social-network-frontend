@@ -9,7 +9,7 @@ import { Snackbar } from '@react-native-material/core';
 import strings from '../../i18n/strings';
 import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
-import {ACCESS_TOKEN, getHeight, moderateScale} from '../../common/constants';
+import {ACCESS_TOKEN, USER_LEVEL, getHeight, moderateScale} from '../../common/constants';
 import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import {StackNav} from '../../navigation/NavigationKeys';
@@ -19,6 +19,7 @@ import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper
 import {setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
 import {getAuthData, getAuthToken} from '../../api/auth/auth';
+import { getAccessLevel } from '../../utils/_support_functions';
 
 const Login = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -120,22 +121,28 @@ const Login = ({navigation}) => {
 
   const onPressSignWithPassword = async () => {
 
-    const token = await getAuthToken(email, password);
+    await getAuthToken(email, password)
+    .then(async (token) => {
+      if ("token" in token) {
+        console.log(token);
+        const user_lvl = getAccessLevel(token['role_id']);
+        console.log(user_lvl);
+        await setAsyncStorageData(ACCESS_TOKEN, token);
+        await setAsyncStorageData(USER_LEVEL, user_lvl);
+  
+        const user = await getAuthData(email);
+        
+        navigation.reset({
+          index: 0,
+          routes: [{name: StackNav.TabBar}],
+        });
+  
+      } else {
+        setSnackVisible(true);
+        return;
+      }
+    });
     
-    if (token['success'] === true) {
-
-      await setAsyncStorageData(ACCESS_TOKEN, token);
-      const user = await getAuthData(email);
-      // await setAsyncStorageData(USER_LEVEL, user.level);
-      navigation.reset({
-        index: 0,
-        routes: [{name: StackNav.TabBar}],
-      });
-
-    } else {
-      setSnackVisible(true);
-      return;
-    }
   };
 
   const onPressPasswordEyeIcon = () => setIsPasswordVisible(!isPasswordVisible);

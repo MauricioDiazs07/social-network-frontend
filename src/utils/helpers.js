@@ -35,10 +35,12 @@ const getAsyncStorageData = async key => {
 // get user level
 const getUserLevel = async () => {
   try {
-    const value = await AsyncStorage.getItem(USER_LEVEL);
-    if (value !== null) {
-        return JSON.parse(value);
-    }
+    const value = await AsyncStorage.getItem(USER_LEVEL)
+    .then(resp => {
+      if (value !== null) {
+          return JSON.parse(value);
+      }
+    });
   } catch (error) {
     
   }

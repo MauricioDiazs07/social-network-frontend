@@ -52,10 +52,22 @@ const isNotEmptyString = str_ => {
   return str_.length > 0;
 }
 
+const getAccessLevel = lvl => {
+  console.log("LEVEL:", lvl);
+  if (lvl === 1) {
+    return 'user';
+  } else if (lvl === 2) {
+    return 'admin';
+  }
+
+  return 'master';
+}
+
 export {
     translateBirthday,
     getStates,
     getMunicipalities,
     getGender,
     isNotEmptyString,
+    getAccessLevel,
 }

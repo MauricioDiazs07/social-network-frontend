@@ -16,8 +16,9 @@ const getAuthToken = async (email, password) => {
         headers: {
             'Content-type': 'application/json'
         }
-    })
-    const token = await response.json()
+    });
+
+    const token = await response.json();
     if (token && response.ok){
         return token;
     } else {

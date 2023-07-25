@@ -166,49 +166,24 @@ const FinishProfile = props => {
 
   const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
 
-  /* AT THE END OF THE REGISTER; LOGIN AUTOMATICALLY */
   const onPressContinue = async () => {
     /* FINAL UPDATE ON SIGNUP */
     const userCred_ = {
       email: email,
       password: userCred['password'],
     };
-    //
-    // const usser_ = {
-    //   ...userCred_,
-    //   identification_photo: selectImage,
-    //   phoneNo: callingCodeLib.toString() + phoneNo.toString(),
-    //   ...userInfo
-    // }
-    /* FINAL UPDATE ON SIGNUP */
+    
+    const phoneNo_ = phoneNo.toString() != '' ?
+                callingCodeLib.toString() + phoneNo.toString() : '';
 
-    /* TEMPORARY SIGNUP */
-    let birthd_ = userInfo['birthday'];
-    birthd_ = birthd_.split('-');
-
-    let day = birthd_[0];
-    let month = birthd_[1].length;
-    let year = birthd_[2];
-
-    const date_ = `${year}-${month}-${day}`;
-
-    const usser_temp = {
+    const usser_ = {
       ...userCred_,
-      name: userInfo['name'],
-      gender: userInfo['gender'][0],
-      state: userInfo['state'],
-      municipality: userInfo['municipality'],
-      colony: 'colony',
-      street: 'street',
-      int_number: 'int_number',
-      ext_number: 'ext_number',
-      birthday: date_,
-      curp: userInfo['curp'],
-      identification_photo: userInfo['curp'],
+      identification_photo: selectImage,
+      phone: phoneNo_,
+      ...userInfo
     };
-    /* TEMPORARY SIGNUP */
 
-    await signUp(usser_temp)
+    await signUp(usser_)
       .then(async resp => {
         if (resp) {
           await getAuthToken(
