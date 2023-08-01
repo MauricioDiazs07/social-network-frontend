@@ -3,6 +3,7 @@ import React from 'react';
 import {useSelector} from 'react-redux';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Local import
 import {StackRoute, TabRoute} from '../NavigationRoutes';
@@ -20,7 +21,16 @@ import {
 } from '../../assets/svgs';
 import {styles} from '../../themes';
 import ProfilePicture from '../../components/models/ProfilePicture';
-import {getUserLevel} from '../../utils/helpers';
+import { USER_LEVEL } from '../../common/constants';
+
+let user_access = '';
+
+const getUserLevel = async () => {
+  await AsyncStorage.getItem(USER_LEVEL)
+    .then((data) => {
+      user_access = JSON.parse(data);
+    }).catch(err => console.log("ERROR:", err));
+};
 
 export default function TabBarNavigation({navigation}) {
   const colors = useSelector(state => state.theme.theme);
@@ -88,21 +98,23 @@ export default function TabBarNavigation({navigation}) {
         listeners={{tabPress: e => e.preventDefault()}}
         options={{
           tabBarIcon: ({focused}) => (
-            <TouchableOpacity
-              onPress={onPressAdd}
-              style={localStyles.tabViewContainer}>
-              {user_level == 'admin' && (
-                <Add_Icon style={localStyles.add_icon} />
-              )}
-              <ProfilePicture
-                SheetRef={ProfilePictureSheetRef}
-                post={true}
-                live={true}
-                title={strings.choose}
-                onPressCamera={onPressPost}
-                onPressGallery={onPressLive}
-              />
-            </TouchableOpacity>
+            <View>
+              {user_access === 'admin' && (<TouchableOpacity
+                onPress={onPressAdd}
+                style={localStyles.tabViewContainer}>
+                <Add_Icon 
+                  style={localStyles.add_icon}
+                />
+                <ProfilePicture
+                  SheetRef={ProfilePictureSheetRef}
+                  post={true}
+                  live={true}
+                  title={strings.choose}
+                  onPressCamera={onPressPost}
+                  onPressGallery={onPressLive}
+                />
+              </TouchableOpacity>)}
+            </View>
           ),
         }}
       />

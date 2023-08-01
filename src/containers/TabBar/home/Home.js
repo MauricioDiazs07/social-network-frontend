@@ -37,14 +37,10 @@ const onPressCancel = () => LogOutSheetRef?.current?.hide();
 let user_access = '';
 
 const getUserLevel = async () => {
-  try {
-    const value = await AsyncStorage.getItem(USER_LEVEL)
-      .then((data) => {
-        user_access = JSON.parse(data);
-      });
-  } catch (error) {
-    
-  }
+  await AsyncStorage.getItem(USER_LEVEL)
+    .then((data) => {
+      user_access = JSON.parse(data);
+    }).catch(err => console.log("ERROR:", err));
 };
 
 const UserProfile = React.memo(() => {
