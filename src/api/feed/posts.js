@@ -4,31 +4,30 @@ import { URL_API,
  } from "../../utils/api_constants";
 
 const getPosts = async () => {
-    const response = fetch(URL_API + GET_POSTS, {
+    const response = await fetch(URL_API + GET_POSTS, {
         method: 'GET'
     });
 
     const resp = await response.json();
-    console.log(resp);
     if (response.ok) {
         return resp;
     }
 }
 
 const createPost = async (form) => {
-    // const response = fetch(URL_API + CREATE_POSTS, {
-    //     method: 'POST',
-    //     body: form
-    // });
+    console.log("FORM", form);
+    const response = await fetch(URL_API + CREATE_POSTS, {
+        method: 'POST',
+        body: form,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+    });
 
-    // const resp = await response.json();
-    // if (response.ok) {
-    //     return resp;
-    // }
-
-    /* TESTING */
-    console.log("FORM:", form);
-    return 'holi';
+    const resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
 }
 
 export {

@@ -213,4 +213,8 @@ export default {
   validCurp: 'Please enter a valid CURP',
   userExists: 'User already exists. Please, log in.',
   loginRedirect: 'Go to Login',
+  postsNotFound: 'No more publications found to display',
+  goBack: 'Go back',
+  selectImg: 'Add image',
+  emptyPost: 'Empty post',
 };

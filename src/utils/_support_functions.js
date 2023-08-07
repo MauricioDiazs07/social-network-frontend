@@ -23,6 +23,9 @@ const getMunicipalities = (state_) => {
 }
 
 getList = (list_) => {
+  if (list_ == undefined) {
+    return [];
+  }
   const keyList = Object.keys(list_).sort();
   const filtered_list = [];
 
@@ -63,6 +66,34 @@ const getAccessLevel = lvl => {
   return 'master';
 }
 
+const transformfPosts = (post) => {
+  console.log("START POST:", post);
+  const new_posts = [];
+  let name = "Victoria Hernandez";
+  let photo = "https://aishlatino.com/wp-content/uploads/2021/11/que-tipo-de-persona-te-gustaria-ser-730x411-SP.jpg";
+
+  post.forEach(element => {
+    const images = [];
+    element['multimedia'].forEach(mult => {
+      images.push(mult['archive_url']);
+    });
+
+    const obj = {
+      id: element['share']['share_id'],
+      name: name,
+      subtitle: 'Hace 2 horas',
+      profileImage: photo,
+      text: element['share']['description'],
+      image: images,
+      role: 'CEO de empresa',
+      postType: 'text',
+    };
+    new_posts.push(obj);
+  });
+
+  return new_posts.reverse();
+}
+
 export {
     translateBirthday,
     getStates,
@@ -70,4 +101,5 @@ export {
     getGender,
     isNotEmptyString,
     getAccessLevel,
+    transformfPosts,
 }

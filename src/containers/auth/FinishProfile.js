@@ -10,6 +10,7 @@ import CountryPicker, {
   DARK_THEME,
   DEFAULT_THEME,
 } from 'react-native-country-picker-modal';
+import {Snackbar, Button} from '@react-native-material/core';
 
 // local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -25,7 +26,6 @@ import images from '../../assets/images';
 import strings from '../../i18n/strings';
 import {signUp, getAuthToken} from '../../api/auth/auth';
 import {StackNav} from '../../navigation/NavigationKeys';
-import {Snackbar, Button} from '@react-native-material/core';
 
 const FinishProfile = props => {
   const {navigation} = props;

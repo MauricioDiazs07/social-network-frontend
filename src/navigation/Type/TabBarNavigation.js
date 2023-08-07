@@ -62,7 +62,7 @@ export default function TabBarNavigation({navigation}) {
 
   const onPressLive = () => {
     ProfilePictureSheetRef?.current?.hide();
-    navigation.navigate(StackNav.Live);
+    // navigation.navigate(StackNav.Live);
   };
 
   return (

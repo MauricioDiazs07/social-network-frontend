@@ -178,7 +178,7 @@ export default {
     videos: 'Videos',
     live: 'Live',
     choose: 'Escoge uno',
-    post: 'Post',
+    post: 'Publicar',
     selectCover: 'Seleccionar portada',
     mention: 'Mención',
     tagPeople: 'Etiquetar gente',
@@ -222,4 +222,8 @@ export default {
     validCurp: 'Por favor, introduce un CURP válido',
     userExists: 'El usuario ya está registrado. Por favor, inicie sesión.',
     loginRedirect: 'Ir a inicio de sesión',
+    postsNotFound: 'No se encontraron más publicaciones para mostrar',
+    goBack: 'Regresar',
+    selectImg: 'Agregar imagen',
+    emptyPost: 'La publicación está vacía',
   };
