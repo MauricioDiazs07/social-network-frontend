@@ -67,26 +67,23 @@ const getAccessLevel = lvl => {
 }
 
 const transformfPosts = (post) => {
-  console.log("START POST:", post);
   const new_posts = [];
-  let name = "Victoria Hernandez";
-  let photo = "https://aishlatino.com/wp-content/uploads/2021/11/que-tipo-de-persona-te-gustaria-ser-730x411-SP.jpg";
 
   post.forEach(element => {
     const images = [];
-    element['multimedia'].forEach(mult => {
+    element['multimedia']['data'].forEach(mult => {
       images.push(mult['archive_url']);
     });
 
     const obj = {
-      id: element['share']['share_id'],
-      name: name,
-      subtitle: 'Hace 2 horas',
-      profileImage: photo,
-      text: element['share']['description'],
+      id: element['id'],
+      name: element['name'],
+      subtitle: element['creationDate'],
+      profileImage: element['profileImage'],
+      text: element['text'],
       image: images,
-      role: 'CEO de empresa',
-      postType: 'text',
+      role: 'CEO de empresa', // TODO: delete field
+      postType: 'POST',
     };
     new_posts.push(obj);
   });
