@@ -104,11 +104,14 @@ export default function PostDetail() {
     formData.append("description", text);
     formData.append("profile_id", "0c7ceb44a155db2fd60058e64eb255ch");
     formData.append("share_type", "POST");
-    console.log("DATA:", selectImage);
     
     selectImage.forEach((value, index) => {
-      // var image = getFileFromBase64(value.data, 'file.jpg');
-      formData.append(`image_${index}`, image);
+      const imageData = {
+        uri: value.path,
+        name: `img_${index}.jpg`,
+        type: value.mime,
+      }
+      formData.append(`image_${index}`, imageData);
     });
 
     await createPost(formData)
