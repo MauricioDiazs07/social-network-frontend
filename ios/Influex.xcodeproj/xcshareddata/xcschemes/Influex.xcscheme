@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "instagram.app"
-               BlueprintName = "instagram"
-               ReferencedContainer = "container:instagram.xcodeproj">
+               BuildableName = "Influex.app"
+               BlueprintName = "Influex"
+               ReferencedContainer = "container:Influex.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "instagramTests.xctest"
-               BlueprintName = "instagramTests"
-               ReferencedContainer = "container:instagram.xcodeproj">
+               BuildableName = "InfluexTests.xctest"
+               BlueprintName = "InfluexTests"
+               ReferencedContainer = "container:Influex.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "instagram.app"
-            BlueprintName = "instagram"
-            ReferencedContainer = "container:instagram.xcodeproj">
+            BuildableName = "Influex.app"
+            BlueprintName = "Influex"
+            ReferencedContainer = "container:Influex.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "instagram.app"
-            BlueprintName = "instagram"
-            ReferencedContainer = "container:instagram.xcodeproj">
+            BuildableName = "Influex.app"
+            BlueprintName = "Influex"
+            ReferencedContainer = "container:Influex.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
