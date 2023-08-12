@@ -41,6 +41,7 @@ const SetUpProfile = props => {
   const {navigation} = props;
   const userCred = props.route.params.userCred;
   const userInfo = props.route.params.user;
+  const id_photo = props.route.params.identification_photo;
 
   const colors = useSelector(state => state.theme.theme);
   const statesList = getStates();
@@ -203,7 +204,8 @@ const SetUpProfile = props => {
         address: address,
         state: state_,
         municipality: municipality,
-        curp: curp
+        curp: curp,
+        identification_photo: id_photo
     };
 
     navigation.navigate(StackNav.FinishProfile, {

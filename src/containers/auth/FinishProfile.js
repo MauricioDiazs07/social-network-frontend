@@ -178,7 +178,7 @@ const FinishProfile = props => {
 
     const usser_ = {
       ...userCred_,
-      identification_photo: selectImage,
+      profile_photo: selectImage,
       phone: phoneNo_,
       ...userInfo
     };
