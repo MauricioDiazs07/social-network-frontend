@@ -51,6 +51,7 @@ export default {
   municipality: 'Municipality',
   address: 'Address',
   curp: 'CURP',
+  section: 'Section',
   validAge: 'Please, select a valid age',
   contactNeeded: 'Please, type an email or a cellphone number',
   createNewPin: 'Create New PIN',
@@ -211,6 +212,7 @@ export default {
   warningInfo: 'Check that the information is correct. These fields can not be edited when they are accepted.\nMake sure the lighting is good to avoid reading errors.',
   finishProfile: 'Finish your profile',
   validCurp: 'Please enter a valid CURP',
+  validSect: 'The section must consist of four digits',
   userExists: 'User already exists. Please, log in.',
   loginRedirect: 'Go to Login',
 };

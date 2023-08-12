@@ -23,6 +23,10 @@ const getMunicipalities = (state_) => {
 }
 
 getList = (list_) => {
+  if (list_ == undefined) {
+    return [];
+  }
+
   const keyList = Object.keys(list_).sort();
   const filtered_list = [];
 

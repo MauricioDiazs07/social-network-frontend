@@ -23,7 +23,8 @@ import { StackNav } from '../../navigation/NavigationKeys';
 import ZButton from '../../components/common/ZButton';
 import {
   validateNotEmptyField,
-  validateINE
+  validateINE,
+  validateSection
 } from '../../utils/validators';
 import { checkPlatform } from '../../utils/helpers';
 import { GenderData } from '../../utils/constants';
@@ -50,6 +51,7 @@ const SetUpProfile = props => {
   const stateInitState = validateNotEmptyField(userInfo['state']);
   const municipalityInitState = validateNotEmptyField(userInfo['municipality']);
   const curpInitState = validateINE(userInfo['curp']);
+  const sectionInitState = validateINE(userInfo['section']);
 
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
@@ -70,16 +72,21 @@ const SetUpProfile = props => {
   const [state_, setState] = useState(userInfo['state']);
   const [municipality, setMunicipality] = useState(userInfo['municipality']);
   const [curp, setCurp] = useState(userInfo['curp']);
+  const [section, setSection] = useState(userInfo['section']);
 
   const [fullNameInputStyle, setFullNameInputStyle] = useState(BlurredStyle);
   const [birthdayInputStyle, setBirthdayInputStyle] = useState(BlurredStyle);
   const [addressInputStyle, setAddressInputStyle] = useState(BlurredStyle);
   const [curpInputStyle, setCurpInputStyle] = useState(BlurredStyle);
+  const [sectionInputStyle, setSectionInputStyle] = useState(BlurredStyle);
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [nameError, setNameError] = useState(nameInitState['msg']);
   const [addressError, setAddressError] = useState(addressInitState['msg']);
+  const [stateError, setStateError] = useState(stateInitState['msg']);
+  const [municipalityError, setMunicipalityError] = useState(municipalityInitState['msg']);
   const [curpError, setCurpError] = useState(curpInitState['msg']);
+  const [sectionError, setSectionError] = useState(sectionInitState['msg']);
   const [date, setDate] = React.useState(new Date());
   const [showPicker, setShowPicker] = React.useState(false);
 
@@ -98,7 +105,9 @@ const SetUpProfile = props => {
       isNotEmptyString(state_) &&
       isNotEmptyString(municipality) &&
       isNotEmptyString(curp) &&
-      !curpError
+      !curpError &&
+      isNotEmptyString(section) &&
+      !sectionError
     ) {
       setIsSubmitDisabled(false);
     } else {
@@ -114,7 +123,9 @@ const SetUpProfile = props => {
     state_,
     municipality,
     curp,
-    curpError
+    curpError,
+    section,
+    sectionError
   ]);
 
   const toggleDatePicker = () => {
@@ -125,11 +136,13 @@ const SetUpProfile = props => {
   const onFocusFullName = () => onFocusInput(setFullNameInputStyle);
   const onFocusAddress = () => onFocusInput(setAddressInputStyle);
   const onFocusCurp = () => onFocusInput(setCurpInputStyle);
+  const onFocusSection = () => onFocusInput(setSectionInputStyle);
 
   const onBlurBirthday = () => onBlurInput(setBirthdayInputStyle);
   const onBlurFullName = () => onBlurInput(setFullNameInputStyle);
   const onBlurAddress = () => onBlurInput(setAddressInputStyle);
   const onBlurCurp = () => onBlurInput(setCurpInputStyle);
+  const onBlurSection = () => onBlurInput(setSectionInputStyle);
 
   const onChangedFullName = text => {
     const {msg} = validateNotEmptyField(text.trim());
@@ -140,7 +153,7 @@ const SetUpProfile = props => {
   const onChangedGender = text => setGender(text.value.toLowerCase());
   const onChangedState = text => {
     setState(text.value.toLowerCase());
-    const municipalityList_ = getMunicipalities(text);
+    const municipalityList_ = getMunicipalities(text.value);
     setMunicipalityList(municipalityList_);
   };
   const onChangedMunicipality = text =>
@@ -154,6 +167,11 @@ const SetUpProfile = props => {
     const {msg} = validateINE(text.trim());
     setCurp(text);
     setCurpError(msg);
+  };
+  const onChangedSection = text => {
+    const {msg} = validateSection(text.trim());
+    setSection(text);
+    setSectionError(msg);
   };
 
   const onChangeDatePicker = ({type}, selectedDate) => {
@@ -346,6 +364,7 @@ const SetUpProfile = props => {
               color: colors.white,
             },
           ]}
+          _errorText={stateError}
           placeholderStyle={{color: colors.grayScale5}}
           data={statesList}
           maxHeight={moderateScale(180)}
@@ -377,6 +396,7 @@ const SetUpProfile = props => {
               color: colors.white,
             },
           ]}
+          _errorText={municipalityError}
           placeholderStyle={{color: colors.grayScale5}}
           data={municipalityList}
           maxHeight={moderateScale(180)}
@@ -412,6 +432,22 @@ const SetUpProfile = props => {
           ]}
           _onFocus={onFocusCurp}
           onBlur={onBlurCurp}
+        />
+
+        <ZText type={'r12'}>{strings.section}</ZText>
+        <ZInput
+          placeHolder={strings.section}
+          _value={section}
+          _errorText={sectionError}
+          autoCapitalize={'none'}
+          toGetTextFieldValue={onChangedSection}
+          inputContainerStyle={[
+            {backgroundColor: colors.inputBg},
+            localStyles.inputContainerStyle,
+            sectionInputStyle,
+          ]}
+          _onFocus={onFocusSection}
+          onBlur={onBlurSection}
         />
         {/* form inputs */}
       </ZKeyBoardAvoidWrapper>
