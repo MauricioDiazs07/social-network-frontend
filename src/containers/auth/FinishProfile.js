@@ -18,14 +18,16 @@ import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper
 import ZButton from '../../components/common/ZButton';
 import ProfilePicture from '../../components/models/ProfilePicture';
 import {validateEmail, validateNotEmptyContact} from '../../utils/validators';
-import {moderateScale, getHeight} from '../../common/constants';
+import {ACCESS_TOKEN, USER_LEVEL, moderateScale, getHeight} from '../../common/constants';
 import {isNotEmptyString} from '../../utils/_support_functions';
 import {styles} from '../../themes';
 import images from '../../assets/images';
 import strings from '../../i18n/strings';
-import {signUp, getAuthToken} from '../../api/auth/auth';
+import {signUp, getAuthToken, getAuthData} from '../../api/auth/auth';
 import {StackNav} from '../../navigation/NavigationKeys';
 import {Snackbar, Button} from '@react-native-material/core';
+import { getAccessLevel } from '../../utils/_support_functions';
+import {setAsyncStorageData} from '../../utils/helpers';
 
 const FinishProfile = props => {
   const {navigation} = props;
@@ -190,11 +192,16 @@ const FinishProfile = props => {
             userCred_['email'],
             userCred_['password']
           )
-            .then(resp => {
-              if (resp) {
+            .then(async (token) => {
+              if ("token" in token) {
+                const user_lvl = getAccessLevel(token['role_id']);
+                await setAsyncStorageData(ACCESS_TOKEN, token);
+                await setAsyncStorageData(USER_LEVEL, user_lvl);
+          
+                const user = await getAuthData(email);
+                
                 navigation.navigate(StackNav.FollowSomeone);
-              }
-            })
+            }})
             .catch(err => {
               setIsSnackbarVisible(true);
               console.log(err);

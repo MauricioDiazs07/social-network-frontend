@@ -24,12 +24,6 @@ const FollowSomeone = ({navigation}) => {
       routes: [{name: StackNav.TabBar}],
     });
   };
-  const onPressSkip = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: StackNav.TabBar}],
-    });
-  };
 
   return (
     <ZSafeAreaView>

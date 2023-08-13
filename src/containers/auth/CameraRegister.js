@@ -75,7 +75,6 @@ const CameraRegister = props => {
   const readINE_ = img => {
     setIsLoading(true);
     setImg(img);
-    console.log("IMG",img['data']);
 
     readINE(img)
       .then(resp => {

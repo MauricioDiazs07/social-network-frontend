@@ -124,9 +124,7 @@ const Login = ({navigation}) => {
     await getAuthToken(email, password)
     .then(async (token) => {
       if ("token" in token) {
-        console.log(token);
         const user_lvl = getAccessLevel(token['role_id']);
-        console.log(user_lvl);
         await setAsyncStorageData(ACCESS_TOKEN, token);
         await setAsyncStorageData(USER_LEVEL, user_lvl);
   
