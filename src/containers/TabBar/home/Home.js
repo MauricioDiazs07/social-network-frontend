@@ -23,7 +23,6 @@ import strings from '../../../i18n/strings';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
-// import {postData, userDetail} from '../../../api/constant';
 import { userDetail } from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
@@ -33,6 +32,7 @@ import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
 import { transformfPosts } from '../../../utils/_support_functions';
+import { SearchingPosts } from '../../../assets/svgs';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -215,10 +215,13 @@ const Home = () => {
       ) : (
         <View>
           {headerStory()}
-          <View>
-            <ZText>
+          <View style={[styles.center, styles.p30]}>
+            <ZText type={'s28'} style={{textAlign: 'center'}}>
               {strings.postsNotFound}
             </ZText>
+            <View >
+              <SearchingPosts />
+            </View>
           </View>
         </View>
       )}
