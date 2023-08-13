@@ -84,6 +84,8 @@ const transformfPosts = (post) => {
       image: images,
       role: 'CEO de empresa', // TODO: delete field
       postType: 'POST',
+      likes: element['likes'],
+      comments: element['comments']
     };
     new_posts.push(obj);
   });

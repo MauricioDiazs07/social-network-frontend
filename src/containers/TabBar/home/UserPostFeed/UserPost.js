@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -17,55 +17,71 @@ import {
   ChatIcon_Light,
   HeartIcon_Dark,
   HeartIcon_Light,
+  LikedHeart
 } from '../../../../assets/svgs';
 import {StackNav} from '../../../../navigation/NavigationKeys';
 
-const BottomIconContainer = () => {
+const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
+
+  const [isLiked, setIsLiked] = useState(false);
+  const [likes, setLikes] = useState(item['likes']['count']);
+ 
+  const onPressLike = () => {
+    if (!isLiked) {
+      setLikes(likes + 1);
+    } else {
+      setLikes(likes - 1);
+    }
+
+    setIsLiked(!isLiked);
+  };
+
   return (
     <View style={localStyels.iconsContainer}>
       <View style={localStyels.leftIconsContainer}>
         <View style={localStyels.commentItemContainer}>
-          {colors.dark ? (
-            <HeartIcon_Dark
-              width={moderateScale(28)}
-              height={moderateScale(28)}
-            />
-          ) : (
-            <HeartIcon_Light
-              width={moderateScale(28)}
-              height={moderateScale(28)}
-            />
-          )}
-          <ZText type={'s14'}>{'44,389'}</ZText>
+          <TouchableOpacity
+            onPress={onPressLike}
+          >
+            {isLiked ? (
+              <LikedHeart
+                width={moderateScale(28)}
+                height={moderateScale(28)}
+              />
+            ) : (
+              colors.dark ? (
+                <HeartIcon_Dark
+                  width={moderateScale(28)}
+                  height={moderateScale(28)}
+                />
+              ) : (
+                <HeartIcon_Light
+                  width={moderateScale(28)}
+                  height={moderateScale(28)}
+                />
+              )
+            )}
+          </TouchableOpacity>
+          <ZText type={'s14'}>{likes}</ZText>
         </View>
         <View style={localStyels.commentItemContainer}>
-          {colors.dark ? (
-            <ChatIcon_Dark
-              width={moderateScale(28)}
-              height={moderateScale(28)}
-            />
-          ) : (
-            <ChatIcon_Light
-              width={moderateScale(28)}
-              height={moderateScale(28)}
-            />
-          )}
-          <ZText type={'s14'}>{'19,377'}</ZText>
+          <TouchableOpacity>
+            {colors.dark ? (
+              <ChatIcon_Dark
+                width={moderateScale(28)}
+                height={moderateScale(28)}
+              />
+            ) : (
+              <ChatIcon_Light
+                width={moderateScale(28)}
+                height={moderateScale(28)}
+              />
+            )}
+          </TouchableOpacity>
+          <ZText type={'s14'}>{item['comments']['count']}</ZText>
         </View>
-        <Ionicons
-          name="paper-plane-outline"
-          size={moderateScale(24)}
-          color={colors.reverse}
-          style={styles.ml10}
-        />
       </View>
-
-      <Ionicons
-        name="bookmark-outline"
-        size={moderateScale(24)}
-        color={colors.reverse}
-      />
     </View>
   );
 };
@@ -126,7 +142,7 @@ const UserPost = ({item}) => {
             </View>
           )}
         </View>
-      <BottomIconContainer />
+      <BottomIconContainer item={item} />
     </View>
   );
 };
@@ -157,13 +173,10 @@ const localStyels = StyleSheet.create({
     borderRadius: moderateScale(25),
   },
   iconsContainer: {
-    ...styles.rowSpaceBetween,
     ...styles.mv20,
   },
   leftIconsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: moderateScale(150),
+    ...styles.rowSpaceBetween
   },
   commentItemContainer: {
     ...styles.rowSpaceAround,
