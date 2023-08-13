@@ -149,9 +149,9 @@ export default function PostDetail() {
     
     selectImage.forEach((value, index) => {
       const imageData = {
-        uri: value.path,
+        uri: value.img.path,
         name: `img_${index}.jpg`,
-        type: value.mime,
+        type: value.img.mime,
       }
       formData.append(`image_${index}`, imageData);
     });
