@@ -43,6 +43,8 @@ export default function PostDetail() {
   const [text, setText] = React.useState('');
   const [isSnackbarVisible, setIsSnackbarVisible] = React.useState(false);
   const [selectImage, setSelectImage] = React.useState([]);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [index, setIndex] = React.useState(1);
 
   const onChangeText = val => setText(val);
 
@@ -52,7 +54,7 @@ export default function PostDetail() {
 
   useEffect(() => {
     ProfilePictureSheetRef?.current?.hide();
-  }, [selectImage]);
+  }, [selectImage, isDeleting]);
 
   const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
 
@@ -75,30 +77,67 @@ export default function PostDetail() {
   };
 
   const addImg = (img) => {
-    const new_arr = [img];
     const old_arr = selectImage;
+    const new_arr = [{
+                      index: index,
+                      img: img
+                    }];
     const selectImgArr = old_arr.concat(new_arr);
     
     setSelectImage(selectImgArr);
+    setIndex(index + 1);
+  };
+
+  const removeImg = (img) => {
+    const old_arr = selectImage;
+    const new_arr = old_arr.filter(img_ => img_.index != img.index);
+    
+    setSelectImage(new_arr);
+
+    if (new_arr.length < 1) {
+      setIsDeleting(false);
+    }
   };
 
   const imgContainer = (img) => {
     return (
       <TouchableOpacity 
-            style={localStyles.image}
-          >
-            <Image
-              source={{
-                width: size * 0.8,
-                height: size * 0.8,
-                uri: img.path
-              }}
-              resizeMode="cover"
-              style={localStyles.imageContainer}
-            />
-          </TouchableOpacity>
+        style={localStyles.deleteImg}
+        onPress={() => {
+          if (isDeleting) {
+            removeImg(img)
+          }
+        }}
+      >
+
+        <View
+          style={[localStyles.imageContainer,
+            localStyles.newImg,
+            localStyles.box,
+            localStyles.container,
+            isDeleting && localStyles.overlay]}
+        >
+          {isDeleting && (<Ionicons
+            name={'trash-outline'}
+            size={moderateScale(50)}
+            color={colors.textColor}
+            style={[styles.selfCenter, styles.mt10]}
+          />)}
+          <Image
+            source={{
+              width: size * 0.8,
+              height: size * 0.8,
+              uri: img.img.path
+            }}
+            resizeMode="cover"
+            style={[localStyles.imageContainer, localStyles.box]}
+          />
+        </View>
+      </TouchableOpacity>
     )
   }
+
+  const onPressDelete = () => setIsDeleting(!isDeleting);
 
   const onPressPost = async () => {
     const profile_id = await getAsyncStorageData(ACCESS_TOKEN);
@@ -188,6 +227,36 @@ export default function PostDetail() {
               {strings.selectImg}
             </ZText>
           </TouchableOpacity>
+
+          {selectImage.length > 0 && (<TouchableOpacity 
+            style={localStyles.image}
+            onPress={onPressDelete}
+          >
+            <View
+              style={[localStyles.imageContainer,
+                      isDeleting && {backgroundColor: 'green'},
+                      !isDeleting && {backgroundColor: 'darkred'}
+                    ]}
+            >
+              <Ionicons
+                name={
+                        isDeleting 
+                        ? 'checkmark-circle-outline' 
+                        : 'close-circle-outline'
+                      }
+                size={moderateScale(50)}
+                color={colors.textColor}
+                style={[styles.selfCenter, styles.mt10]}
+              />
+            </View>
+            <ZText
+              type={'b16'}
+              color={colors.white}
+              align={'center'}
+              style={localStyles.coverPhotoStyle}>
+              {!isDeleting ? strings.deleteImg : strings.ready}
+            </ZText>
+          </TouchableOpacity>)}
         </View>
 
         <View style={localStyles.imgContainer}>
@@ -197,6 +266,7 @@ export default function PostDetail() {
             numColumns={numColumns}
             renderItem={({item}) => imgContainer(item)}
             estimatedItemSize={size}
+            extraData={isDeleting}
           />
         </View>
       </ScrollView>
@@ -256,6 +326,7 @@ const localStyles = StyleSheet.create({
     ...styles.rowStart,
     ...styles.justifyCenter,
     ...styles.wrap,
+    ...styles.ml10,
   },
   inputContainerStyle: {
     ...styles.flex,
@@ -323,6 +394,22 @@ const localStyles = StyleSheet.create({
   },
   image: {
     ...styles.m5,
+  },
+  deleteImg: {
+    width: 150,
+    height: 150,
+    position: 'relative',
+  },
+  box: {
+    width: 100,
+    height: 100,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  overlay: {
+    zIndex: 9,
+    opacity: 0.7,
   },
   newImg: {
     backgroundColor: '#555555',

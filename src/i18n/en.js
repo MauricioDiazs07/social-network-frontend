@@ -220,4 +220,6 @@ export default {
   goBack: 'Go back',
   selectImg: 'Add image',
   emptyPost: 'Empty post',
+  deleteImg: 'Delete images',
+  ready: 'Ready',
 };

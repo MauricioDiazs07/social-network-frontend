@@ -229,4 +229,6 @@ export default {
     goBack: 'Regresar',
     selectImg: 'Agregar imagen',
     emptyPost: 'La publicación está vacía',
+    deleteImg: 'Borrar imágenes',
+    ready: 'Listo',
   };
