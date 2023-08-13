@@ -3,7 +3,9 @@ import {
     LOGIN,
     SIGNUP,
     USER_DATA,
-    READ_INE } from "../../utils/api_constants";
+    READ_INE,
+    INTERESTS_LIST
+ } from "../../utils/api_constants";
 
 const getAuthToken = async (email, password) => {
 
@@ -86,9 +88,21 @@ const signUp = async (
     }
 }
 
+const getInterests = async () => {
+    const response = await fetch(URL_API + INTERESTS_LIST, {
+        method: 'GET'
+    });
+
+    resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
+}
+
 export {
     getAuthToken,
     getAuthData,
     readINE,
     signUp,
+    getInterests,
 };

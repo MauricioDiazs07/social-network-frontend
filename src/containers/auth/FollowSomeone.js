@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {StyleSheet, View} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
 import {useSelector} from 'react-redux';
 
-import { interestsList } from '../../api/constant';
 import ZButton from '../../components/common/ZButton';
 import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -14,9 +13,28 @@ import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
 import {moderateScale} from '../../common/constants';
 import ZSearch from '../../components/common/ZSearch';
+import { getListInterests } from '../../utils/_support_functions';
+import { getInterests } from '../../api/auth/auth';
 
 const FollowSomeone = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
+
+  const [interestsList, setInterestsList] = React.useState(getListInterests());
+
+  useEffect(() => {
+    new Promise((resolve, reject) => {
+      const interestList_ = [];
+
+      getInterests()
+      .then(resp => {
+        resp.forEach(element => {
+          interestList_.push(element['description']);
+        });
+
+        setInterestsList(interestList_);
+      });
+    })
+  }, []);
 
   const onPressContinue = () => {
     navigation.reset({

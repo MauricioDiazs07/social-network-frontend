@@ -26,7 +26,6 @@ getList = (list_) => {
   if (list_ == undefined) {
     return [];
   }
-
   const keyList = Object.keys(list_).sort();
   const filtered_list = [];
 
@@ -67,6 +66,31 @@ const getAccessLevel = lvl => {
   return 'master';
 }
 
+const transformfPosts = (post) => {
+  const new_posts = [];
+
+  post.forEach(element => {
+    const images = [];
+    element['multimedia']['data'].forEach(mult => {
+      images.push(mult['archive_url']);
+    });
+
+    const obj = {
+      id: element['id'],
+      name: element['name'],
+      subtitle: element['creationDate'],
+      profileImage: element['profileImage'],
+      text: element['text'],
+      image: images,
+      role: 'CEO de empresa', // TODO: delete field
+      postType: 'POST',
+    };
+    new_posts.push(obj);
+  });
+
+  return new_posts.reverse();
+}
+
 export {
     translateBirthday,
     getStates,
@@ -74,4 +98,5 @@ export {
     getGender,
     isNotEmptyString,
     getAccessLevel,
+    transformfPosts,
 }

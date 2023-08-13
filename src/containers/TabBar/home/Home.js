@@ -1,5 +1,5 @@
 import {View, TouchableOpacity, StyleSheet} from 'react-native';
-import React, {useMemo, createRef, useState} from 'react';
+import React, {useMemo, createRef, useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
@@ -23,13 +23,16 @@ import strings from '../../../i18n/strings';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
-import {postData, userDetail} from '../../../api/constant';
+// import {postData, userDetail} from '../../../api/constant';
+import { userDetail } from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
 import { ACCESS_TOKEN, USER_LEVEL, THEME } from '../../../common/constants';
-import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
+import { setAsyncStorageData } from '../../../utils/helpers';
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
+import { getPosts } from '../../../api/feed/posts';
+import { transformfPosts } from '../../../utils/_support_functions';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -37,14 +40,10 @@ const onPressCancel = () => LogOutSheetRef?.current?.hide();
 let user_access = '';
 
 const getUserLevel = async () => {
-  try {
-    const value = await AsyncStorage.getItem(USER_LEVEL)
-      .then((data) => {
-        user_access = JSON.parse(data);
-      });
-  } catch (error) {
-    
-  }
+  await AsyncStorage.getItem(USER_LEVEL)
+    .then((data) => {
+      user_access = JSON.parse(data);
+    }).catch(err => console.log("ERROR:", err));
 };
 
 const UserProfile = React.memo(() => {
@@ -161,6 +160,19 @@ const Home = () => {
   const rightHeaderIcon = useMemo(() => <RightHeaderIcons />, []);
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
 
+  const [postData, setPostData] = useState([]);
+  
+  useEffect(() => {
+    new Promise((resolve, reject) => {
+      getPosts()
+      .then(resp => {
+        const new_posts = transformfPosts(resp);
+        setPostData(new_posts);
+      });
+    });
+  }, []);
+
+
   const onPressYesLogOut = async () => {
     try {
       await AsyncStorage.removeItem(ACCESS_TOKEN);
@@ -192,13 +204,24 @@ const Home = () => {
         rightIcon={rightHeaderIcon}
         isLeftIcon={leftHeaderIcon}
       />
-      <FlashList
-        data={postData}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => <UserPost item={item} />}
-        ListHeaderComponent={headerStory}
-        showsVerticalScrollIndicator={false}
-      />
+      {postData.length > 0 ? (
+        <FlashList
+          data={postData}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => <UserPost item={item} dataLength={postData.length}/>}
+          ListHeaderComponent={headerStory}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <View>
+          {headerStory()}
+          <View>
+            <ZText>
+              {strings.postsNotFound}
+            </ZText>
+          </View>
+        </View>
+      )}
       <LogOut
         SheetRef={LogOutSheetRef}
         onPressLogOut={onPressYesLogOut}

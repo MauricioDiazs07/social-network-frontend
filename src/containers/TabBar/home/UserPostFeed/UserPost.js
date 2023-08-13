@@ -7,7 +7,6 @@ import {FlashList} from '@shopify/flash-list';
 import {useNavigation} from '@react-navigation/native';
 
 import {
-  getHeight,
   moderateScale,
   screenWidth,
 } from '../../../../common/constants';
@@ -111,20 +110,22 @@ const UserPost = ({item}) => {
           color={colors.reverse}
         />
       </View>
-      {item.postType == 'text'
-        ? <ZText>{item.text}</ZText>
-        : <View>
+      
+      <View>
           <ZText>{item.text}</ZText>
-          <FlashList
-            data={item.image}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={image => image}
-            horizontal
-            pagingEnabled
-            renderItem={renderPostImages}
-          />
+          {item.image.length > 0 && (
+            <View style={item.text !== "" ? styles.mt20 : styles.mt5}>
+              <FlashList
+                data={item.image}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={image => image}
+                horizontal
+                pagingEnabled
+                renderItem={renderPostImages}
+              />
+            </View>
+          )}
         </View>
-      }
       <BottomIconContainer />
     </View>
   );

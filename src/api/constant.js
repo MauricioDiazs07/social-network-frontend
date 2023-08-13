@@ -115,7 +115,7 @@ const postData = [
     profileImage:
       'https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg',
     text: 'Hoy es un día muy soleado 🌞',
-    image: '',
+    image: [],
     role: 'CEO de empresa',
     postType: 'text',
   },
