@@ -21,11 +21,11 @@ import {StackNav} from '../../../navigation/NavigationKeys';
 import strings from '../../../i18n/strings';
 import images from '../../../assets/images';
 import ZButton from '../../../components/common/ZButton';
-import {Inbox_Dark} from '../../../assets/svgs';
 import SwitchAccont from '../../../components/models/SwitchAccont';
 import ReelComponent from '../../../components/ReelComponent';
 import {savedStorys, videoData} from '../../../api/constant';
 import UserStories from '../home/UserStory/UserStories';
+import ZHeader from '../../../components/common/ZHeader';
 
 const UserDetail = [
   {
@@ -124,6 +124,7 @@ export default function Profile({navigation}) {
 
   return (
     <ZSafeAreaView>
+      <ZHeader />
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
@@ -191,7 +192,12 @@ export default function Profile({navigation}) {
               {borderColor: colors.primary},
             ]}
             bgColor={colors.tranparent}
-            frontIcon={<Inbox_Dark />}
+            frontIcon={
+              <Ionicons
+                name="paper-plane-outline"
+                size={moderateScale(20)}
+                color={colors.primary}
+              />}
           />
         </View>
         <UserStories stories={savedStorys} />
