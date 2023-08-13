@@ -14,21 +14,22 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Snackbar, Button} from '@react-native-material/core';
 import ImagePicker from 'react-native-image-crop-picker';
 import { FlashList } from '@shopify/flash-list';
-// import base64 from 'react-native-base64';
+import {useNavigation} from '@react-navigation/native';
 
 // Local import
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import {styles} from '../../../themes';
-import {getHeight, moderateScale} from '../../../common/constants';
+import {ACCESS_TOKEN, getHeight, moderateScale} from '../../../common/constants';
 import typography from '../../../themes/typography';
 import ZText from '../../../components/common/ZText';
 import ZButton from '../../../components/common/ZButton';
-import {useNavigation} from '@react-navigation/native';
 import {TabNav} from '../../../navigation/NavigationKeys';
 import { createPost } from '../../../api/feed/posts';
 import ProfilePicture from '../../../components/models/ProfilePicture';
+import { getAsyncStorageData } from '../../../utils/helpers';
+import { StackNav } from '../../../navigation/NavigationKeys';
 
 export default function PostDetail() {
   const colors = useSelector(state => state.theme.theme);
@@ -100,9 +101,11 @@ export default function PostDetail() {
   }
 
   const onPressPost = async () => {
+    const profile_id = await getAsyncStorageData(ACCESS_TOKEN);
+
     const formData = new FormData();
     formData.append("description", text);
-    formData.append("profile_id", "0c7ceb44a155db2fd60058e64eb255ch");
+    formData.append("profile_id", profile_id.profile_id);
     formData.append("share_type", "POST");
     
     selectImage.forEach((value, index) => {
@@ -116,30 +119,17 @@ export default function PostDetail() {
 
     await createPost(formData)
       .then(resp => {
-        console.log("RESP:",resp);
         if ("Error" in resp) {
           setIsSnackbarVisible(true);
         } else {
-          console.log("Resp:", resp);
-          navigation.navigate(TabNav.Home);
+          navigation.reset({
+            index: 0,
+            routes: [{name: StackNav.TabBar}],
+          });
         }
       })
       .catch(err => console.log('Post error:', err));
   };
-
-  // const getFileFromBase64 = (string64, fileName) => {
-  //   const trimmedString = string64.replace('dataimage/jpegbase64', '');
-  //   const imageContent = base64.decode(trimmedString);
-  //   const buffer = new ArrayBuffer(imageContent.length);
-  //   const view = new Uint8Array(buffer);
-  
-  //   for (let n = 0; n < imageContent.length; n++) {
-  //     view[n] = imageContent.charCodeAt(n);
-  //   }
-  //   const type = 'image/jpeg';
-  //   const blob = new Blob([buffer], { type });
-  //   return new File([blob], fileName, { lastModified: new Date().getTime(), type });
-  // }
 
   return (
     <ZSafeAreaView>

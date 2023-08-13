@@ -26,7 +26,6 @@ import images from '../../assets/images';
 import strings from '../../i18n/strings';
 import {signUp, getAuthToken, getAuthData} from '../../api/auth/auth';
 import {StackNav} from '../../navigation/NavigationKeys';
-import {Snackbar, Button} from '@react-native-material/core';
 import { getAccessLevel } from '../../utils/_support_functions';
 import {setAsyncStorageData} from '../../utils/helpers';
 
