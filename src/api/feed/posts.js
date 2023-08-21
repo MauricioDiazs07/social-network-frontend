@@ -15,7 +15,6 @@ const getPosts = async () => {
 }
 
 const createPost = async (form) => {
-    console.log("FORM", form);
     const response = await fetch(URL_API + CREATE_POSTS, {
         method: 'POST',
         body: form,
