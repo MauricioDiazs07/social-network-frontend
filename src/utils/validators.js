@@ -19,6 +19,9 @@ const ageRegex = /^[0-9]*$/;
 // regex for curp
 const curpRegex = /^[A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}\d{2}$/;
 
+// regex for section
+const sectionRegex = /^(\d{4})$/;
+
 // Name validation
 const validateName = name => {
   if (!name) {
@@ -231,6 +234,22 @@ const validateINE = (ine_) => {
   }
 }
 
+const validateSection = (sect) => {
+  if (!sect) {
+    return {
+      status: false,
+      msg: strings.thisFieldIsMandatory,
+    };
+  } else {
+    return sectionRegex.test(sect)
+      ? {status: true, msg: ''}
+      : {
+          status: false,
+          msg: strings.validSect,
+        };
+  }
+}
+
 export {
   validateEmail,
   validateNotNecessatyEmail,
@@ -243,4 +262,5 @@ export {
   validateNotEmptyField,
   validateNotEmptyContact,
   validateINE,
+  validateSection,
 };

@@ -1,15 +1,20 @@
-import {View, TouchableOpacity, StyleSheet} from 'react-native';
-import React, {useMemo, createRef, useState, useEffect} from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
-import {FlashList} from '@shopify/flash-list';
+import { View,
+        TouchableOpacity,
+        StyleSheet,
+        ScrollView,
+        RefreshControl,
+        ActivityIndicator } from 'react-native';
+import React, { useMemo, createRef, useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { FlashList } from '@shopify/flash-list';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
-import {moderateScale} from '../../../common/constants';
+import { getHeight, moderateScale } from '../../../common/constants';
 import {
   App_Logo,
   StoryAddIcon,
@@ -23,7 +28,6 @@ import strings from '../../../i18n/strings';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
-// import {postData, userDetail} from '../../../api/constant';
 import { userDetail } from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
@@ -33,6 +37,7 @@ import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
 import { transformfPosts } from '../../../utils/_support_functions';
+import { SearchingPosts } from '../../../assets/svgs';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -161,6 +166,7 @@ const Home = () => {
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
 
   const [postData, setPostData] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
     new Promise((resolve, reject) => {
@@ -168,10 +174,15 @@ const Home = () => {
       .then(resp => {
         const new_posts = transformfPosts(resp);
         setPostData(new_posts);
+        setIsLoaded(true);
       });
     });
   }, []);
 
+  const onRefresh = () => navigation.reset({
+                                          index: 0,
+                                          routes: [{name: StackNav.TabBar}]
+                                        });
 
   const onPressYesLogOut = async () => {
     try {
@@ -204,24 +215,39 @@ const Home = () => {
         rightIcon={rightHeaderIcon}
         isLeftIcon={leftHeaderIcon}
       />
-      {postData.length > 0 ? (
-        <FlashList
-          data={postData}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => <UserPost item={item} dataLength={postData.length}/>}
-          ListHeaderComponent={headerStory}
-          showsVerticalScrollIndicator={false}
-        />
-      ) : (
-        <View>
+      <ScrollView 
+        refreshControl={
+          <RefreshControl onRefresh={onRefresh} />
+        }>
+        {postData.length > 0 ? (
+          <FlashList
+            data={postData}
+            keyExtractor={item => item.id}
+            renderItem={({item}) => <UserPost item={item} dataLength={postData.length}/>}
+            ListHeaderComponent={headerStory}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : !isLoaded ?
+        (<View>
           {headerStory()}
-          <View>
-            <ZText>
-              {strings.postsNotFound}
-            </ZText>
+          <View style={localStyles.loadingPosts}>
+            <ActivityIndicator size="large" color="#B042FF" />
           </View>
-        </View>
-      )}
+        </View>)
+        : (
+          <View>
+            {headerStory()}
+            <View style={[styles.center, styles.p30]}>
+              <ZText type={'s28'} style={{textAlign: 'center'}}>
+                {strings.postsNotFound}
+              </ZText>
+              <View >
+                <SearchingPosts />
+              </View>
+            </View>
+          </View>
+        )}
+      </ScrollView>
       <LogOut
         SheetRef={LogOutSheetRef}
         onPressLogOut={onPressYesLogOut}
@@ -267,6 +293,10 @@ const localStyles = StyleSheet.create({
   },
   rightBtns: {
     ...styles.mr10,
+  },
+  loadingPosts: {
+    height: getHeight(200),
+    ...styles.rowCenter
   },
 });
 

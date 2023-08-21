@@ -14,21 +14,22 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Snackbar, Button} from '@react-native-material/core';
 import ImagePicker from 'react-native-image-crop-picker';
 import { FlashList } from '@shopify/flash-list';
-// import base64 from 'react-native-base64';
+import {useNavigation} from '@react-navigation/native';
 
 // Local import
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import {styles} from '../../../themes';
-import {getHeight, moderateScale} from '../../../common/constants';
+import {ACCESS_TOKEN, getHeight, moderateScale} from '../../../common/constants';
 import typography from '../../../themes/typography';
 import ZText from '../../../components/common/ZText';
 import ZButton from '../../../components/common/ZButton';
-import {useNavigation} from '@react-navigation/native';
 import {TabNav} from '../../../navigation/NavigationKeys';
 import { createPost } from '../../../api/feed/posts';
 import ProfilePicture from '../../../components/models/ProfilePicture';
+import { getAsyncStorageData } from '../../../utils/helpers';
+import { StackNav } from '../../../navigation/NavigationKeys';
 
 export default function PostDetail() {
   const colors = useSelector(state => state.theme.theme);
@@ -42,6 +43,8 @@ export default function PostDetail() {
   const [text, setText] = React.useState('');
   const [isSnackbarVisible, setIsSnackbarVisible] = React.useState(false);
   const [selectImage, setSelectImage] = React.useState([]);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [index, setIndex] = React.useState(1);
 
   const onChangeText = val => setText(val);
 
@@ -51,7 +54,7 @@ export default function PostDetail() {
 
   useEffect(() => {
     ProfilePictureSheetRef?.current?.hide();
-  }, [selectImage]);
+  }, [selectImage, isDeleting]);
 
   const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
 
@@ -74,72 +77,98 @@ export default function PostDetail() {
   };
 
   const addImg = (img) => {
-    const new_arr = [img];
     const old_arr = selectImage;
+    const new_arr = [{
+                      index: index,
+                      img: img
+                    }];
     const selectImgArr = old_arr.concat(new_arr);
     
     setSelectImage(selectImgArr);
+    setIndex(index + 1);
+  };
+
+  const removeImg = (img) => {
+    const old_arr = selectImage;
+    const new_arr = old_arr.filter(img_ => img_.index != img.index);
+    
+    setSelectImage(new_arr);
+
+    if (new_arr.length < 1) {
+      setIsDeleting(false);
+    }
   };
 
   const imgContainer = (img) => {
     return (
       <TouchableOpacity 
-            style={localStyles.image}
-          >
-            <Image
-              source={{
-                width: size * 0.8,
-                height: size * 0.8,
-                uri: img.path
-              }}
-              resizeMode="cover"
-              style={localStyles.imageContainer}
-            />
-          </TouchableOpacity>
+        style={localStyles.deleteImg}
+        onPress={() => {
+          if (isDeleting) {
+            removeImg(img)
+          }
+        }}
+      >
+
+        <View
+          style={[localStyles.imageContainer,
+            localStyles.newImg,
+            localStyles.box,
+            localStyles.container,
+            isDeleting && localStyles.overlay]}
+        >
+          {isDeleting && (<Ionicons
+            name={'trash-outline'}
+            size={moderateScale(50)}
+            color={colors.textColor}
+            style={[styles.selfCenter, styles.mt10]}
+          />)}
+          <Image
+            source={{
+              width: size * 0.8,
+              height: size * 0.8,
+              uri: img.img.path
+            }}
+            resizeMode="cover"
+            style={[localStyles.imageContainer, localStyles.box]}
+          />
+        </View>
+      </TouchableOpacity>
     )
   }
 
+  const onPressDelete = () => setIsDeleting(!isDeleting);
+
   const onPressPost = async () => {
+    const profile_id = await getAsyncStorageData(ACCESS_TOKEN);
+
     const formData = new FormData();
     formData.append("description", text);
-    formData.append("profile_id", "0c7ceb44a155db2fd60058e64eb255ch");
+    formData.append("profile_id", profile_id.profile_id);
     formData.append("share_type", "POST");
     
     selectImage.forEach((value, index) => {
       const imageData = {
-        uri: value.path,
+        uri: value.img.path,
         name: `img_${index}.jpg`,
-        type: value.mime,
+        type: value.img.mime,
       }
       formData.append(`image_${index}`, imageData);
     });
 
     await createPost(formData)
       .then(resp => {
-        console.log("RESP:",resp);
         if ("Error" in resp) {
           setIsSnackbarVisible(true);
         } else {
-          console.log("Resp:", resp);
-          navigation.navigate(TabNav.Home);
+          navigation.reset({
+            index: 0,
+            routes: [{name: StackNav.TabBar}],
+          });
         }
       })
       .catch(err => console.log('Post error:', err));
   };
-
-  // const getFileFromBase64 = (string64, fileName) => {
-  //   const trimmedString = string64.replace('dataimage/jpegbase64', '');
-  //   const imageContent = base64.decode(trimmedString);
-  //   const buffer = new ArrayBuffer(imageContent.length);
-  //   const view = new Uint8Array(buffer);
-  
-  //   for (let n = 0; n < imageContent.length; n++) {
-  //     view[n] = imageContent.charCodeAt(n);
-  //   }
-  //   const type = 'image/jpeg';
-  //   const blob = new Blob([buffer], { type });
-  //   return new File([blob], fileName, { lastModified: new Date().getTime(), type });
-  // }
 
   return (
     <ZSafeAreaView>
@@ -198,6 +227,36 @@ export default function PostDetail() {
               {strings.selectImg}
             </ZText>
           </TouchableOpacity>
+
+          {selectImage.length > 0 && (<TouchableOpacity 
+            style={localStyles.image}
+            onPress={onPressDelete}
+          >
+            <View
+              style={[localStyles.imageContainer,
+                      isDeleting && {backgroundColor: 'green'},
+                      !isDeleting && {backgroundColor: 'darkred'}
+                    ]}
+            >
+              <Ionicons
+                name={
+                        isDeleting 
+                        ? 'checkmark-circle-outline' 
+                        : 'close-circle-outline'
+                      }
+                size={moderateScale(50)}
+                color={colors.textColor}
+                style={[styles.selfCenter, styles.mt10]}
+              />
+            </View>
+            <ZText
+              type={'b16'}
+              color={colors.white}
+              align={'center'}
+              style={localStyles.coverPhotoStyle}>
+              {!isDeleting ? strings.deleteImg : strings.ready}
+            </ZText>
+          </TouchableOpacity>)}
         </View>
 
         <View style={localStyles.imgContainer}>
@@ -207,6 +266,7 @@ export default function PostDetail() {
             numColumns={numColumns}
             renderItem={({item}) => imgContainer(item)}
             estimatedItemSize={size}
+            extraData={isDeleting}
           />
         </View>
       </ScrollView>
@@ -266,6 +326,7 @@ const localStyles = StyleSheet.create({
     ...styles.rowStart,
     ...styles.justifyCenter,
     ...styles.wrap,
+    ...styles.ml10,
   },
   inputContainerStyle: {
     ...styles.flex,
@@ -333,6 +394,22 @@ const localStyles = StyleSheet.create({
   },
   image: {
     ...styles.m5,
+  },
+  deleteImg: {
+    width: 150,
+    height: 150,
+    position: 'relative',
+  },
+  box: {
+    width: 100,
+    height: 100,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  overlay: {
+    zIndex: 9,
+    opacity: 0.7,
   },
   newImg: {
     backgroundColor: '#555555',

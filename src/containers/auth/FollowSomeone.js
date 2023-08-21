@@ -13,13 +13,12 @@ import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
 import {moderateScale} from '../../common/constants';
 import ZSearch from '../../components/common/ZSearch';
-import { getListInterests } from '../../utils/_support_functions';
 import { getInterests } from '../../api/auth/auth';
 
 const FollowSomeone = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
 
-  const [interestsList, setInterestsList] = React.useState(getListInterests());
+  const [interestsList, setInterestsList] = React.useState();
 
   useEffect(() => {
     new Promise((resolve, reject) => {
@@ -37,12 +36,6 @@ const FollowSomeone = ({navigation}) => {
   }, []);
 
   const onPressContinue = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: StackNav.TabBar}],
-    });
-  };
-  const onPressSkip = () => {
     navigation.reset({
       index: 0,
       routes: [{name: StackNav.TabBar}],

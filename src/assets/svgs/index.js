@@ -43,10 +43,12 @@ import LikeIconModal from './likeIconModal.svg';
 import QrCodeIcon from './qrCodeIcon.svg';
 import HeartIcon_Light from './heart_light.svg';
 import HeartIcon_Dark from './heart_dark.svg';
+import LikedHeart from './liked_heart.svg';
 import ChatIcon_Light from './chat_icon_light.svg';
 import ChatIcon_Dark from './chat_icon_dark.svg';
 import StoryAddIcon from './story_add_icon.svg';
 import UserResearch from './user-research.svg';
+import SearchingPosts from './searchingPosts.svg';
 
 export {
   Home_Light,
@@ -91,8 +93,10 @@ export {
   QrCodeIcon,
   HeartIcon_Light,
   HeartIcon_Dark,
+  LikedHeart,
   ChatIcon_Light,
   ChatIcon_Dark,
   StoryAddIcon,
   UserResearch,
+  SearchingPosts,
 };
