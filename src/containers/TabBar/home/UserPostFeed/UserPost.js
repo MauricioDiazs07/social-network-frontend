@@ -5,6 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {useNavigation} from '@react-navigation/native';
+import { addLike, disLike } from '../../../../api/feed/interaction';
+import {getAsyncStorageData} from '../../../../utils/helpers';
 
 import {
   moderateScale,
@@ -24,14 +26,22 @@ import {StackNav} from '../../../../navigation/NavigationKeys';
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
 
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(item['likes']['like']);
   const [likes, setLikes] = useState(item['likes']['count']);
  
   const onPressLike = () => {
     if (!isLiked) {
       setLikes(likes + 1);
+      getAsyncStorageData("PROFILE_ID").then(profile => {
+        addLike(profile,item['id'],item['postType'])
+        console.log(item);
+      })
+      
     } else {
       setLikes(likes - 1);
+      getAsyncStorageData("PROFILE_ID").then(profile => {
+        disLike(profile,item['id'],item['postType'])
+      }) 
     }
 
     setIsLiked(!isLiked);
@@ -94,10 +104,11 @@ const UserPost = ({item}) => {
     return <FastImage source={{uri: item}} style={localStyels.postImage} />;
   };
 
-  const onPressProfile = (userName, userImage) => {
+  const onPressProfile = (userName, userImage, profileId) => {
     navigation.navigate(StackNav.ProfileDetail, {
       userName: userName,
       userImage: userImage,
+      profileId: profileId
     });
   };
 
@@ -106,7 +117,7 @@ const UserPost = ({item}) => {
       <View style={localStyels.headerContainer}>
         <TouchableOpacity
           style={localStyels.profileContainer}
-          onPress={() => onPressProfile(item.name, item.profileImage)}>
+          onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}>
           <FastImage
             source={{uri: item.profileImage}}
             style={localStyels.profileImage}

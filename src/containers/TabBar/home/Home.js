@@ -32,7 +32,7 @@ import { userDetail } from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
 import { ACCESS_TOKEN, USER_LEVEL, THEME } from '../../../common/constants';
-import { setAsyncStorageData } from '../../../utils/helpers';
+import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
@@ -169,8 +169,8 @@ const Home = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
-    new Promise((resolve, reject) => {
-      getPosts()
+    getAsyncStorageData("PROFILE_ID").then(profile => {
+      getPosts(profile)
       .then(resp => {
         const new_posts = transformfPosts(resp);
         setPostData(new_posts);

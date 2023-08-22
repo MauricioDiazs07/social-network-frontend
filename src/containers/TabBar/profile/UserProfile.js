@@ -17,6 +17,7 @@ import CountryPicker, {
 } from 'react-native-country-picker-modal';
 
 // Local import
+import { getUserData } from '../../../api/feed/interaction';
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
@@ -32,13 +33,45 @@ import {validateNotEmptyContact} from '../../../utils/validators';
 import ZText from '../../../components/common/ZText';
 import {userProfile} from '../../../api/constant';
 import { validateNotNecessatyEmail } from '../../../utils/validators';
+import { getAsyncStorageData } from '../../../utils/helpers';
+
 
 const UserProfile = props => {
   const {navigation} = props;
   const headerTitle = '';
 
   // TODO: fetch from API
-  const user = userProfile;
+  const [userData, setUserData] = useState({
+    img: '',
+    username: '',
+    birthdate: '',
+    gender: '',
+    state: '',
+    municipality: '',
+    email: '',
+    phoneNo: ''
+  });
+
+  useEffect(() => {
+    getAsyncStorageData("PROFILE_ID").then(profile => {
+      getUserData(profile)
+      .then(resp => {
+        const user = {
+          img: resp['profile_photo'],
+          username: resp['name'],
+          birthdate: resp['birthday'],
+          gender: resp['gender'],
+          state: resp['state'],
+          municipality: resp['municipality'],
+          email: resp['email'],
+          phoneNo: resp['phone_number']
+        }
+        setUserData(user)
+        setEmail(resp['email'])
+        setPhoneNo(resp['phone_number'])
+      });
+    });
+  }, []);
 
   const colors = useSelector(state => state.theme.theme);
   const ProfilePictureSheetRef = createRef();
@@ -54,8 +87,8 @@ const UserProfile = props => {
   const BlurredIconStyle = colors.grayScale5;
   const FocusedIconStyle = colors.primary;
 
-  const [email, setEmail] = useState(user.email);
-  const [phoneNo, setPhoneNo] = useState(user.phoneNo);
+  const [email, setEmail] = useState(userData.email);
+  const [phoneNo, setPhoneNo] = useState(userData.phoneNo);
   const [emailError, setEmailError] = React.useState('');
 
   const [emailInputStyle, setEmailInputStyle] = useState(BlurredStyle);
@@ -77,8 +110,8 @@ const UserProfile = props => {
 
   useEffect(() => {
     if (
-      (user.email !== email ||
-      user.phoneNo !== phoneNo) &&
+      (userData.email !== email ||
+        userData.phoneNo !== phoneNo) &&
       !emailError &&
       !contactError ||
       !!selectImage.path
@@ -88,9 +121,9 @@ const UserProfile = props => {
       setIsSubmitDisabled(true);
     }
   }, [
-    user.email,
-    email,
-    user.phoneNo,
+    userData.email,
+    userData,
+    userData.phoneNo,
     phoneNo,
     emailError,
     contactError,
@@ -205,10 +238,10 @@ const UserProfile = props => {
                     source={{uri: selectImage?.path}}
                     style={localStyles.userImage}
                     />
-                ) : !!user.img ?
+                ) : !!userData.img ?
                 (
                     <Image
-                    source={{uri: user.img}}
+                    source={{uri: userData.img}}
                     style={localStyles.userImage}
                     />
                 ) :
@@ -227,7 +260,7 @@ const UserProfile = props => {
             </TouchableOpacity>
 
             <ZText style={styles.selfCenter}>
-                {user.username}
+                {userData.username}
             </ZText>
         </View>
 
@@ -242,7 +275,7 @@ const UserProfile = props => {
             </View>
             <View style={styles.ml15}>
                 <ZText>{strings.birthday}</ZText>
-                <ZText style={localStyles.iconColor}>{user.birthdate}</ZText>
+                <ZText style={localStyles.iconColor}>{userData.birthdate}</ZText>
             </View>
         </View>
 
@@ -256,7 +289,7 @@ const UserProfile = props => {
             </View>
             <View style={styles.ml15}>
                 <ZText>{strings.gender}</ZText>
-                <ZText style={localStyles.iconColor}>{user.gender}</ZText>
+                <ZText style={localStyles.iconColor}>{userData.gender}</ZText>
             </View>
         </View>
 
@@ -270,7 +303,7 @@ const UserProfile = props => {
             </View>
             <View style={styles.ml15}>
                 <ZText>{strings.state}</ZText>
-                <ZText style={localStyles.iconColor}>{user.state}</ZText>
+                <ZText style={localStyles.iconColor}>{userData.state}</ZText>
             </View>
         </View>
 
@@ -284,7 +317,7 @@ const UserProfile = props => {
             </View>
             <View style={styles.ml15}>
                 <ZText>{strings.municipality}</ZText>
-                <ZText style={localStyles.iconColor}>{user.municipality}</ZText>
+                <ZText style={localStyles.iconColor}>{userData.municipality}</ZText>
             </View>
         </View>
 

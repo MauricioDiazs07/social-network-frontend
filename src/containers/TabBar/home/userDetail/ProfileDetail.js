@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, { useMemo, createRef, useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 
@@ -29,12 +29,29 @@ import {
   videoData,
 } from '../../../../api/constant';
 import UserStories from '../UserStory/UserStories';
+import { getMasterData } from '../../../../api/feed/interaction';
 
 export default function ProfileDetail({navigation, route}) {
-  const {userName, userImage} = route.params;
+  const {userName, userImage, profileId} = route.params;
   const colors = useSelector(state => state.theme.theme);
   const [isSelect, setIsSelect] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [masterData, setMasterData] = useState({
+    description: '',
+    name: '',
+    profile_photo: '',
+    shares: '',
+  });
+
+  useEffect(() => {
+    console.log(profileId);
+    getMasterData(profileId).then(resp =>{
+      console.log(resp);
+      setMasterData(resp);
+    })
+
+  }, []);
 
   const categoryData = [
     {
@@ -161,9 +178,7 @@ export default function ProfileDetail({navigation, route}) {
               align={'center'}
               color={colors.userDesc}
               style={styles.mt10}>
-              {
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.'
-              }
+              {masterData.description}
             </ZText>
           </View>
         </View>

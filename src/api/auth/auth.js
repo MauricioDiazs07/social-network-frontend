@@ -2,7 +2,6 @@ import {
     URL_API,
     LOGIN,
     SIGNUP,
-    USER_DATA,
     READ_INE,
     INTERESTS_LIST
  } from "../../utils/api_constants";
@@ -31,23 +30,6 @@ const getAuthToken = async (email, password) => {
     }
 }
 
-const getAuthData = async (email) => {
-    
-    const response = await fetch(URL_API + USER_DATA, {
-        method: "POST", 
-        body: JSON.stringify({
-            email: email
-        }),
-        headers: {
-            'Content-type': 'application/json'
-        }
-    })
-
-    resp = await response.json();
-    if (response.ok){
-        return resp
-    }
-}
 
 /* method to send INE pic and get the information */
 const readINE = async (ine_pic) => {
@@ -101,7 +83,6 @@ const getInterests = async () => {
 
 export {
     getAuthToken,
-    getAuthData,
     readINE,
     signUp,
     getInterests,

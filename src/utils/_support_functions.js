@@ -78,12 +78,13 @@ const transformfPosts = (post) => {
     const obj = {
       id: element['id'],
       name: element['name'],
+      profileId: element['profileId'],
       subtitle: element['creationDate'],
       profileImage: element['profileImage'],
       text: element['text'],
       image: images,
       role: 'CEO de empresa', // TODO: delete field
-      postType: 'POST',
+      postType: element['shareType'],
       likes: element['likes'],
       comments: element['comments']
     };

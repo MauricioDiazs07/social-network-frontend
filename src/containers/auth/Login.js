@@ -16,9 +16,9 @@ import {StackNav} from '../../navigation/NavigationKeys';
 import ZInput from '../../components/common/ZInput';
 import {validateEmail, validatePassword} from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
-import {setAsyncStorageData} from '../../utils/helpers';
+import {getAsyncStorageData, setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
-import {getAuthData, getAuthToken} from '../../api/auth/auth';
+import {getAuthToken} from '../../api/auth/auth';
 import { getAccessLevel } from '../../utils/_support_functions';
 
 const Login = ({navigation}) => {
@@ -127,8 +127,7 @@ const Login = ({navigation}) => {
         const user_lvl = getAccessLevel(token['role_id']);
         await setAsyncStorageData(ACCESS_TOKEN, token);
         await setAsyncStorageData(USER_LEVEL, user_lvl);
-  
-        const user = await getAuthData(email);
+        await setAsyncStorageData("PROFILE_ID", token['profile_id']);
         
         navigation.reset({
           index: 0,
