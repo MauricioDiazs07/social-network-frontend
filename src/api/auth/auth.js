@@ -70,6 +70,47 @@ const signUp = async (
     }
 }
 
+const signUp2 = async (
+    user
+) => {
+
+    const form = new FormData()
+    form.append('email', user['email'])
+    form.append('password', user['password'])
+    form.append('name', user['name'])
+    form.append('gender', user['gender'])
+    form.append('state', user['state'])
+    form.append('municipality', user['municipality'])
+    form.append('address', user['address'])
+    form.append('birthday', user['birthday'])
+    form.append('curp', user['curp'])
+    form.append('phone', user['phone'])
+
+    const value = user['identification_photo']
+    console.log(value)
+    console.log("..........");
+    const imageData = {
+        uri: value.path,
+        name: `img_${1}.jpg`,
+        type: value.mime,
+      }
+
+    form.append('identification_photo', imageData)
+    console.log(form);
+    const response = await fetch(URL_API + SIGNUP, {
+        method: "POST", 
+        body: form,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    resp = await response.json();
+    if (response.ok){
+        return resp;
+    }
+}
+
 const getInterests = async () => {
     const response = await fetch(URL_API + INTERESTS_LIST, {
         method: 'GET'
@@ -85,5 +126,6 @@ export {
     getAuthToken,
     readINE,
     signUp,
+    signUp2,
     getInterests,
 };

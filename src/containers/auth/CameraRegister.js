@@ -75,7 +75,6 @@ const CameraRegister = props => {
   const readINE_ = img => {
     setIsLoading(true);
     setImg(img);
-
     readINE(img)
       .then(resp => {
         setIsLoading(false);
@@ -84,14 +83,13 @@ const CameraRegister = props => {
           setIsSnackbarVisible(true);
           return;
         }
-
         navigation.navigate(StackNav.SetUpProfile, {
           title: headerTitle,
           userCred: {
             email: emailRegister,
             password: passwordRegister,
           },
-          identification_photo: img['data'],
+          identification_photo: img,
           user: resp,
         });
       })
@@ -109,7 +107,7 @@ const CameraRegister = props => {
         email: emailRegister,
         password: passwordRegister,
       },
-      identification_photo: img['data'],
+      identification_photo: img,
       user: {
         'name': '',
         'gender': '',

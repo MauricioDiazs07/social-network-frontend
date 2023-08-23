@@ -24,7 +24,7 @@ import {isNotEmptyString} from '../../utils/_support_functions';
 import {styles} from '../../themes';
 import images from '../../assets/images';
 import strings from '../../i18n/strings';
-import {signUp, getAuthToken, getAuthData} from '../../api/auth/auth';
+import {signUp, signUp2, getAuthToken, getAuthData} from '../../api/auth/auth';
 import {StackNav} from '../../navigation/NavigationKeys';
 import { getAccessLevel } from '../../utils/_support_functions';
 import {setAsyncStorageData} from '../../utils/helpers';
@@ -185,7 +185,7 @@ const FinishProfile = props => {
       ...userInfo
     };
 
-    await signUp(usser_)
+    await signUp2(usser_)
       .then(async resp => {
         if (resp) {
           await getAuthToken(
@@ -197,9 +197,7 @@ const FinishProfile = props => {
                 const user_lvl = getAccessLevel(token['role_id']);
                 await setAsyncStorageData(ACCESS_TOKEN, token);
                 await setAsyncStorageData(USER_LEVEL, user_lvl);
-          
-                const user = await getAuthData(email);
-                
+
                 navigation.navigate(StackNav.FollowSomeone);
             }})
             .catch(err => {
