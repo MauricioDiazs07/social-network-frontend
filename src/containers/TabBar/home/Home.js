@@ -36,7 +36,7 @@ import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
-import { transformfPosts } from '../../../utils/_support_functions';
+import { transformfPosts, transformfHistoy } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
 
 const LogOutSheetRef = createRef();
@@ -54,11 +54,20 @@ const getUserLevel = async () => {
 const UserProfile = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
 
+  const [profilePhoto, setProfilePhoto] = useState();
+  
+  useEffect(() => {
+    getAsyncStorageData("PROFILE_PHOTO").then(photo => {
+      setProfilePhoto(photo)
+      console.log(photo);
+    });
+  }, []);
+
   return (
     <View style={localStyles.itemContainer}>
       <View style={localStyles.itemInnerContainer}>
         <FastImage
-          source={images.profile}
+          source={{uri: profilePhoto}}
           style={[
             localStyles.itemImage,
             {
@@ -166,6 +175,7 @@ const Home = () => {
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
 
   const [postData, setPostData] = useState([]);
+  const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
@@ -173,7 +183,9 @@ const Home = () => {
       getPosts(profile)
       .then(resp => {
         const new_posts = transformfPosts(resp);
+        const new_history = transformfHistoy(resp)
         setPostData(new_posts);
+        setHistoryData(new_history)
         setIsLoaded(true);
       });
     });
@@ -203,7 +215,7 @@ const Home = () => {
 
   const headerStory = () => {
     return (
-      <UserStories ListHeaderComponent={<UserProfile />} stories={userDetail} />
+      <UserStories ListHeaderComponent={<UserProfile/>} stories={historyData} />
     );
   };
 

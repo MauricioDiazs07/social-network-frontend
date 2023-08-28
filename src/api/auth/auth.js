@@ -95,6 +95,7 @@ const signUp2 = async (
         type: value.mime,
       }
 
+    console.log(user['profile_photo']);
     form.append('identification_photo', imageData)
     console.log(form);
     const response = await fetch(URL_API + SIGNUP, {

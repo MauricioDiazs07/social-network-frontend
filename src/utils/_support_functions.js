@@ -70,28 +70,73 @@ const transformfPosts = (post) => {
   const new_posts = [];
 
   post.forEach(element => {
-    const images = [];
-    element['multimedia']['data'].forEach(mult => {
-      images.push(mult['archive_url']);
-    });
+    if (element['shareType'] == 'POST'){
+      const images = [];
+      element['multimedia']['data'].forEach(mult => {
+        images.push(mult['archive_url']);
+      });
 
-    const obj = {
-      id: element['id'],
-      name: element['name'],
-      profileId: element['profileId'],
-      subtitle: element['creationDate'],
-      profileImage: element['profileImage'],
-      text: element['text'],
-      image: images,
-      role: 'CEO de empresa', // TODO: delete field
-      postType: element['shareType'],
-      likes: element['likes'],
-      comments: element['comments']
-    };
-    new_posts.push(obj);
+      const obj = {
+        id: element['id'],
+        name: element['name'],
+        profileId: element['profileId'],
+        subtitle: element['creationDate'],
+        profileImage: element['profileImage'],
+        text: element['text'],
+        image: images,
+        role: 'CEO de empresa', // TODO: delete field
+        postType: element['shareType'],
+        likes: element['likes'],
+        comments: element['comments']
+      };
+      new_posts.push(obj);
+    }
   });
 
   return new_posts.reverse();
+}
+
+const transformfHistoy = (post) => {
+  const new_historys = [];
+
+  post.forEach(element => {
+    if (element['shareType'] == 'HISTORY'){
+
+      const obj = {
+        id: element['id'],
+        name: element['name'],
+        description: element['text'],
+        imgUrl: element['profileImage'],
+        isFollow: false
+      };
+      
+      new_historys.push(obj);
+    }
+  });
+
+  return new_historys.reverse();
+}
+
+const transformpHistoy = (post) => {
+  const new_historys = [];
+  historys = post['shares']['shares']
+  historys.forEach(element => {
+    if (element['shareType'] == 'HISTORY'){
+      console.log(element);
+      const obj = {
+        id: element['id'],
+        name: '',
+        description: '',
+        imgUrl: element['multimedia']['data'][0]['archive_url'],
+        isFollow: false
+      };
+      console.log("Historia 2");
+      console.log(obj);
+      new_historys.push(obj);
+    }
+  });
+
+  return new_historys.reverse();
 }
 
 export {
@@ -102,4 +147,6 @@ export {
     isNotEmptyString,
     getAccessLevel,
     transformfPosts,
+    transformfHistoy,
+    transformpHistoy
 }

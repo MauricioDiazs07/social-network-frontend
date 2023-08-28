@@ -30,12 +30,19 @@ import {
 } from '../../../../api/constant';
 import UserStories from '../UserStory/UserStories';
 import { getMasterData } from '../../../../api/feed/interaction';
+import {transformpHistoy } from '../../../../utils/_support_functions';
 
 export default function ProfileDetail({navigation, route}) {
   const {userName, userImage, profileId} = route.params;
   const colors = useSelector(state => state.theme.theme);
   const [isSelect, setIsSelect] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [historyData, setHistoryData] = useState([{
+    id: '',
+    name: '',
+    description:'',
+    imgUrl: ''
+  }]);
 
   const [masterData, setMasterData] = useState({
     description: '',
@@ -45,12 +52,12 @@ export default function ProfileDetail({navigation, route}) {
   });
 
   useEffect(() => {
-    console.log(profileId);
     getMasterData(profileId).then(resp =>{
       console.log(resp);
       setMasterData(resp);
+      const new_history = transformpHistoy(resp)
+      setHistoryData(new_history)
     })
-
   }, []);
 
   const categoryData = [
@@ -231,7 +238,7 @@ export default function ProfileDetail({navigation, route}) {
             <LikeBg />
           </TouchableOpacity> */}
         </View>
-        <UserStories stories={userDetail} />
+        <UserStories stories={historyData} />
         <View
           style={[
             localStyles.mainContainer,

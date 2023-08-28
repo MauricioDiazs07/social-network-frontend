@@ -197,6 +197,7 @@ const FinishProfile = props => {
                 const user_lvl = getAccessLevel(token['role_id']);
                 await setAsyncStorageData(ACCESS_TOKEN, token);
                 await setAsyncStorageData(USER_LEVEL, user_lvl);
+                await setAsyncStorageData("PROFILE_ID", token['profile_id']);
 
                 navigation.navigate(StackNav.FollowSomeone);
             }})
