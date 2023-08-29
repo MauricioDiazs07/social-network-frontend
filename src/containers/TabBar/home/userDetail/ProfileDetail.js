@@ -30,7 +30,7 @@ import {
 } from '../../../../api/constant';
 import UserStories from '../UserStory/UserStories';
 import { getMasterData } from '../../../../api/feed/interaction';
-import {transformpHistoy } from '../../../../utils/_support_functions';
+import {transformpHistoy,transformFeed } from '../../../../utils/_support_functions';
 
 export default function ProfileDetail({navigation, route}) {
   const {userName, userImage, profileId} = route.params;
@@ -51,12 +51,20 @@ export default function ProfileDetail({navigation, route}) {
     shares: '',
   });
 
+  const [feeds, setFeeds] = useState([]);
+  const [shorts, setShorts] = useState([]);
+  const [tags, setTags] = useState([]);
+
   useEffect(() => {
     getMasterData(profileId).then(resp =>{
-      console.log(resp);
+      console.log('--------------------------');
+      console.log('resp', resp);
       setMasterData(resp);
       const new_history = transformpHistoy(resp)
+      const feeds = transformFeed(resp)
+      console.log(feeds);
       setHistoryData(new_history)
+      setFeeds(feeds)
     })
   }, []);
 
@@ -157,7 +165,7 @@ export default function ProfileDetail({navigation, route}) {
         showsVerticalScrollIndicator={false}
         style={localStyles.root}>
         <View style={styles.itemsCenter}>
-            <Image style={localStyles.bgImg} source={{uri: 'https://cdn.pixabay.com/photo/2017/08/30/17/25/please-2697945_1280.jpg'}}></Image>
+            <Image style={localStyles.bgImg} source={{uri: 'https://marketplace.canva.com/EAFFI2trtnE/1/0/1600w/canva-black-minimalist-motivation-quote-linkedin-banner-cqVV-6-1kOk.jpg'}}></Image>
           <TouchableOpacity onPress={onPressEditProfile} style={styles.mt25}>
             {!!userImage?.length ? (
               <Image
@@ -252,12 +260,12 @@ export default function ProfileDetail({navigation, route}) {
           ))}
         </View>
         <FlatList
-          data={videoData}
+          data={feeds}
           renderItem={({item, index}) => (
             <ReelComponent
               data={item?.views}
               reelUrl={item?.poster}
-              isPlay={true}
+              isPlay={false}
             />
           )}
           numColumns={3}
