@@ -62,4 +62,5 @@ export const StackNav = {
   UserProfile: 'UserProfile',
   CameraRegister: 'CameraRegister',
   FinishProfile: 'FinishProfile',
+  HistoryDetail: 'HistoryDetail'
 };

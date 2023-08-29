@@ -169,6 +169,10 @@ export default function StackNavigation() {
         component={StackRoute.PostDetail}
       />
       <Stack.Screen
+        name={StackNav.HistoryDetail}
+        component={StackRoute.HistoryDetail}
+      />
+      <Stack.Screen
         name={StackNav.PostSound}
         component={StackRoute.PostSound}
       />

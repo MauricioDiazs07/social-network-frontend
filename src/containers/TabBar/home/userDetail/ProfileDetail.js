@@ -37,12 +37,7 @@ export default function ProfileDetail({navigation, route}) {
   const colors = useSelector(state => state.theme.theme);
   const [isSelect, setIsSelect] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [historyData, setHistoryData] = useState([{
-    id: '',
-    name: '',
-    description:'',
-    imgUrl: ''
-  }]);
+  const [historyData, setHistoryData] = useState([]);
 
   const [masterData, setMasterData] = useState({
     description: '',
@@ -57,12 +52,9 @@ export default function ProfileDetail({navigation, route}) {
 
   useEffect(() => {
     getMasterData(profileId).then(resp =>{
-      console.log('--------------------------');
-      console.log('resp', resp);
       setMasterData(resp);
       const new_history = transformpHistoy(resp)
       const feeds = transformFeed(resp)
-      console.log(feeds);
       setHistoryData(new_history)
       setFeeds(feeds)
     })
