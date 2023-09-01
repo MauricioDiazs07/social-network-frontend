@@ -59,6 +59,7 @@ import StoryView from '../containers/TabBar/home/UserStory/StoryView';
 import UserProfile from '../containers/TabBar/profile/UserProfile';
 import CameraRegister from '../containers/auth/CameraRegister';
 import FinishProfile from '../containers/auth/FinishProfile';
+import PostComments from '../containers/TabBar/home/UserPostFeed/PostComments';
 
 export const TabRoute = {
   Home,
@@ -123,4 +124,5 @@ export const StackRoute = {
   UserProfile,
   CameraRegister,
   FinishProfile,
+  PostComments,
 };

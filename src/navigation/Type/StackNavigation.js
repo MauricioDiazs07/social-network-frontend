@@ -198,6 +198,10 @@ export default function StackNavigation() {
           name={StackNav.Profile}
           component={StackRoute.Profile}
       />
+      <Stack.Screen
+        name={StackNav.PostComments}
+        component={StackRoute.PostComments}
+      />
     </Stack.Navigator>
   );
 }

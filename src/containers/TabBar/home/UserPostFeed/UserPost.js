@@ -1,3 +1,4 @@
+// libraries import
 import React, { useState } from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -5,9 +6,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {useNavigation} from '@react-navigation/native';
-import { addLike, disLike } from '../../../../api/feed/interaction';
-import {getAsyncStorageData} from '../../../../utils/helpers';
 
+// local import
 import {
   moderateScale,
   screenWidth,
@@ -22,9 +22,12 @@ import {
   LikedHeart
 } from '../../../../assets/svgs';
 import {StackNav} from '../../../../navigation/NavigationKeys';
+import { addLike, disLike } from '../../../../api/feed/interaction';
+import {getAsyncStorageData} from '../../../../utils/helpers';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
+  const navigation = useNavigation();
 
   const [isLiked, setIsLiked] = useState(item['likes']['like']);
   const [likes, setLikes] = useState(item['likes']['count']);
@@ -46,6 +49,11 @@ const BottomIconContainer = ({item}) => {
 
     setIsLiked(!isLiked);
   };
+
+  const OnPressComments = () => {
+    navigation.navigate(StackNav.PostComments,
+      {item: item});
+  }
 
   return (
     <View style={localStyels.iconsContainer}>
@@ -76,7 +84,9 @@ const BottomIconContainer = ({item}) => {
           <ZText type={'s14'}>{likes}</ZText>
         </View>
         <View style={localStyels.commentItemContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={OnPressComments}
+          >
             {colors.dark ? (
               <ChatIcon_Dark
                 width={moderateScale(28)}
