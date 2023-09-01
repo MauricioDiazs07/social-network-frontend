@@ -20,7 +20,7 @@ import {styles} from '../../themes';
 import strings from '../../i18n/strings';
 import {getHeight, moderateScale} from '../../common/constants';
 import {UserResearch} from '../../assets/svgs';
-import {readINE} from '../../api/auth/auth';
+import {readINE, readINE_2} from '../../api/auth/auth';
 import {StackNav} from '../../navigation/NavigationKeys';
 
 const CameraRegister = props => {
@@ -75,8 +75,9 @@ const CameraRegister = props => {
   const readINE_ = img => {
     setIsLoading(true);
     setImg(img);
-    readINE(img)
+    readINE_2(img)
       .then(resp => {
+        console.log(resp);
         setIsLoading(false);
         if (!('name' in resp)) {
           setIsReadingError(true);

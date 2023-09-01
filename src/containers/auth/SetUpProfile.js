@@ -107,8 +107,7 @@ const SetUpProfile = props => {
       isNotEmptyString(municipality) &&
       isNotEmptyString(curp) &&
       !curpError &&
-      isNotEmptyString(section) &&
-      !sectionError
+      isNotEmptyString(section)
     ) {
       setIsSubmitDisabled(false);
     } else {
@@ -125,8 +124,7 @@ const SetUpProfile = props => {
     municipality,
     curp,
     curpError,
-    section,
-    sectionError
+    section
   ]);
 
   const toggleDatePicker = () => {
