@@ -24,11 +24,13 @@ import {useSelector} from 'react-redux';
 const {width, height} = Dimensions.get('window');
 
 function StoryView({route}) {
+  console.log(route.params);
   const img = route.params;
+  const hystorys = route.params.historys;
   const navigation = useNavigation();
   const colors = useSelector(state => state.theme.theme);
 
-  const [content, setContent] = useState(userStoryData);
+  const [content, setContent] = useState(hystorys);
   const [end, setEnd] = useState(0);
   const [current, setCurrent] = useState(0);
   const [load, setLoad] = useState(false);
@@ -36,7 +38,7 @@ function StoryView({route}) {
 
   // start() is for starting the animation bars at the top
   function start(n) {
-    if (content[current].type == 'video') {
+    if (content[current].type == 'mp4') {
       // type video
       if (load) {
         Animated.timing(progress, {
