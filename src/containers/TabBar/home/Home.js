@@ -53,38 +53,49 @@ const getUserLevel = async () => {
 
 const UserProfile = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
-
+  const navigation = useNavigation();
   const [profilePhoto, setProfilePhoto] = useState();
   
   useEffect(() => {
     getAsyncStorageData("PROFILE_PHOTO").then(photo => {
       setProfilePhoto(photo)
-      console.log(photo);
     });
   }, []);
 
+  const onPressHistoryIcon = () => {
+    navigation.navigate(StackNav.HistoryDetail);
+  };
+  
+
   return (
-    <View style={localStyles.itemContainer}>
-      <View style={localStyles.itemInnerContainer}>
-        <FastImage
-          source={{uri: profilePhoto}}
-          style={[
-            localStyles.itemImage,
-            {
-              borderWidth: 0,
-            },
-          ]}
-        />
-        <StoryAddIcon
-          style={localStyles.addIcon}
-          width={moderateScale(25)}
-          height={moderateScale(25)}
-        />
-      </View>
-      <ZText type={'s14'} style={localStyles.itemUsername} color={colors.white}>
-        {strings.you}
-      </ZText>
-    </View>
+    <TouchableOpacity 
+        onPress={onPressHistoryIcon}
+        style={localStyles.rightBtns}
+      >
+      <View style={localStyles.itemContainer}>
+            <View style={localStyles.itemInnerContainer}>
+              <FastImage
+                source={{uri: profilePhoto}}
+                style={[
+                  localStyles.itemImage,
+                  {
+                    borderWidth: 0,
+                  },
+                ]}
+              />
+              <StoryAddIcon
+                style={localStyles.addIcon}
+                width={moderateScale(25)}
+                height={moderateScale(25)}
+              />
+            </View>
+            <ZText type={'s14'} style={localStyles.itemUsername} color={colors.white}>
+              {strings.you}
+            </ZText>
+          </View>
+
+      </TouchableOpacity>
+    
   );
 });
 

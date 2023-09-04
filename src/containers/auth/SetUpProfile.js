@@ -87,7 +87,7 @@ const SetUpProfile = props => {
   const [stateError, setStateError] = useState(stateInitState['msg']);
   const [municipalityError, setMunicipalityError] = useState(municipalityInitState['msg']);
   const [curpError, setCurpError] = useState(curpInitState['msg']);
-  const [sectionError, setSectionError] = useState(sectionInitState['msg']);
+  const [sectionError, setSectionError] = useState('');
   const [date, setDate] = React.useState(new Date());
   const [showPicker, setShowPicker] = React.useState(false);
 
@@ -107,8 +107,7 @@ const SetUpProfile = props => {
       isNotEmptyString(municipality) &&
       isNotEmptyString(curp) &&
       !curpError &&
-      isNotEmptyString(section) &&
-      !sectionError
+      isNotEmptyString(section)
     ) {
       setIsSubmitDisabled(false);
     } else {
@@ -125,8 +124,7 @@ const SetUpProfile = props => {
     municipality,
     curp,
     curpError,
-    section,
-    sectionError
+    section
   ]);
 
   const toggleDatePicker = () => {

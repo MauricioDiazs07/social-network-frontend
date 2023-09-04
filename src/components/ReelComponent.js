@@ -44,7 +44,7 @@ export default function ReelComponent({
         {!!isPlay && (
           <View style={localStyles.playIconStyle}>
             <Ionicons
-              name="play-circle"
+              name="heart-outline"
               size={moderateScale(28)}
               color={colors.white}
             />
@@ -53,7 +53,7 @@ export default function ReelComponent({
         {data.length > 0 && (
           <View style={localStyles.playStyle}>
             <Ionicons
-              name="play-circle"
+              name="heart-outline"
               size={moderateScale(18)}
               color={colors.primary}
             />

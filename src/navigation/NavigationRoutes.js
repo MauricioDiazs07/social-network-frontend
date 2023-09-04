@@ -49,6 +49,7 @@ import SearchLive from '../containers/TabBar/home/Seach/SearchLive';
 import SearchHashtag from '../containers/TabBar/home/Seach/SearchHashtag';
 import UserNetwork from '../containers/TabBar/home/userDetail/UserNetwork';
 import PostDetail from '../containers/TabBar/add/PostDetail';
+import HistoryDetail from '../containers/TabBar/add/HistoryDetail';
 import PostSound from '../containers/TabBar/add/PostSound';
 import ReelsComponent from '../containers/TabBar/home/ReelsComponent';
 import Shorts from '../containers/TabBar/home/ReelsComponent';
@@ -125,4 +126,5 @@ export const StackRoute = {
   CameraRegister,
   FinishProfile,
   PostComments,
+  HistoryDetail
 };

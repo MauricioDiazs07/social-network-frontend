@@ -3,6 +3,7 @@ import {
     LOGIN,
     SIGNUP,
     READ_INE,
+    READ_INE_2,
     INTERESTS_LIST
  } from "../../utils/api_constants";
 
@@ -50,6 +51,31 @@ const readINE = async (ine_pic) => {
     }
 }
 
+const readINE_2 = async (ine_pic) => {
+
+    const formData = new FormData();
+    const imageData = {
+        uri: ine_pic.path,
+        name: `img_${1}.jpg`,
+        type: ine_pic.mime,
+      }
+    formData.append("ine", imageData);
+    
+    const response = await fetch(URL_API + READ_INE_2, {
+        method: "POST", 
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+    });
+    
+    resp = await response.json();
+    if (response.ok) {
+        console.log(resp);
+        return resp;
+    }
+}
+
 /* method to signup to the app */
 const signUp = async (
     user
@@ -66,6 +92,7 @@ const signUp = async (
 
     resp = await response.json();
     if (response.ok){
+        
         return resp;
     }
 }
@@ -87,17 +114,13 @@ const signUp2 = async (
     form.append('phone', user['phone'])
 
     const value = user['identification_photo']
-    console.log(value)
-    console.log("..........");
     const imageData = {
         uri: value.path,
         name: `img_${1}.jpg`,
         type: value.mime,
       }
 
-    console.log(user['profile_photo']);
     form.append('identification_photo', imageData)
-    console.log(form);
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: form,
@@ -126,6 +149,7 @@ const getInterests = async () => {
 export {
     getAuthToken,
     readINE,
+    readINE_2,
     signUp,
     signUp2,
     getInterests,
