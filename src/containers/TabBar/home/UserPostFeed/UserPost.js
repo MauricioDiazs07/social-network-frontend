@@ -36,14 +36,14 @@ const BottomIconContainer = ({item}) => {
     if (!isLiked) {
       setLikes(likes + 1);
       getAsyncStorageData("PROFILE_ID").then(profile => {
-        addLike(profile,item['id'],item['postType'])
+        addLike(profile, item['id'], item['postType'])
         console.log(item);
       })
       
     } else {
       setLikes(likes - 1);
       getAsyncStorageData("PROFILE_ID").then(profile => {
-        disLike(profile,item['id'],item['postType'])
+        disLike(profile, item['id'], item['postType'])
       }) 
     }
 
@@ -52,7 +52,7 @@ const BottomIconContainer = ({item}) => {
 
   const OnPressComments = () => {
     navigation.navigate(StackNav.PostComments,
-      {item: item});
+      {idPost: item['id']});
   }
 
   return (

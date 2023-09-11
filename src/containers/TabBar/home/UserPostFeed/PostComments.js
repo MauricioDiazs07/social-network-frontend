@@ -1,5 +1,5 @@
 // libraries import
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet,
          View,
          TouchableOpacity,
@@ -15,6 +15,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ZHeader from '../../../../components/common/ZHeader';
 import ZSafeAreaView from '../../../../components/common/ZSafeAreaView';
 import ZText from '../../../../components/common/ZText';
+import ZInput from '../../../../components/common/ZInput';
+import ZKeyBoardAvoidWrapper from '../../../../components/common/ZKeyBoardAvoidWrapper';
 import { getAsyncStorageData } from '../../../../utils/helpers';
 import { addLike, disLike } from '../../../../api/feed/interaction';
 import { moderateScale, screenWidth } from '../../../../common/constants';
@@ -99,9 +101,41 @@ const BottomIconContainer = ({item}) => {
 
 const PostComments = props => {
   const colors = useSelector(state => state.theme.theme);
-  const item = props.route.params.item;
+  const idPost = props.route.params.idPost;
   const navigation = useNavigation();
   console.log("ITEM", item.comments.data);
+  
+  const BlurredStyle = {
+    backgroundColor: colors.inputBg,
+    borderColor: colors.btnColor1,
+  };
+  const FocusedStyle = {
+    backgroundColor: colors.inputFocusColor,
+    borderColor: colors.primary,
+  };
+  
+  const [addChat, setAddChat] = useState('');
+  const [chatStyle, setChatStyle] = useState(BlurredStyle);
+  const [item, setItem] = useState('');
+
+  useEffect(() => {
+    
+  });
+
+  const onFocusInput = () => setChatStyle(FocusedStyle);
+
+  const onBlurInput = () => setChatStyle(BlurredStyle);
+  
+  const SendIcon = () => (
+    <TouchableOpacity
+      onPress={onPressSend}>
+      <Ionicons
+        name={'send'}
+        size={moderateScale(20)}
+        color={colors.primary}
+      />
+    </TouchableOpacity>
+  );
   
   const renderPostImages = ({item}) => {
     return <FastImage source={{uri: item}} style={localStyles.postImage} />;
@@ -129,7 +163,7 @@ const PostComments = props => {
           </TouchableOpacity>
         </View>
     )
-  }
+  };
 
   const onPressProfile = (userName, userImage, profileId) => {
     navigation.navigate(StackNav.ProfileDetail, {
@@ -140,72 +174,99 @@ const PostComments = props => {
   };
   
   const onRefresh = () => navigation.reset({
+    // TODO: pass id of post
     index: 0,
     routes: [{name: StackNav.TabBar}]
   });
+  
+  const onchangeComment = text => setAddChat(text);
+
+  const onPressSend = () => {
+    console.log("Comentario enviado");
+  };
 
   return (
     <ZSafeAreaView>
-      <ScrollView
-        refreshControl={
-            <RefreshControl onRefresh={onRefresh}/>
-        }
-      >
-        <View>
-            <ZHeader />
-            <View style={localStyles.headerContainer}>
-            <TouchableOpacity
-                style={localStyles.profileContainer}
-                onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}
-            >
-                <FastImage
-                source={{uri: item.profileImage}}
-                style={localStyles.profileImage}
-                />
-                <View>
-                <ZText type={'b16'}>{item.name}</ZText>
-                <ZText
-                    type={'m14'}
-                    color={colors.dark ? colors.grayScale4 : colors.grayScale7}>
-                    {item.subtitle}
-                </ZText>
-                </View>
-            </TouchableOpacity>
-            <Ionicons
-                name="ellipsis-horizontal"
-                size={moderateScale(24)}
-                color={colors.reverse}
+      <ZKeyBoardAvoidWrapper>
+        <ScrollView
+          refreshControl={
+              <RefreshControl onRefresh={onRefresh}/>
+          }
+        >
+          <View>
+              <ZHeader />
+              <View style={localStyles.headerContainer}>
+              <TouchableOpacity
+                  style={localStyles.profileContainer}
+                  onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}
+              >
+                  <FastImage
+                  source={{uri: item.profileImage}}
+                  style={localStyles.profileImage}
+                  />
+                  <View>
+                  <ZText type={'b16'}>{item.name}</ZText>
+                  <ZText
+                      type={'m14'}
+                      color={colors.dark ? colors.grayScale4 : colors.grayScale7}>
+                      {item.subtitle}
+                  </ZText>
+                  </View>
+              </TouchableOpacity>
+              <Ionicons
+                  name="ellipsis-horizontal"
+                  size={moderateScale(24)}
+                  color={colors.reverse}
+              />
+              </View>
+
+              <View style={[styles.mr20, styles.ml20]}>
+              <ZText>{item.text}</ZText>
+              {item.image.length > 0 && (
+                  <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
+                  <FlashList
+                      data={item.image}
+                      showsHorizontalScrollIndicator={false}
+                      keyExtractor={image => image}
+                      horizontal
+                      pagingEnabled
+                      renderItem={renderPostImages}
+                  />
+                  </View>
+              )}
+              </View>
+          <BottomIconContainer item={item} />
+
+          <FlashList
+              data={item.comments.data}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={image => image}
+              horizontal
+              pagingEnabled
+              renderItem={renderComments}
+          />
+
+          <View style={styles.m10}>
+            <ZInput
+              placeHolder={strings.message + '...'}
+              keyBoardType={'default'}
+              _value={addChat}
+              autoCapitalize={'none'}
+              rightAccessory={() => <SendIcon />}
+              toGetTextFieldValue={onchangeComment}
+              inputContainerStyle={[
+                {backgroundColor: colors.inputBg},
+                localStyles.inputContainerStyle,
+                chatStyle,
+              ]}
+              _onFocus={onFocusInput}
+              onBlur={onBlurInput}
             />
-            </View>
+          </View>
 
-            <View style={[styles.mr20, styles.ml20]}>
-            <ZText>{item.text}</ZText>
-            {item.image.length > 0 && (
-                <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
-                <FlashList
-                    data={item.image}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={image => image}
-                    horizontal
-                    pagingEnabled
-                    renderItem={renderPostImages}
-                />
-                </View>
-            )}
-            </View>
-        <BottomIconContainer item={item} />
-
-        <FlashList
-            data={item.comments.data}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={image => image}
-            horizontal
-            pagingEnabled
-            renderItem={renderComments}
-        />
-
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
+      </ZKeyBoardAvoidWrapper>
     </ZSafeAreaView>
   );
 };
@@ -246,5 +307,11 @@ const localStyles = StyleSheet.create({
     commentItemContainer: {
       ...styles.rowSpaceAround,
       width: moderateScale(90),
+    },
+    inputContainerStyle: {
+      // height: moderateScale(60),
+      borderRadius: moderateScale(20),
+      borderWidth: moderateScale(1),
+      ...styles.ph15,
     },
 });
