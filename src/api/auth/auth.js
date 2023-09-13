@@ -120,7 +120,7 @@ const signUp2 = async (
         type: value.mime,
       }
 
-    form.append('identification_photo', imageData)
+    form.append('identification_photo', imageData);
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: form,
