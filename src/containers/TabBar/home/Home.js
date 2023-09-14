@@ -21,14 +21,12 @@ import {
   Profile_Dark,
   Profile_Light
 } from '../../../assets/svgs';
-import images from '../../../assets/images';
 import {styles} from '../../../themes';
 import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
-import { userDetail } from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
 import { ACCESS_TOKEN, USER_LEVEL, THEME } from '../../../common/constants';
@@ -193,8 +191,8 @@ const Home = () => {
     getAsyncStorageData("PROFILE_ID").then(profile => {
       getPosts(profile)
       .then(resp => {
-        const new_posts = transformfPosts(resp);
-        const new_history = transformfHistoy(resp)
+        const new_posts = transformfPosts(resp['POST']);
+        const new_history = transformfHistoy(resp['HISTORY'])
         setPostData(new_posts);
         setHistoryData(new_history)
         setIsLoaded(true);

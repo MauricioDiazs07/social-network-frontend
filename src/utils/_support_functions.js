@@ -75,29 +75,27 @@ const getAccessLevel = lvl => {
 
 const transformfPosts = (post) => {
   const new_posts = [];
-
   post.forEach(element => {
-    if (element['shareType'] == 'POST'){
-      const images = [];
-      element['multimedia']['data'].forEach(mult => {
-        images.push(mult['archive_url']);
-      });
+    const images = [];
+    element['multimedia']['data'].forEach(mult => {
+      images.push(mult['archive_url']);
+    });
 
-      const obj = {
-        id: element['id'],
-        name: element['name'],
-        profileId: element['profileId'],
-        subtitle: element['creationDate'],
-        profileImage: element['profileImage'],
-        text: element['text'],
-        image: images,
-        role: 'CEO de empresa', // TODO: delete field
-        postType: element['shareType'],
-        likes: element['likes'],
-        comments: element['comments']
-      };
-      new_posts.push(obj);
-    }
+    const obj = {
+      id: element['id'],
+      name: element['name'],
+      profileId: element['profileId'],
+      subtitle: element['creationDate'],
+      profileImage: element['profileImage'],
+      text: element['text'],
+      image: images,
+      role: 'CEO de empresa', // TODO: delete field
+      postType: element['shareType'],
+      likes: element['likes'],
+      comments: element['comments']
+    };
+    new_posts.push(obj);
+    
   });
 
   return new_posts.reverse();
@@ -107,20 +105,18 @@ const transformfHistoy = (post) => {
   const new_historys = [];
 
   post.forEach(element => {
-    if (element['shareType'] == 'HISTORY'){
-
-      const obj = {
-        id: element['id'],
-        name: element['name'],
-        description: element['text'],
-        imgUrl: element['profileImage'],
-        isFollow: false
-      };
-      
-      new_historys.push(obj);
-    }
+    const obj = {
+      id: element['id'],
+      name: element['name'],
+      description: element['text'],
+      imgUrl: element['profileImage'],
+      profileId: element['profileId'],
+      historys: element['historys'],
+      isFollow: false
+    };
+    
+    new_historys.push(obj);
   });
-
   return new_historys.reverse();
 }
 

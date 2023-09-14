@@ -11,18 +11,21 @@ import ZText from '../../../../components/common/ZText';
 import {StackNav} from '../../../../navigation/NavigationKeys';
 
 const UserStories = ({stories, ...props}) => {
+  console.log(stories);
   const navigation = useNavigation();
 
-  const onPressStory = (name, userImage, role) =>
+  const onPressStory = (name, userImage, profileId, historys) =>
     navigation.navigate(StackNav.StoryView, {
       name: name,
-      userImage: userImage
+      userImage: userImage,
+      profileId: profileId,
+      historys: historys
     });
 
   const renderItem = ({item}) => (
     <Pressable
       style={localStyles.itemContainer}
-      onPress={() => onPressStory(item.name, item.imgUrl)}>
+      onPress={() => onPressStory(item.name, item.imgUrl, item.profileId, item.historys)}>
       <LinearGradient
         colors={['#A020F0', '#B042FF']}
         style={localStyles.itemInnerContainer}>
