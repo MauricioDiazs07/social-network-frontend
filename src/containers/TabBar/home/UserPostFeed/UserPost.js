@@ -52,7 +52,7 @@ const BottomIconContainer = ({item}) => {
 
   const OnPressComments = () => {
     navigation.navigate(StackNav.PostComments,
-      {idPost: item['id']});
+      {idPost: item});
   }
 
   return (

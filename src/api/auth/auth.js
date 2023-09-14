@@ -136,7 +136,6 @@ const signUp2 = async (
     form.append('phone', user['phone'])
     
     const value = user['identification_photo'];
-    console.log("VALUE", user);
     const imageData = {
         uri: value,
         name: `img_${1}.jpg`,

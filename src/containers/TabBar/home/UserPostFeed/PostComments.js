@@ -101,9 +101,7 @@ const BottomIconContainer = ({item}) => {
 
 const PostComments = props => {
   const colors = useSelector(state => state.theme.theme);
-  const idPost = props.route.params.idPost;
   const navigation = useNavigation();
-  console.log("ITEM", item.comments.data);
   
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
@@ -116,7 +114,8 @@ const PostComments = props => {
   
   const [addChat, setAddChat] = useState('');
   const [chatStyle, setChatStyle] = useState(BlurredStyle);
-  const [item, setItem] = useState('');
+  const [item, setItem] = useState(props.route.params.idPost);
+  console.log("ITEM", item);
 
   useEffect(() => {
     
