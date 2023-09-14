@@ -58,9 +58,9 @@ const readINE_2 = async (ine_pic) => {
         uri: ine_pic.path,
         name: `img_${1}.jpg`,
         type: ine_pic.mime,
-      }
+    } 
+    console.log('imageData', imageData);
     formData.append("ine", imageData);
-    
     const response = await fetch(URL_API + READ_INE_2, {
         method: "POST", 
         body: formData,
@@ -71,7 +71,6 @@ const readINE_2 = async (ine_pic) => {
     
     resp = await response.json();
     if (response.ok) {
-        console.log(resp);
         return resp;
     }
 }

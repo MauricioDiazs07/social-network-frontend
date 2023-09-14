@@ -255,7 +255,42 @@ const CameraRegister = props => {
 
           /// TODO:
           /// Enviar newState.resultFrontImageDocument a readINE_2 y sacar sección, municipio y estado
-          navigation.navigate(StackNav.SetUpProfile, {
+          /// Inicio
+          readINE(newState.resultFrontImageDocument)
+            .then(resp => {
+              console.log(resp);
+              setIsLoading(false);
+              if (!('name' in resp)) {
+                setIsReadingError(true);
+                setIsSnackbarVisible(true);
+                return;
+              }
+
+              user_["section"] = '';
+              user_["state"] = '';
+              user_["municipality"] = '';
+
+              navigation.navigate(StackNav.SetUpProfile, {
+                title: headerTitle,
+                userCred: {
+                  email: emailRegister,
+                  password: passwordRegister,
+                },
+                identification_photo: img,
+                user: user_,
+              });
+            })
+            .catch(err => {
+              console.log(err);
+              setIsReadingError(true);
+              setIsLoading(false);
+              setIsSnackbarVisible(true);
+            });
+
+          /// Fin 
+          /// Se debe descomentar si se quita lo de arriba -->
+
+         /*  navigation.navigate(StackNav.SetUpProfile, {
             title: headerTitle,
             userCred: {
               email: emailRegister,
@@ -263,7 +298,7 @@ const CameraRegister = props => {
             },
             identification_photo: img,
             user: user_,
-          });
+          }); */
           
       }
     } catch (error) {
