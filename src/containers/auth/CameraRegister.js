@@ -272,7 +272,7 @@ const CameraRegister = props => {
           /// Inicio
           
           setIsLoading(true);
-          setImg(newState.resultFrontImageDocument);
+          // setImg(newState.resultFrontImageDocument);
 
           readINE_3(newState.resultFrontImageDocument)
             .then(resp => {
@@ -294,7 +294,7 @@ const CameraRegister = props => {
                   email: emailRegister,
                   password: passwordRegister,
                 },
-                identification_photo: img,
+                identification_photo: newState.resultFrontImageDocument,
                 user: user_,
               });
             })
