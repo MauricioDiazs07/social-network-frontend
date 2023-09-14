@@ -123,6 +123,7 @@ const signUp2 = async (
     user
 ) => {
 
+    console.log("Hola");
     const form = new FormData()
     form.append('email', user['email'])
     form.append('password', user['password'])

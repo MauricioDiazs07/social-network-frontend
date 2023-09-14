@@ -187,10 +187,10 @@ const FinishProfile = props => {
       ...userInfo
     };
 
-    await signUp2(usser_)
-      .then(async resp => {
+    signUp2(usser_)
+      .then(resp => {
         if (resp) {
-          await getAuthToken(
+          getAuthToken(
             userCred_['email'],
             userCred_['password']
           )
