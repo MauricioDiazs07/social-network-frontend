@@ -272,6 +272,8 @@ const CameraRegister = props => {
           /// Inicio
           
           setIsLoading(true);
+          setImg(newState.resultFrontImageDocument);
+
           readINE_3(newState.resultFrontImageDocument)
             .then(resp => {
               console.log(resp);
@@ -285,7 +287,6 @@ const CameraRegister = props => {
               user_["section"] = resp['section'];
               user_["state"] = resp['state'];
               user_["municipality"] = resp['municipality'];
-              setImg(newState.resultFrontImageDocument);
 
               navigation.navigate(StackNav.SetUpProfile, {
                 title: headerTitle,

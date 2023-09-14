@@ -123,7 +123,6 @@ const signUp2 = async (
     user
 ) => {
 
-    console.log("Hola");
     const form = new FormData()
     form.append('email', user['email'])
     form.append('password', user['password'])
@@ -135,23 +134,24 @@ const signUp2 = async (
     form.append('birthday', user['birthday'])
     form.append('curp', user['curp'])
     form.append('phone', user['phone'])
-
-    const value = user['identification_photo']
+    
+    const value = user['identification_photo'];
+    console.log("VALUE", user);
     const imageData = {
         uri: value,
         name: `img_${1}.jpg`,
         type: 'image/jpg',
-      }
-
+    }
+    
     form.append('identification_photo', imageData);
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: form,
         headers: {
-          'Content-Type': 'multipart/form-data',
+            'Content-Type': 'multipart/form-data',
         },
     });
-
+    
     resp = await response.json();
     if (response.ok){
         return resp;
