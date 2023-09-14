@@ -1,6 +1,6 @@
 // libraries import
 import React, {createRef, useState, useEffect} from 'react';
-import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Image, TouchableOpacity, ActivityIndicator} from 'react-native';
 import {useSelector} from 'react-redux';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -63,6 +63,7 @@ const FinishProfile = props => {
   const [countryCodeLib, setCountryCodeLib] = useState('MX');
   const [visiblePiker, setVisiblePiker] = useState(false);
   const [isSnackbarVisible, setIsSnackbarVisible] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -169,6 +170,7 @@ const FinishProfile = props => {
   const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
 
   const onPressContinue = async () => {
+    setIsLoading(true);
     /* FINAL UPDATE ON SIGNUP */
     const userCred_ = {
       email: email,
@@ -198,18 +200,24 @@ const FinishProfile = props => {
                 await setAsyncStorageData(ACCESS_TOKEN, token);
                 await setAsyncStorageData(USER_LEVEL, user_lvl);
                 await setAsyncStorageData("PROFILE_ID", token['profile_id']);
+                setIsLoading(false);
 
                 navigation.navigate(StackNav.FollowSomeone);
             }})
             .catch(err => {
+              setIsLoading(false);
               setIsSnackbarVisible(true);
               console.log(err);
             });
         } else {
+          setIsLoading(false);
           setIsSnackbarVisible(true);
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        setIsLoading(false);
+        console.log(err)
+      });
   };
 
   const redirectLogin = () => {
@@ -333,6 +341,11 @@ const FinishProfile = props => {
         }}
         theme={colors.dark ? DARK_THEME : DEFAULT_THEME}
       />
+
+      <View
+        style={[localStyles.loadingScreen, !isLoading && {display: 'none'}]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
     </ZSafeAreaView>
   );
 };
@@ -372,5 +385,12 @@ const localStyles = StyleSheet.create({
     start: 16,
     end: 6,
     bottom: 16,
+  },
+  loadingScreen: {
+    ...styles.center,
+    backgroundColor: '#141C22AA',
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
   },
 });

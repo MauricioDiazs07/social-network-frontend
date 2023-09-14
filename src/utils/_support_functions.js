@@ -10,6 +10,13 @@ const translateBirthday = (date) => {
     return `${day}-${month}-${year}`;
 };
 
+const getFormatedBirthday = (day_, month_, year_) => {
+  var day = day_ < 10 ? `0${day_}` : day_;
+  let month = months[month_ - 1];
+
+  return `${day}/${month}/${year_}`;
+};
+
 const getStates = () => {
     return getList(states);
 };
@@ -191,6 +198,7 @@ const transformShorts = (post) => {
 
 export {
     translateBirthday,
+    getFormatedBirthday,
     getStates,
     getMunicipalities,
     getGender,

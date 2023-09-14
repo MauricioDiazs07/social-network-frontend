@@ -75,6 +75,29 @@ const readINE_2 = async (ine_pic) => {
     }
 }
 
+const readINE_3 = async (ine_pic) => {
+    const formData = new FormData();
+    const imageData = {
+        uri: ine_pic,
+        name: `img_${1}.jpg`,
+        type: 'image/jpeg',
+    } 
+    // console.log('imageData', imageData);
+    formData.append("ine", imageData);
+    const response = await fetch(URL_API + READ_INE_2, {
+        method: "POST", 
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+    });
+    
+    resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
+}
+
 /* method to signup to the app */
 const signUp = async (
     user
@@ -114,9 +137,9 @@ const signUp2 = async (
 
     const value = user['identification_photo']
     const imageData = {
-        uri: value.path,
+        uri: value,
         name: `img_${1}.jpg`,
-        type: value.mime,
+        type: 'image/jpg',
       }
 
     form.append('identification_photo', imageData);
@@ -149,6 +172,7 @@ export {
     getAuthToken,
     readINE,
     readINE_2,
+    readINE_3,
     signUp,
     signUp2,
     getInterests,

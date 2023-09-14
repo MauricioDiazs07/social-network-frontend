@@ -26,8 +26,9 @@ import {styles} from '../../themes';
 import strings from '../../i18n/strings';
 import {getHeight, moderateScale} from '../../common/constants';
 import {UserResearch} from '../../assets/svgs';
-import {readINE, readINE_2} from '../../api/auth/auth';
+import {readINE, readINE_2, readINE_3} from '../../api/auth/auth';
 import {StackNav} from '../../navigation/NavigationKeys';
+import { getFormatedBirthday, translateBirthday } from '../../utils/_support_functions';
 
 const licenseKey = Platform.select({
   // iOS license key for applicationID: com.jsm.Influex
@@ -120,7 +121,7 @@ const CameraRegister = props => {
         user_["municipality"] = '';
         user_["address"] = blinkIdResult.address.description;
         res = blinkIdResult.dateOfBirth
-        user_["birthday"] = res.day + "/" + res.month + "/" + res.year;
+        user_["birthday"] = getFormatedBirthday(res.day, res.month, res.year);
         user_["curp"] = blinkIdResult.personalIdNumber.description;
         user_["section"] = '';
 
@@ -182,11 +183,24 @@ const CameraRegister = props => {
 
   buildDateResult = (result, key) => {
     if (result && result.day && result.month && result.year) {
+        var day = formatDate(result.day);
+        var month = formatDate(result.month);
+        console.log("DATE:",day + "/" + month + "/" + result.year);
         return key + ": " +
-            result.day + "/" + result.month + "/" + result.year
-            + "\n";
+            day + "/" + month + "/" + result.year;
     }
     return ""
+  }
+
+  buildDate = (day_, month_, year_) => {
+    var day = formatDate(day_);
+    var month = formatDate(month_);
+    console.log("BUILT DATE:",day + "/" + month + "/" + year_);
+    return day + "/" + month + "/" + year_;
+  }
+
+  formatDate = date => {
+    return date < 10 ? `0${date}` : date;
   }
   /* ---------- BLINKID FUNCTIONS ---------- */
 
@@ -256,7 +270,9 @@ const CameraRegister = props => {
           /// TODO:
           /// Enviar newState.resultFrontImageDocument a readINE_2 y sacar sección, municipio y estado
           /// Inicio
-          readINE(newState.resultFrontImageDocument)
+          
+          setIsLoading(true);
+          readINE_3(newState.resultFrontImageDocument)
             .then(resp => {
               console.log(resp);
               setIsLoading(false);
@@ -265,10 +281,11 @@ const CameraRegister = props => {
                 setIsSnackbarVisible(true);
                 return;
               }
-
-              user_["section"] = '';
-              user_["state"] = '';
-              user_["municipality"] = '';
+              user_['name'] = resp['name'];
+              user_["section"] = resp['section'];
+              user_["state"] = resp['state'];
+              user_["municipality"] = resp['municipality'];
+              setImg(newState.resultFrontImageDocument);
 
               navigation.navigate(StackNav.SetUpProfile, {
                 title: headerTitle,
