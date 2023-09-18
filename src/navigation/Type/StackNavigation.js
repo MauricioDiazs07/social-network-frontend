@@ -169,6 +169,10 @@ export default function StackNavigation() {
         component={StackRoute.PostDetail}
       />
       <Stack.Screen
+        name={StackNav.HistoryDetail}
+        component={StackRoute.HistoryDetail}
+      />
+      <Stack.Screen
         name={StackNav.PostSound}
         component={StackRoute.PostSound}
       />
@@ -197,6 +201,10 @@ export default function StackNavigation() {
       <Stack.Screen
           name={StackNav.Profile}
           component={StackRoute.Profile}
+      />
+      <Stack.Screen
+        name={StackNav.PostComments}
+        component={StackRoute.PostComments}
       />
     </Stack.Navigator>
   );

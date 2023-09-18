@@ -19,6 +19,15 @@ export default Connect = ({navigation}) => {
   const onPressSignWithPassword = () => navigation.navigate(StackNav.Login);
   const onPressSignUp = () => navigation.navigate(StackNav.Register);
 
+  // TODO: REMOVE FUNCTION ONCE REGISTER IS DONE
+  // const redirectRegister = () => {
+  //   navigation.navigate(StackNav.CameraRegister, {
+  //     title: strings.fillYourProfile,
+  //     email: 'prueba@brita.ai',
+  //     password: 'Brita1234,'
+  //   });
+  // }
+
   return (
     <ZSafeAreaView style={localStyles.root}>
       <Image 
@@ -54,6 +63,18 @@ export default Connect = ({navigation}) => {
           </ZText>
         </View>
       </TouchableOpacity>
+{/* 
+      <TouchableOpacity
+        onPress={redirectRegister}
+        style={localStyles.signUpContainer}>
+        <View
+          style={styles.center}  
+        >
+          <ZText type={'s14'} color={colors.primary}>
+            Hola
+          </ZText>
+        </View>
+      </TouchableOpacity> */}
     </ZSafeAreaView>
   );
 };

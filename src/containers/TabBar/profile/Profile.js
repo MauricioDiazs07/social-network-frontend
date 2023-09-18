@@ -7,7 +7,7 @@ import {
   View,
   FlatList,
 } from 'react-native';
-import React, {createRef, useState} from 'react';
+import React, {createRef, useState, useEffect} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -26,6 +26,9 @@ import ReelComponent from '../../../components/ReelComponent';
 import {savedStorys, videoData} from '../../../api/constant';
 import UserStories from '../home/UserStory/UserStories';
 import ZHeader from '../../../components/common/ZHeader';
+import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
+import { getMasterData } from '../../../api/feed/interaction';
+import {transformpHistoy,transformFeed } from '../../../utils/_support_functions';
 
 const UserDetail = [
   {
@@ -46,6 +49,30 @@ export default function Profile({navigation}) {
   const colors = useSelector(state => state.theme.theme);
   const [isSelect, setIsSelect] = useState(0);
   const switchAccountRef = createRef(null);
+
+  const [feeds, setFeeds] = useState([]);
+  const [shorts, setShorts] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [masterData, setMasterData] = useState({
+    description: '',
+    name: '',
+    profile_photo: '',
+    shares: '',
+  });
+  const [historyData, setHistoryData] = useState([]);
+
+  useEffect(() => {
+    getAsyncStorageData("PROFILE_ID").then(profileId => {
+      getMasterData(profileId).then(resp =>{
+        console.log(resp);
+        setMasterData(resp);
+        const new_history = transformpHistoy(resp)
+        const feeds = transformFeed(resp)
+        setHistoryData(new_history)
+        setFeeds(feeds)
+      })
+    });
+  }, []);
 
   const categoryData = [
     {
@@ -131,10 +158,19 @@ export default function Profile({navigation}) {
         style={localStyles.root}>
         <View style={styles.itemsCenter}>
           <TouchableOpacity onPress={onPressEditProfile} style={styles.mt40}>
-            <Image
-              source={colors.dark ? images.userDark : images.userLight}
-              style={localStyles.userImage}
-            />
+          {!!masterData.profile_photo?.length ? (
+              <Image
+                source={{
+                  uri: masterData.profile_photo,
+                }}
+                style={localStyles.userImage}
+              />
+            ) : (
+              <Image
+                source={colors.dark ? images.userDark : images.userLight}
+                style={localStyles.userImage}
+              />
+            )}
             <MaterialIcon
               name="pencil-box"
               size={moderateScale(30)}
@@ -144,15 +180,13 @@ export default function Profile({navigation}) {
           </TouchableOpacity>
           <View style={styles.mv20}>
             <ZText type="b24" align={'center'}>
-              {'Mauricio Díaz'}
+              {masterData.name}
             </ZText>
             <ZText type="m14" align={'center'} style={styles.mt10}>
               {'mauricio.diaz@brita.ai'}
             </ZText>
             <ZText type="m14" align={'center'} style={styles.mt10}>
-              {
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.'
-              }
+              {masterData.description}
             </ZText>
           </View>
         </View>
@@ -200,7 +234,7 @@ export default function Profile({navigation}) {
               />}
           />
         </View>
-        <UserStories stories={savedStorys} />
+        <UserStories stories={historyData} />
         <View
           style={[
             localStyles.mainContainer,
@@ -214,7 +248,7 @@ export default function Profile({navigation}) {
           ))}
         </View>
         <FlatList
-          data={videoData}
+          data={feeds}
           renderItem={renderReelItem}
           numColumns={3}
           keyExtractor={(item, index) => index.toString()}

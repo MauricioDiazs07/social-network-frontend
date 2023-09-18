@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, { useMemo, createRef, useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 
@@ -29,12 +29,36 @@ import {
   videoData,
 } from '../../../../api/constant';
 import UserStories from '../UserStory/UserStories';
+import { getMasterData } from '../../../../api/feed/interaction';
+import {transformpHistoy,transformFeed } from '../../../../utils/_support_functions';
 
 export default function ProfileDetail({navigation, route}) {
-  const {userName, userImage} = route.params;
+  const {userName, userImage, profileId} = route.params;
   const colors = useSelector(state => state.theme.theme);
   const [isSelect, setIsSelect] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [historyData, setHistoryData] = useState([]);
+
+  const [masterData, setMasterData] = useState({
+    description: '',
+    name: '',
+    profile_photo: '',
+    shares: '',
+  });
+
+  const [feeds, setFeeds] = useState([]);
+  const [shorts, setShorts] = useState([]);
+  const [tags, setTags] = useState([]);
+
+  useEffect(() => {
+    getMasterData(profileId).then(resp =>{
+      setMasterData(resp);
+      const new_history = transformpHistoy(resp)
+      const feeds = transformFeed(resp)
+      setHistoryData(new_history)
+      setFeeds(feeds)
+    })
+  }, []);
 
   const categoryData = [
     {
@@ -133,7 +157,7 @@ export default function ProfileDetail({navigation, route}) {
         showsVerticalScrollIndicator={false}
         style={localStyles.root}>
         <View style={styles.itemsCenter}>
-            <Image style={localStyles.bgImg} source={{uri: 'https://cdn.pixabay.com/photo/2017/08/30/17/25/please-2697945_1280.jpg'}}></Image>
+            <Image style={localStyles.bgImg} source={{uri: 'https://marketplace.canva.com/EAFFI2trtnE/1/0/1600w/canva-black-minimalist-motivation-quote-linkedin-banner-cqVV-6-1kOk.jpg'}}></Image>
           <TouchableOpacity onPress={onPressEditProfile} style={styles.mt25}>
             {!!userImage?.length ? (
               <Image
@@ -161,9 +185,7 @@ export default function ProfileDetail({navigation, route}) {
               align={'center'}
               color={colors.userDesc}
               style={styles.mt10}>
-              {
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.'
-              }
+              {masterData.description}
             </ZText>
           </View>
         </View>
@@ -216,7 +238,7 @@ export default function ProfileDetail({navigation, route}) {
             <LikeBg />
           </TouchableOpacity> */}
         </View>
-        <UserStories stories={userDetail} />
+        <UserStories stories={historyData} />
         <View
           style={[
             localStyles.mainContainer,
@@ -230,12 +252,12 @@ export default function ProfileDetail({navigation, route}) {
           ))}
         </View>
         <FlatList
-          data={videoData}
+          data={feeds}
           renderItem={({item, index}) => (
             <ReelComponent
               data={item?.views}
               reelUrl={item?.poster}
-              isPlay={true}
+              isPlay={false}
             />
           )}
           numColumns={3}

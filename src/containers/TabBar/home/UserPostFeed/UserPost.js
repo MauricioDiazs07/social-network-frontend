@@ -1,3 +1,4 @@
+// libraries import
 import React, { useState } from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -6,6 +7,7 @@ import {useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {useNavigation} from '@react-navigation/native';
 
+// local import
 import {
   moderateScale,
   screenWidth,
@@ -20,22 +22,38 @@ import {
   LikedHeart
 } from '../../../../assets/svgs';
 import {StackNav} from '../../../../navigation/NavigationKeys';
+import { addLike, disLike } from '../../../../api/feed/interaction';
+import {getAsyncStorageData} from '../../../../utils/helpers';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
+  const navigation = useNavigation();
 
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(item['likes']['like']);
   const [likes, setLikes] = useState(item['likes']['count']);
  
   const onPressLike = () => {
     if (!isLiked) {
       setLikes(likes + 1);
+      getAsyncStorageData("PROFILE_ID").then(profile => {
+        addLike(profile, item['id'], item['postType'])
+        console.log(item);
+      })
+      
     } else {
       setLikes(likes - 1);
+      getAsyncStorageData("PROFILE_ID").then(profile => {
+        disLike(profile, item['id'], item['postType'])
+      }) 
     }
 
     setIsLiked(!isLiked);
   };
+
+  const OnPressComments = () => {
+    navigation.navigate(StackNav.PostComments,
+      {idPost: item});
+  }
 
   return (
     <View style={localStyels.iconsContainer}>
@@ -66,7 +84,9 @@ const BottomIconContainer = ({item}) => {
           <ZText type={'s14'}>{likes}</ZText>
         </View>
         <View style={localStyels.commentItemContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={OnPressComments}
+          >
             {colors.dark ? (
               <ChatIcon_Dark
                 width={moderateScale(28)}
@@ -94,10 +114,11 @@ const UserPost = ({item}) => {
     return <FastImage source={{uri: item}} style={localStyels.postImage} />;
   };
 
-  const onPressProfile = (userName, userImage) => {
+  const onPressProfile = (userName, userImage, profileId) => {
     navigation.navigate(StackNav.ProfileDetail, {
       userName: userName,
       userImage: userImage,
+      profileId: profileId
     });
   };
 
@@ -106,7 +127,7 @@ const UserPost = ({item}) => {
       <View style={localStyels.headerContainer}>
         <TouchableOpacity
           style={localStyels.profileContainer}
-          onPress={() => onPressProfile(item.name, item.profileImage)}>
+          onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}>
           <FastImage
             source={{uri: item.profileImage}}
             style={localStyels.profileImage}

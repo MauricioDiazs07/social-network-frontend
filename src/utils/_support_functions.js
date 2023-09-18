@@ -10,6 +10,13 @@ const translateBirthday = (date) => {
     return `${day}-${month}-${year}`;
 };
 
+const getFormatedBirthday = (day_, month_, year_) => {
+  var day = day_ < 10 ? `0${day_}` : day_;
+  let month = months[month_ - 1];
+
+  return `${day}/${month}/${year_}`;
+};
+
 const getStates = () => {
     return getList(states);
 };
@@ -68,7 +75,6 @@ const getAccessLevel = lvl => {
 
 const transformfPosts = (post) => {
   const new_posts = [];
-
   post.forEach(element => {
     const images = [];
     element['multimedia']['data'].forEach(mult => {
@@ -78,27 +84,125 @@ const transformfPosts = (post) => {
     const obj = {
       id: element['id'],
       name: element['name'],
+      profileId: element['profileId'],
       subtitle: element['creationDate'],
       profileImage: element['profileImage'],
       text: element['text'],
       image: images,
       role: 'CEO de empresa', // TODO: delete field
-      postType: 'POST',
+      postType: element['shareType'],
       likes: element['likes'],
       comments: element['comments']
     };
     new_posts.push(obj);
+    
   });
 
   return new_posts.reverse();
 }
 
+const transformfHistoy = (post) => {
+  const new_historys = [];
+
+  post.forEach(element => {
+    const obj = {
+      id: element['id'],
+      name: element['name'],
+      description: element['text'],
+      imgUrl: element['profileImage'],
+      profileId: element['profileId'],
+      historys: element['historys'],
+      isFollow: false
+    };
+    
+    new_historys.push(obj);
+  });
+  return new_historys.reverse();
+}
+
+const transformpHistoy = (post) => {
+  const new_historys = [];
+  historys = post['shares']['shares']
+  historys.forEach(element => {
+    if (element['shareType'] == 'HISTORY'){
+      console.log(element);
+      const obj = {
+        id: element['id'],
+        name: '',
+        description: '',
+        imgUrl: element['multimedia']['data'][0]['archive_url'],
+        isFollow: false
+      };
+      console.log("Historia 2");
+      console.log(obj);
+      new_historys.push(obj);
+    }
+  });
+
+  return new_historys.reverse();
+}
+
+const transformFeed = (post) => {
+  const new_historys = [];
+  historys = post['shares']['shares']
+  historys.forEach(element => {
+    if (element['shareType'] == 'POST'){
+      console.log(element);
+      const obj = {
+        id: element['id'],
+        channelName: post['name'],
+        uri: 'https://user-images.githubusercontent.com/129170600/231968235-a6a60f18-6b50-459d-8c7c-9716d9df0730.mp4',
+        caption: element['text'],
+        musicName: 'Song #1',
+        likes: '0',
+        comments: '0',
+        bookmark: '0',
+        share: '0',
+        categoty: 'Entertainment',
+        avatarUri: post['profile_photo'],
+        poster: element['multimedia']['data'][0]['archive_url'],
+        views: '0',
+      };
+      new_historys.push(obj);
+    }
+  });
+
+  return new_historys.reverse();
+}
+
+const transformShorts = (post) => {
+  const new_historys = [];
+  historys = post['shares']['shares']
+  historys.forEach(element => {
+    if (element['shareType'] == 'HISTORY'){
+      console.log(element);
+      const obj = {
+        id: element['id'],
+        name: '',
+        description: '',
+        imgUrl: element['multimedia']['data'][0]['archive_url'],
+        isFollow: false
+      };
+      console.log("Historia 2");
+      console.log(obj);
+      new_historys.push(obj);
+    }
+  });
+
+  return new_historys.reverse();
+}
+
 export {
     translateBirthday,
+    getFormatedBirthday,
     getStates,
     getMunicipalities,
     getGender,
     isNotEmptyString,
     getAccessLevel,
     transformfPosts,
+    transformfHistoy,
+    transformpHistoy,
+    transformFeed,
+    transformShorts
 }

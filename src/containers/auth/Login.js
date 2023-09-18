@@ -18,7 +18,8 @@ import {validateEmail, validatePassword} from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 import {setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
-import {getAuthData, getAuthToken} from '../../api/auth/auth';
+import {getAuthToken} from '../../api/auth/auth';
+import { getProfileData } from '../../api/feed/interaction';
 import { getAccessLevel } from '../../utils/_support_functions';
 
 const Login = ({navigation}) => {
@@ -127,9 +128,17 @@ const Login = ({navigation}) => {
         const user_lvl = getAccessLevel(token['role_id']);
         await setAsyncStorageData(ACCESS_TOKEN, token);
         await setAsyncStorageData(USER_LEVEL, user_lvl);
-  
-        const user = await getAuthData(email);
+        await setAsyncStorageData("PROFILE_ID", token['profile_id']);
         
+        console.log(user_lvl);
+        getProfileData(token['profile_id'])
+        .then(resp => {
+          setAsyncStorageData("PROFILE_PHOTO", resp['profile_photo']);
+          setAsyncStorageData("USERNAME", resp['name']);
+          setAsyncStorageData("GENDER", resp['gender']);
+          setAsyncStorageData("DESCRIPTION", resp['description']);
+        });
+
         navigation.reset({
           index: 0,
           routes: [{name: StackNav.TabBar}],

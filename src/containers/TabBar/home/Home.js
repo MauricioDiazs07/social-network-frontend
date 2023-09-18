@@ -21,22 +21,20 @@ import {
   Profile_Dark,
   Profile_Light
 } from '../../../assets/svgs';
-import images from '../../../assets/images';
 import {styles} from '../../../themes';
 import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
-import { userDetail } from '../../../api/constant';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
 import { ACCESS_TOKEN, USER_LEVEL, THEME } from '../../../common/constants';
-import { setAsyncStorageData } from '../../../utils/helpers';
+import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
-import { transformfPosts } from '../../../utils/_support_functions';
+import { transformfPosts, transformfHistoy } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
 
 const LogOutSheetRef = createRef();
@@ -53,29 +51,49 @@ const getUserLevel = async () => {
 
 const UserProfile = React.memo(() => {
   const colors = useSelector(state => state.theme.theme);
+  const navigation = useNavigation();
+  const [profilePhoto, setProfilePhoto] = useState();
+  
+  useEffect(() => {
+    getAsyncStorageData("PROFILE_PHOTO").then(photo => {
+      setProfilePhoto(photo)
+    });
+  }, []);
+
+  const onPressHistoryIcon = () => {
+    navigation.navigate(StackNav.HistoryDetail);
+  };
+  
 
   return (
-    <View style={localStyles.itemContainer}>
-      <View style={localStyles.itemInnerContainer}>
-        <FastImage
-          source={images.profile}
-          style={[
-            localStyles.itemImage,
-            {
-              borderWidth: 0,
-            },
-          ]}
-        />
-        <StoryAddIcon
-          style={localStyles.addIcon}
-          width={moderateScale(25)}
-          height={moderateScale(25)}
-        />
-      </View>
-      <ZText type={'s14'} style={localStyles.itemUsername} color={colors.white}>
-        {strings.you}
-      </ZText>
-    </View>
+    <TouchableOpacity 
+        onPress={onPressHistoryIcon}
+        style={localStyles.rightBtns}
+      >
+      <View style={localStyles.itemContainer}>
+            <View style={localStyles.itemInnerContainer}>
+              <FastImage
+                source={{uri: profilePhoto}}
+                style={[
+                  localStyles.itemImage,
+                  {
+                    borderWidth: 0,
+                  },
+                ]}
+              />
+              <StoryAddIcon
+                style={localStyles.addIcon}
+                width={moderateScale(25)}
+                height={moderateScale(25)}
+              />
+            </View>
+            <ZText type={'s14'} style={localStyles.itemUsername} color={colors.white}>
+              {strings.you}
+            </ZText>
+          </View>
+
+      </TouchableOpacity>
+    
   );
 });
 
@@ -166,14 +184,17 @@ const Home = () => {
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
 
   const [postData, setPostData] = useState([]);
+  const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
-    new Promise((resolve, reject) => {
-      getPosts()
+    getAsyncStorageData("PROFILE_ID").then(profile => {
+      getPosts(profile)
       .then(resp => {
-        const new_posts = transformfPosts(resp);
+        const new_posts = transformfPosts(resp['POST']);
+        const new_history = transformfHistoy(resp['HISTORY'])
         setPostData(new_posts);
+        setHistoryData(new_history)
         setIsLoaded(true);
       });
     });
@@ -203,7 +224,7 @@ const Home = () => {
 
   const headerStory = () => {
     return (
-      <UserStories ListHeaderComponent={<UserProfile />} stories={userDetail} />
+      <UserStories ListHeaderComponent={<UserProfile/>} stories={historyData} />
     );
   };
 
