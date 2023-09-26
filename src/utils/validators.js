@@ -90,6 +90,23 @@ const validateEmail = email => {
   }
 };
 
+//Email validation
+const validateOptionalEmail = email => {
+  if (!email) {
+    return {
+      status: false,
+      msg: "",
+    };
+  } else {
+    return emailRegex.test(email)
+      ? {status: true, msg: ''}
+      : {
+          status: false,
+          msg: strings.validEmail,
+        };
+  }
+};
+
 const validateNotNecessatyEmail = email => {
   if (!email) {
     return {
@@ -250,6 +267,30 @@ const validateSection = (sect) => {
   }
 }
 
+//Password validation
+const validatePhoneNumber = (phoneNumber) => {
+  if (!phoneNumber) {
+    return {
+      status: false,
+      msg: strings.phoneNeeded,
+    };
+  } else if (phoneNumber.length < 10 || phoneNumber.length > 10) {
+    return {
+      status: false,
+      msg: strings.validatePhoneNumber,
+    };
+  } else {
+    if (ageRegex.test(phoneNumber)) {
+      return {status: true, msg: ''};
+    } else {
+      return {
+        status: false,
+        msg: strings.validatePhoneNumber,
+      };
+    }
+  }
+};
+
 export {
   validateEmail,
   validateNotNecessatyEmail,
@@ -263,4 +304,6 @@ export {
   validateNotEmptyContact,
   validateINE,
   validateSection,
+  validatePhoneNumber,
+  validateOptionalEmail,
 };

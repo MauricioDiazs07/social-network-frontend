@@ -49,7 +49,7 @@ const FinishProfile = props => {
   const FocusedIconStyle = colors.primary;
 
   const [email, setEmail] = useState(userCred['email']);
-  const [phoneNo, setPhoneNo] = useState('');
+  const [phoneNo, setPhoneNo] = useState(userCred['phone']);
 
   const [emailInputStyle, setEmailInputStyle] = useState(BlurredStyle);
   const [phoneNoInputStyle, setPhoneNoInputStyle] = useState(BlurredStyle);

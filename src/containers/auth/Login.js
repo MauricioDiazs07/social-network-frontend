@@ -3,13 +3,18 @@ import {Button, StyleSheet, View, TouchableOpacity} from 'react-native';
 import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Snackbar } from '@react-native-material/core';
+import {Snackbar} from '@react-native-material/core';
 
 // Local Imports
 import strings from '../../i18n/strings';
 import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
-import {ACCESS_TOKEN, USER_LEVEL, getHeight, moderateScale} from '../../common/constants';
+import {
+  ACCESS_TOKEN,
+  USER_LEVEL,
+  getHeight,
+  moderateScale,
+} from '../../common/constants';
 import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import {StackNav} from '../../navigation/NavigationKeys';
@@ -19,8 +24,8 @@ import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper
 import {setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
 import {getAuthToken} from '../../api/auth/auth';
-import { getProfileData } from '../../api/feed/interaction';
-import { getAccessLevel } from '../../utils/_support_functions';
+import {getProfileData} from '../../api/feed/interaction';
+import {getAccessLevel} from '../../utils/_support_functions';
 
 const Login = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -121,35 +126,30 @@ const Login = ({navigation}) => {
   );
 
   const onPressSignWithPassword = async () => {
-
-    await getAuthToken(email, password)
-    .then(async (token) => {
-      if ("token" in token) {
+    await getAuthToken(email, password).then(async token => {
+      if ('token' in token) {
         const user_lvl = getAccessLevel(token['role_id']);
         await setAsyncStorageData(ACCESS_TOKEN, token);
         await setAsyncStorageData(USER_LEVEL, user_lvl);
-        await setAsyncStorageData("PROFILE_ID", token['profile_id']);
-        
+        await setAsyncStorageData('PROFILE_ID', token['profile_id']);
+
         console.log(user_lvl);
-        getProfileData(token['profile_id'])
-        .then(resp => {
-          setAsyncStorageData("PROFILE_PHOTO", resp['profile_photo']);
-          setAsyncStorageData("USERNAME", resp['name']);
-          setAsyncStorageData("GENDER", resp['gender']);
-          setAsyncStorageData("DESCRIPTION", resp['description']);
+        getProfileData(token['profile_id']).then(resp => {
+          setAsyncStorageData('PROFILE_PHOTO', resp['profile_photo']);
+          setAsyncStorageData('USERNAME', resp['name']);
+          setAsyncStorageData('GENDER', resp['gender']);
+          setAsyncStorageData('DESCRIPTION', resp['description']);
         });
 
         navigation.reset({
           index: 0,
           routes: [{name: StackNav.TabBar}],
         });
-  
       } else {
         setSnackVisible(true);
         return;
       }
     });
-    
   };
 
   const onPressPasswordEyeIcon = () => setIsPasswordVisible(!isPasswordVisible);
@@ -168,16 +168,22 @@ const Login = ({navigation}) => {
             {strings.loginYourAccount}
           </ZText>
 
-          {snackVisible && (<View style={{ flex: 1 }}>
-            <Snackbar
-              message={strings.WrongCredentials}
-              action={<Button 
-                        variant="text"
-                        title={strings.close}
-                        color={colors.primary}
-                        compact onPress={closeSnackBar}/>}
-            />
-          </View>)}
+          {snackVisible && (
+            <View style={{flex: 1}}>
+              <Snackbar
+                message={strings.WrongCredentials}
+                action={
+                  <Button
+                    variant="text"
+                    title={strings.close}
+                    color={colors.primary}
+                    compact
+                    onPress={closeSnackBar}
+                  />
+                }
+              />
+            </View>
+          )}
 
           <ZInput
             placeHolder={strings.email}
@@ -240,16 +246,16 @@ const Login = ({navigation}) => {
             </ZText>
           </TouchableOpacity>
 
-          <View style={localStyles.divider}>
-          </View>
+          <View style={localStyles.divider}></View>
 
           <TouchableOpacity
             onPress={onPressSignUp}
             style={localStyles.signUpContainer}>
-            <View
-              style={styles.center}
-            >
-              <ZText type={'r14'}>{strings.dontHaveAccount}{"\t"}</ZText>
+            <View style={styles.center}>
+              <ZText type={'r14'}>
+                {strings.dontHaveAccount}
+                {'\t'}
+              </ZText>
               <ZText type={'s14'} color={colors.primary}>
                 {strings.signUp}
               </ZText>

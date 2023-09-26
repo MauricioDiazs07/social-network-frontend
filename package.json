@@ -14,7 +14,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.11",
     "@react-native-community/clipboard": "1.5.1",
-    "@react-native-community/datetimepicker": "^7.1.0",
+    "@react-native-community/datetimepicker": "^7.6.0",
     "@react-native-community/masked-view": "0.1.11",
     "@react-native-material/core": "^1.3.7",
     "@react-navigation/bottom-tabs": "6.5.5",
@@ -23,6 +23,7 @@
     "@shopify/flash-list": "1.4.1",
     "@twotalltotems/react-native-otp-input": "1.3.11",
     "bcryptjs": "2.4.3",
+    "blinkid-react-native": "^6.1.1",
     "lottie-ios": "3.4.0",
     "lottie-react-native": "5.1.5",
     "patch-package": "6.5.1",
@@ -52,8 +53,7 @@
     "react-native-video": "5.2.1",
     "react-redux": "8.0.5",
     "redux": "4.2.1",
-    "redux-thunk": "2.4.2",
-    "blinkid-react-native": "^6.1.1"
+    "redux-thunk": "2.4.2"
   },
   "devDependencies": {
     "@babel/core": "7.20.0",

@@ -14,7 +14,7 @@ import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZInput from '../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
-import {validateEmail, validatePassword} from '../../utils/validators';
+import {validateOptionalEmail, validatePassword, validatePhoneNumber} from '../../utils/validators';
 import ZButton from '../../components/common/ZButton';
 
 const Register = ({navigation}) => {
@@ -40,10 +40,14 @@ const Register = ({navigation}) => {
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
   const [emailInputStyle, setEmailInputStyle] = React.useState(BlurredStyle);
   const [passwordInputStyle, setPasswordInputStyle] =
-    React.useState(BlurredStyle);
+  React.useState(BlurredStyle);
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
   const [isCheck, setIsCheck] = React.useState(true);
-
+  const [phoneNumber, setPhoneNumber] = React.useState('');
+  const [phoneError, setPhoneError] = React.useState('');
+  const [phoneIcon, setPhoneIcon] = React.useState(BlurredIconStyle);
+  const [phoneInputStyle, setPhoneInputStyle] = React.useState(BlurredStyle);
+  
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
   const onBlurInput = onUnHighlight => onUnHighlight(BlurredStyle);
@@ -51,31 +55,40 @@ const Register = ({navigation}) => {
 
   useEffect(() => {
     if (
-      email.length > 0 &&
+      phoneNumber.length > 0 &&
       password.length > 0 &&
-      !emailError &&
+      (email.length == 0 || !emailError) &&
+      !phoneError &&
       !passwordError
     ) {
       setIsSubmitDisabled(false);
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [email, password, emailError, passwordError]);
+  }, [phoneNumber, password, phoneError, passwordError, email, emailError]);
 
   const onChangedEmail = val => {
-    const {msg} = validateEmail(val.trim());
     setEmail(val.trim());
+    const {msg} = validateOptionalEmail(val.trim());
     setEmailError(msg);
   };
+
   const onChangedPassword = val => {
     const {msg} = validatePassword(val.trim());
     setPassword(val.trim());
     setPasswordError(msg);
   };
 
+  const onChangedPhoneNumber = val => {
+    const {msg} = validatePhoneNumber(val.trim());
+    setPhoneNumber(val.trim());
+    setPhoneError(msg);
+  };
+
   const onPressSignWithPassword = () => {
     navigation.navigate(StackNav.CameraRegister, {
       title: strings.fillYourProfile,
+      phone: phoneNumber,
       email: email,
       password: password
     });
@@ -92,10 +105,25 @@ const Register = ({navigation}) => {
     return <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />;
   };
 
+  const PhoneIcon = () => {
+    return <Ionicons name="call" size={moderateScale(20)} color={phoneIcon} />;
+  };
+
+  const onFocusPhone = () => {
+    onFocusInput(setPhoneInputStyle);
+    onFocusIcon(setPhoneIcon);
+  };
+
   const onFocusEmail = () => {
     onFocusInput(setEmailInputStyle);
     onFocusIcon(setEmailIcon);
   };
+
+  const onBlurPhone = () => {
+    onBlurInput(setPhoneInputStyle);
+    onBlurIcon(setPhoneIcon);
+  };
+
   const onBlurEmail = () => {
     onBlurInput(setEmailInputStyle);
     onBlurIcon(setEmailIcon);
@@ -140,8 +168,30 @@ const Register = ({navigation}) => {
           <ZText type={'b46'} align={'left'} style={styles.mv40}>
             {strings.createYourAccount}
           </ZText>
+
+          {/* Phone input */}
           <ZInput
-            placeHolder={strings.email}
+            placeHolder={strings.phoneNumber}
+            keyBoardType={'phone-pad'}
+            _value={phoneNumber}
+            _errorText={phoneError}
+            autoCapitalize={'none'}
+            insideLeftIcon={() => <PhoneIcon />}
+            _maxLength={10}
+            toGetTextFieldValue={onChangedPhoneNumber}
+            inputContainerStyle={[
+              {backgroundColor: colors.inputBg},
+              localStyles.inputContainerStyle,
+              phoneInputStyle,
+            ]}
+            inputBoxStyle={[localStyles.inputBoxStyle]}
+            _onFocus={onFocusPhone}
+            onBlur={onBlurPhone}
+          />
+
+          {/* OPTIONAL: Email input */}
+          <ZInput
+            placeHolder={`${strings.email} (${strings.optional.toLowerCase()})`}
             keyBoardType={'email-address'}
             _value={email}
             _errorText={emailError}
@@ -158,6 +208,7 @@ const Register = ({navigation}) => {
             onBlur={onBlurEmail}
           />
 
+          {/* Password input */}
           <ZInput
             placeHolder={strings.password}
             keyBoardType={'default'}

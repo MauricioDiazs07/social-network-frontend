@@ -40,6 +40,7 @@ const licenseKey = Platform.select({
 const CameraRegister = props => {
   const {navigation} = props;
   const headerTitle = props.route.params.title;
+  const phoneNumberRegister = props.route.params.phone;
   const emailRegister = props.route.params.email;
   const passwordRegister = props.route.params.password;
 
@@ -291,6 +292,7 @@ const CameraRegister = props => {
               navigation.navigate(StackNav.SetUpProfile, {
                 title: headerTitle,
                 userCred: {
+                  phone: phoneNumberRegister,
                   email: emailRegister,
                   password: passwordRegister,
                 },
@@ -351,6 +353,7 @@ const CameraRegister = props => {
         navigation.navigate(StackNav.SetUpProfile, {
           title: headerTitle,
           userCred: {
+            phone: phoneNumberRegister,
             email: emailRegister,
             password: passwordRegister,
           },
@@ -369,6 +372,7 @@ const CameraRegister = props => {
     navigation.navigate(StackNav.SetUpProfile, {
       title: headerTitle,
       userCred: {
+        phone: phoneNumberRegister,
         email: emailRegister,
         password: passwordRegister,
       },

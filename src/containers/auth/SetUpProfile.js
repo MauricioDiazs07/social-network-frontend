@@ -248,10 +248,11 @@ const SetUpProfile = props => {
         {showPicker && (
           <DateTimePicker
             mode="date"
-            display="spinner"
+            display={checkPlatform() === 'ios'? "inline": "spinner"}
             value={date}
             onChange={onChangeDatePicker}
-            style={localStyles.dateContainer}
+            themeVariant={checkPlatform() === 'ios'? "dark": ""}
+            style={checkPlatform() === 'ios'? localStyles.dateContainerIOS: localStyles.dateContainer}
           />
         )}
 
@@ -510,6 +511,10 @@ const localStyles = StyleSheet.create({
   dateContainer: {
     height: 120,
     ...styles.mt_5,
+  },
+  dateContainerIOS: {
+    height: "auto",
+    ...styles.mt_7,
   },
   iosBtns: {
     ...styles.rowSpaceAround,
