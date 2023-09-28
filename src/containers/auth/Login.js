@@ -19,7 +19,7 @@ import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZInput from '../../components/common/ZInput';
-import {validateEmail, validatePassword} from '../../utils/validators';
+import {validatePassword, validatePhoneNumber} from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 import {setAsyncStorageData} from '../../utils/helpers';
 import ZButton from '../../components/common/ZButton';
@@ -42,14 +42,14 @@ const Login = ({navigation}) => {
   const BlurredIconStyle = colors.grayScale5;
   const FocusedIconStyle = colors.primary;
 
-  const [email, setEmail] = React.useState('');
+  const [phoneNumber, setPhoneNumber] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [emailError, setEmailError] = React.useState('');
+  const [phoneError, setPhoneError] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
-  const [emailIcon, setEmailIcon] = React.useState(BlurredIconStyle);
+  const [phoneIcon, setPhoneIcon] = React.useState(BlurredIconStyle);
   const [passwordIcon, setPasswordIcon] = React.useState(BlurredIconStyle);
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
-  const [emailInputStyle, setEmailInputStyle] = React.useState(BlurredStyle);
+  const [phoneInputStyle, setPhoneInputStyle] = React.useState(BlurredStyle);
   const [passwordInputStyle, setPasswordInputStyle] =
     React.useState(BlurredStyle);
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(true);
@@ -62,21 +62,21 @@ const Login = ({navigation}) => {
 
   useEffect(() => {
     if (
-      email.length > 0 &&
+      phoneNumber.length > 0 &&
       password.length > 0 &&
-      !emailError &&
+      !phoneError &&
       !passwordError
     ) {
       setIsSubmitDisabled(false);
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [email, password, emailError, passwordError]);
+  }, [phoneNumber, password, phoneError, passwordError]);
 
-  const onChangedEmail = val => {
-    const {msg} = validateEmail(val.trim());
-    setEmail(val.trim());
-    setEmailError(msg);
+  const onChangedPhoneNumber = val => {
+    const {msg} = validatePhoneNumber(val.trim());
+    setPhoneNumber(val.trim());
+    setPhoneError(msg);
   };
   const onChangedPassword = val => {
     const {msg} = validatePassword(val.trim());
@@ -84,17 +84,17 @@ const Login = ({navigation}) => {
     setPasswordError(msg);
   };
 
-  const EmailIcon = () => {
-    return <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />;
+  const PhoneIcon = () => {
+    return <Ionicons name="call" size={moderateScale(20)} color={phoneIcon} />;
   };
 
-  const onFocusEmail = () => {
-    onFocusInput(setEmailInputStyle);
-    onFocusIcon(setEmailIcon);
+  const onFocusPhone = () => {
+    onFocusInput(setPhoneInputStyle);
+    onFocusIcon(setPhoneIcon);
   };
-  const onBlurEmail = () => {
-    onBlurInput(setEmailInputStyle);
-    onBlurIcon(setEmailIcon);
+  const onBlurPhone = () => {
+    onBlurInput(setPhoneInputStyle);
+    onBlurIcon(setPhoneIcon);
   };
 
   const PasswordIcon = () => (
@@ -126,7 +126,7 @@ const Login = ({navigation}) => {
   );
 
   const onPressSignWithPassword = async () => {
-    await getAuthToken(email, password).then(async token => {
+    await getAuthToken(phoneNumber, password).then(async token => {
       if ('token' in token) {
         const user_lvl = getAccessLevel(token['role_id']);
         await setAsyncStorageData(ACCESS_TOKEN, token);
@@ -186,21 +186,22 @@ const Login = ({navigation}) => {
           )}
 
           <ZInput
-            placeHolder={strings.email}
-            keyBoardType={'email-address'}
-            _value={email}
-            _errorText={emailError}
+            placeHolder={strings.phoneNumber}
+            keyBoardType={'phone-pad'}
+            _value={phoneNumber}
+            _errorText={phoneError}
             autoCapitalize={'none'}
-            insideLeftIcon={() => <EmailIcon />}
-            toGetTextFieldValue={onChangedEmail}
+            insideLeftIcon={() => <PhoneIcon />}
+            _maxLength={10}
+            toGetTextFieldValue={onChangedPhoneNumber}
             inputContainerStyle={[
               {backgroundColor: colors.inputBg},
               localStyles.inputContainerStyle,
-              emailInputStyle,
+              phoneInputStyle,
             ]}
             inputBoxStyle={[localStyles.inputBoxStyle]}
-            _onFocus={onFocusEmail}
-            onBlur={onBlurEmail}
+            _onFocus={onFocusPhone}
+            onBlur={onBlurPhone}
           />
 
           <ZInput

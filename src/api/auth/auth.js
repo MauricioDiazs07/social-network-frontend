@@ -7,12 +7,12 @@ import {
     INTERESTS_LIST
  } from "../../utils/api_constants";
 
-const getAuthToken = async (email, password) => {
+const getAuthToken = async (phoneNumber, password) => {
 
     const response = await fetch(URL_API + LOGIN, {
         method: "POST", 
         body: JSON.stringify({
-            email: email,
+            phoneNumber: phoneNumber,
             password: password
         }),
         headers: {
