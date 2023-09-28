@@ -19,6 +19,7 @@ import {useNavigation} from '@react-navigation/native';
 // Local import
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import ZHeader from '../../../components/common/ZHeader';
+import ZCircle from '../../../components/common/ZCircle';
 import strings from '../../../i18n/strings';
 import {styles} from '../../../themes';
 import {ACCESS_TOKEN, getHeight, moderateScale} from '../../../common/constants';
@@ -30,6 +31,7 @@ import { createPost } from '../../../api/feed/posts';
 import ProfilePicture from '../../../components/models/ProfilePicture';
 import { getAsyncStorageData } from '../../../utils/helpers';
 import { StackNav } from '../../../navigation/NavigationKeys';
+import { getColor } from '../../../utils/_support_functions';
 
 export default function PostDetail() {
   const colors = useSelector(state => state.theme.theme);
@@ -37,6 +39,7 @@ export default function PostDetail() {
   const { width } = Dimensions.get('window');
   const numColumns = 3;
   const size = width / numColumns;
+  const textLimit = 255;
 
   const ProfilePictureSheetRef = createRef();
 
@@ -45,8 +48,12 @@ export default function PostDetail() {
   const [selectImage, setSelectImage] = React.useState([]);
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [index, setIndex] = React.useState(1);
+  const [chars, setChars] = React.useState(0);
 
-  const onChangeText = val => setText(val);
+  const onChangeText = val => {
+    setText(val);
+    setChars(val.length);
+  };
 
   const onPressHome = () => navigation.navigate(TabNav.Home);
 
@@ -193,6 +200,27 @@ export default function PostDetail() {
             inputBoxStyle={localStyles.inputBoxStyle}
             onChangeText={onChangeText}
           />
+          <View>
+            <ZCircle
+              cx={25}
+              cy={25}
+              rx={20}
+              ry={20}
+              t1={1}
+              delta={chars}
+              phi={274}
+              limit={textLimit}
+            />
+          </View>
+        </View>
+        <View>
+          <ZText 
+            type={'b16'}
+            align={'right'}
+            color={getColor(colors, chars, textLimit)}
+          >
+              {chars}/{textLimit}
+          </ZText>
         </View>
         <View
           style={[
@@ -302,8 +330,11 @@ export default function PostDetail() {
           title={strings.post}
           textType={'b18'}
           color={colors.white}
-          containerStyle={localStyles.skipBtnContainer}
+          containerStyle={[
+              localStyles.skipBtnContainer,
+              (chars >= textLimit) && {opacity: 0.5}]}
           onPress={onPressPost}
+          disabled={chars >= textLimit}
         />
       </View>
 
