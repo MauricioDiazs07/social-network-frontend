@@ -192,6 +192,17 @@ const transformShorts = (post) => {
   return new_historys.reverse();
 }
 
+const getColor = (colors, delta, limit) => {
+  if ((limit-delta) < 20 && (limit-delta) > 0) {
+    return colors.yellow;
+  }
+  if (delta >= limit) {
+    return colors.redColor;
+  }
+
+  return colors.primary;
+}
+
 export {
     translateBirthday,
     getFormatedBirthday,
@@ -204,5 +215,6 @@ export {
     transformfHistoy,
     transformpHistoy,
     transformFeed,
-    transformShorts
+    transformShorts,
+    getColor,
 }

@@ -45,7 +45,7 @@ export const commonColor = {
   inputFocusColor: '#FF4D6714',
   tranparent: '#00000000',
   darkBg: '#181A20',
-  redColor: '#A020F0',
+  redColor: '#FF0000',
   lightRed: '#C175FF',
   lightGray: '#7575751F',
   orange: '#FB9400',
