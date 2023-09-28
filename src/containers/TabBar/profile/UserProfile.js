@@ -34,7 +34,8 @@ import ZText from '../../../components/common/ZText';
 import {userProfile} from '../../../api/constant';
 import { validateNotNecessatyEmail } from '../../../utils/validators';
 import { getAsyncStorageData } from '../../../utils/helpers';
-
+import { updateUserData } from '../../../api/user/user';
+import { setAsyncStorageData } from '../../../utils/helpers';
 
 const UserProfile = props => {
   const {navigation} = props;
@@ -220,7 +221,18 @@ const UserProfile = props => {
 
   const onPressUpdate = () => {};
 
-  const onPressContinue = () => navigation.navigate(StackNav.TabBar);
+  const onPressContinue = () => {
+    getAsyncStorageData("PROFILE_ID").then(profile_id => {
+      updateUserData(profile_id,email,phoneNo,selectImage).then(resp => {
+        if (selectImage != ''){
+          setAsyncStorageData("PROFILE_PHOTO", resp['profile_photo']);
+        }
+
+        navigation.navigate(StackNav.TabBar)
+      })
+    });
+    
+  };
 
   const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
 

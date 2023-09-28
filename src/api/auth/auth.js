@@ -141,6 +141,15 @@ const signUp2 = async (
         name: `img_${1}.jpg`,
         type: 'image/jpg',
     }
+
+    if (user['profile_photo'] != ''){
+        const imageData = {
+            uri: user['profile_photo'].path,
+            name: user['profile_photo'].path.split("/").pop(),
+            type: user['profile_photo'].mime,
+        }
+        form.append('profile_photo', imageData)
+    }
     
     form.append('identification_photo', imageData);
     const response = await fetch(URL_API + SIGNUP, {

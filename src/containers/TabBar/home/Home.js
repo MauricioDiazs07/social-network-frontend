@@ -12,6 +12,7 @@ import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import images from '../../../assets/images';
 
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import { getHeight, moderateScale } from '../../../common/constants';
@@ -56,7 +57,7 @@ const UserProfile = React.memo(() => {
   
   useEffect(() => {
     getAsyncStorageData("PROFILE_PHOTO").then(photo => {
-      setProfilePhoto(photo)
+        setProfilePhoto(photo)
     });
   }, []);
 
@@ -72,15 +73,31 @@ const UserProfile = React.memo(() => {
       >
       <View style={localStyles.itemContainer}>
             <View style={localStyles.itemInnerContainer}>
-              <FastImage
-                source={{uri: profilePhoto}}
-                style={[
-                  localStyles.itemImage,
-                  {
-                    borderWidth: 0,
-                  },
-                ]}
-              />
+              {
+                profilePhoto == null ? 
+                (
+                  <FastImage
+                    source={colors.dark ? images.userDark : images.userLight}
+                    style={[
+                      localStyles.itemImage,
+                      {
+                        borderWidth: 0,
+                      },
+                    ]}
+                  />
+                ) : (
+                  <FastImage
+                    source={{uri: profilePhoto}}
+                    style={[
+                      localStyles.itemImage,
+                      {
+                        borderWidth: 0,
+                      },
+                    ]}
+                  />
+                )
+              }
+              
               <StoryAddIcon
                 style={localStyles.addIcon}
                 width={moderateScale(25)}

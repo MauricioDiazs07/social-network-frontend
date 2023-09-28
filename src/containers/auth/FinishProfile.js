@@ -11,7 +11,7 @@ import CountryPicker, {
   DEFAULT_THEME,
 } from 'react-native-country-picker-modal';
 import {Snackbar, Button} from '@react-native-material/core';
-
+import { getProfileData } from '../../api/feed/interaction';
 // local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import ZHeader from '../../components/common/ZHeader';
@@ -201,6 +201,14 @@ const FinishProfile = props => {
                 await setAsyncStorageData(USER_LEVEL, user_lvl);
                 await setAsyncStorageData("PROFILE_ID", token['profile_id']);
                 setIsLoading(false);
+
+                getProfileData(token['profile_id'])
+                .then(resp => {
+                  setAsyncStorageData("PROFILE_PHOTO", resp['profile_photo']);
+                  setAsyncStorageData("USERNAME", resp['name']);
+                  setAsyncStorageData("GENDER", resp['gender']);
+                  setAsyncStorageData("DESCRIPTION", resp['description']);
+                });
 
                 navigation.navigate(StackNav.FollowSomeone);
             }})
