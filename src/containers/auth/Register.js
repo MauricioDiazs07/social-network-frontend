@@ -14,7 +14,7 @@ import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZInput from '../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
-import {validateEmail, validatePassword} from '../../utils/validators';
+import {validatePassword, validatePhoneNumber} from '../../utils/validators';
 import ZButton from '../../components/common/ZButton';
 
 const Register = ({navigation}) => {
@@ -31,19 +31,19 @@ const Register = ({navigation}) => {
   const BlurredIconStyle = colors.grayScale5;
   const FocusedIconStyle = colors.primary;
 
-  const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [emailError, setEmailError] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
-  const [emailIcon, setEmailIcon] = React.useState(BlurredIconStyle);
   const [passwordIcon, setPasswordIcon] = React.useState(BlurredIconStyle);
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
-  const [emailInputStyle, setEmailInputStyle] = React.useState(BlurredStyle);
   const [passwordInputStyle, setPasswordInputStyle] =
-    React.useState(BlurredStyle);
+  React.useState(BlurredStyle);
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
   const [isCheck, setIsCheck] = React.useState(true);
-
+  const [phoneNumber, setPhoneNumber] = React.useState('');
+  const [phoneError, setPhoneError] = React.useState('');
+  const [phoneIcon, setPhoneIcon] = React.useState(BlurredIconStyle);
+  const [phoneInputStyle, setPhoneInputStyle] = React.useState(BlurredStyle);
+  
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
   const onBlurInput = onUnHighlight => onUnHighlight(BlurredStyle);
@@ -51,32 +51,33 @@ const Register = ({navigation}) => {
 
   useEffect(() => {
     if (
-      email.length > 0 &&
+      phoneNumber.length > 0 &&
       password.length > 0 &&
-      !emailError &&
+      !phoneError &&
       !passwordError
     ) {
       setIsSubmitDisabled(false);
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [email, password, emailError, passwordError]);
+  }, [phoneNumber, password, phoneError, passwordError]);
 
-  const onChangedEmail = val => {
-    const {msg} = validateEmail(val.trim());
-    setEmail(val.trim());
-    setEmailError(msg);
-  };
   const onChangedPassword = val => {
     const {msg} = validatePassword(val.trim());
     setPassword(val.trim());
     setPasswordError(msg);
   };
 
+  const onChangedPhoneNumber = val => {
+    const {msg} = validatePhoneNumber(val.trim());
+    setPhoneNumber(val.trim());
+    setPhoneError(msg);
+  };
+
   const onPressSignWithPassword = () => {
     navigation.navigate(StackNav.CameraRegister, {
       title: strings.fillYourProfile,
-      email: email,
+      phone: phoneNumber,
       password: password
     });
   };
@@ -88,17 +89,18 @@ const Register = ({navigation}) => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const EmailIcon = () => {
-    return <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />;
+  const PhoneIcon = () => {
+    return <Ionicons name="call" size={moderateScale(20)} color={phoneIcon} />;
   };
 
-  const onFocusEmail = () => {
-    onFocusInput(setEmailInputStyle);
-    onFocusIcon(setEmailIcon);
+  const onFocusPhone = () => {
+    onFocusInput(setPhoneInputStyle);
+    onFocusIcon(setPhoneIcon);
   };
-  const onBlurEmail = () => {
-    onBlurInput(setEmailInputStyle);
-    onBlurIcon(setEmailIcon);
+
+  const onBlurPhone = () => {
+    onBlurInput(setPhoneInputStyle);
+    onBlurIcon(setPhoneIcon);
   };
 
   const PasswordIcon = () => (
@@ -140,24 +142,28 @@ const Register = ({navigation}) => {
           <ZText type={'b46'} align={'left'} style={styles.mv40}>
             {strings.createYourAccount}
           </ZText>
+
+          {/* Phone input */}
           <ZInput
-            placeHolder={strings.email}
-            keyBoardType={'email-address'}
-            _value={email}
-            _errorText={emailError}
+            placeHolder={strings.phoneNumber}
+            keyBoardType={'phone-pad'}
+            _value={phoneNumber}
+            _errorText={phoneError}
             autoCapitalize={'none'}
-            insideLeftIcon={() => <EmailIcon />}
-            toGetTextFieldValue={onChangedEmail}
+            insideLeftIcon={() => <PhoneIcon />}
+            _maxLength={10}
+            toGetTextFieldValue={onChangedPhoneNumber}
             inputContainerStyle={[
               {backgroundColor: colors.inputBg},
               localStyles.inputContainerStyle,
-              emailInputStyle,
+              phoneInputStyle,
             ]}
             inputBoxStyle={[localStyles.inputBoxStyle]}
-            _onFocus={onFocusEmail}
-            onBlur={onBlurEmail}
+            _onFocus={onFocusPhone}
+            onBlur={onBlurPhone}
           />
 
+          {/* Password input */}
           <ZInput
             placeHolder={strings.password}
             keyBoardType={'default'}

@@ -90,7 +90,7 @@ const validateEmail = email => {
   }
 };
 
-const validateNotNecessatyEmail = email => {
+const validateNotNecessaryEmail = email => {
   if (!email) {
     return {
       status: true,
@@ -250,9 +250,33 @@ const validateSection = (sect) => {
   }
 }
 
+//Password validation
+const validatePhoneNumber = (phoneNumber) => {
+  if (!phoneNumber) {
+    return {
+      status: false,
+      msg: strings.phoneNeeded,
+    };
+  } else if (phoneNumber.length < 10 || phoneNumber.length > 10) {
+    return {
+      status: false,
+      msg: strings.validatePhoneNumber,
+    };
+  } else {
+    if (ageRegex.test(phoneNumber)) {
+      return {status: true, msg: ''};
+    } else {
+      return {
+        status: false,
+        msg: strings.validatePhoneNumber,
+      };
+    }
+  }
+};
+
 export {
   validateEmail,
-  validateNotNecessatyEmail,
+  validateNotNecessaryEmail,
   validatePassword,
   validateConfirmPassword,
   validateName,
@@ -263,4 +287,5 @@ export {
   validateNotEmptyContact,
   validateINE,
   validateSection,
+  validatePhoneNumber,
 };

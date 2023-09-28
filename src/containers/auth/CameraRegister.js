@@ -7,11 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  AppRegistry,
   Platform,
-  Text,
-  Image,
-  ScrollView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
@@ -40,7 +36,7 @@ const licenseKey = Platform.select({
 const CameraRegister = props => {
   const {navigation} = props;
   const headerTitle = props.route.params.title;
-  const emailRegister = props.route.params.email;
+  const phoneNumberRegister = props.route.params.phone;
   const passwordRegister = props.route.params.password;
 
   const colors = useSelector(state => state.theme.theme);
@@ -60,14 +56,6 @@ const CameraRegister = props => {
     'curp': '',
     'section': ''
   }
-
-  // const showCameraAlert = () =>
-  //   Alert.alert('', strings.cutCamera, [
-  //     {
-  //       text: strings.accept,
-  //       onPress: () => onPressCamera(),
-  //     },
-  //   ]);
 
   /* ---------- BLINKID FUNCTIONS ---------- */
   handleResult = (result) => {
@@ -266,13 +254,8 @@ const CameraRegister = props => {
 
           }
           newState.results += '\n';
-
-          /// TODO:
-          /// Enviar newState.resultFrontImageDocument a readINE_2 y sacar sección, municipio y estado
-          /// Inicio
           
           setIsLoading(true);
-          // setImg(newState.resultFrontImageDocument);
 
           readINE_3(newState.resultFrontImageDocument)
             .then(resp => {
@@ -291,7 +274,7 @@ const CameraRegister = props => {
               navigation.navigate(StackNav.SetUpProfile, {
                 title: headerTitle,
                 userCred: {
-                  email: emailRegister,
+                  phone: phoneNumberRegister,
                   password: passwordRegister,
                 },
                 identification_photo: newState.resultFrontImageDocument,
@@ -304,20 +287,6 @@ const CameraRegister = props => {
               setIsLoading(false);
               setIsSnackbarVisible(true);
             });
-
-          /// Fin 
-          /// Se debe descomentar si se quita lo de arriba -->
-
-         /*  navigation.navigate(StackNav.SetUpProfile, {
-            title: headerTitle,
-            userCred: {
-              email: emailRegister,
-              password: passwordRegister,
-            },
-            identification_photo: img,
-            user: user_,
-          }); */
-          
       }
     } catch (error) {
         console.log("ERROR:", error);
@@ -351,7 +320,7 @@ const CameraRegister = props => {
         navigation.navigate(StackNav.SetUpProfile, {
           title: headerTitle,
           userCred: {
-            email: emailRegister,
+            phone: phoneNumberRegister,
             password: passwordRegister,
           },
           identification_photo: img,
@@ -369,7 +338,7 @@ const CameraRegister = props => {
     navigation.navigate(StackNav.SetUpProfile, {
       title: headerTitle,
       userCred: {
-        email: emailRegister,
+        phone: phoneNumberRegister,
         password: passwordRegister,
       },
       identification_photo: img,
