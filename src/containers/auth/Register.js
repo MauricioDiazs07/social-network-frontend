@@ -14,7 +14,7 @@ import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZInput from '../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
-import {validateOptionalEmail, validatePassword, validatePhoneNumber} from '../../utils/validators';
+import {validatePassword, validatePhoneNumber} from '../../utils/validators';
 import ZButton from '../../components/common/ZButton';
 
 const Register = ({navigation}) => {
@@ -31,14 +31,10 @@ const Register = ({navigation}) => {
   const BlurredIconStyle = colors.grayScale5;
   const FocusedIconStyle = colors.primary;
 
-  const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [emailError, setEmailError] = React.useState('');
   const [passwordError, setPasswordError] = React.useState('');
-  const [emailIcon, setEmailIcon] = React.useState(BlurredIconStyle);
   const [passwordIcon, setPasswordIcon] = React.useState(BlurredIconStyle);
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
-  const [emailInputStyle, setEmailInputStyle] = React.useState(BlurredStyle);
   const [passwordInputStyle, setPasswordInputStyle] =
   React.useState(BlurredStyle);
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
@@ -57,7 +53,6 @@ const Register = ({navigation}) => {
     if (
       phoneNumber.length > 0 &&
       password.length > 0 &&
-      (email.length == 0 || !emailError) &&
       !phoneError &&
       !passwordError
     ) {
@@ -65,13 +60,7 @@ const Register = ({navigation}) => {
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [phoneNumber, password, phoneError, passwordError, email, emailError]);
-
-  const onChangedEmail = val => {
-    setEmail(val.trim());
-    const {msg} = validateOptionalEmail(val.trim());
-    setEmailError(msg);
-  };
+  }, [phoneNumber, password, phoneError, passwordError]);
 
   const onChangedPassword = val => {
     const {msg} = validatePassword(val.trim());
@@ -89,7 +78,6 @@ const Register = ({navigation}) => {
     navigation.navigate(StackNav.CameraRegister, {
       title: strings.fillYourProfile,
       phone: phoneNumber,
-      email: email,
       password: password
     });
   };
@@ -101,10 +89,6 @@ const Register = ({navigation}) => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const EmailIcon = () => {
-    return <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />;
-  };
-
   const PhoneIcon = () => {
     return <Ionicons name="call" size={moderateScale(20)} color={phoneIcon} />;
   };
@@ -114,19 +98,9 @@ const Register = ({navigation}) => {
     onFocusIcon(setPhoneIcon);
   };
 
-  const onFocusEmail = () => {
-    onFocusInput(setEmailInputStyle);
-    onFocusIcon(setEmailIcon);
-  };
-
   const onBlurPhone = () => {
     onBlurInput(setPhoneInputStyle);
     onBlurIcon(setPhoneIcon);
-  };
-
-  const onBlurEmail = () => {
-    onBlurInput(setEmailInputStyle);
-    onBlurIcon(setEmailIcon);
   };
 
   const PasswordIcon = () => (
@@ -187,25 +161,6 @@ const Register = ({navigation}) => {
             inputBoxStyle={[localStyles.inputBoxStyle]}
             _onFocus={onFocusPhone}
             onBlur={onBlurPhone}
-          />
-
-          {/* OPTIONAL: Email input */}
-          <ZInput
-            placeHolder={`${strings.email} (${strings.optional.toLowerCase()})`}
-            keyBoardType={'email-address'}
-            _value={email}
-            _errorText={emailError}
-            autoCapitalize={'none'}
-            insideLeftIcon={() => <EmailIcon />}
-            toGetTextFieldValue={onChangedEmail}
-            inputContainerStyle={[
-              {backgroundColor: colors.inputBg},
-              localStyles.inputContainerStyle,
-              emailInputStyle,
-            ]}
-            inputBoxStyle={[localStyles.inputBoxStyle]}
-            _onFocus={onFocusEmail}
-            onBlur={onBlurEmail}
           />
 
           {/* Password input */}

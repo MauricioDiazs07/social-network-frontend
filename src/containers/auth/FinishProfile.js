@@ -18,7 +18,7 @@ import ZHeader from '../../components/common/ZHeader';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 import ZButton from '../../components/common/ZButton';
 import ProfilePicture from '../../components/models/ProfilePicture';
-import {validateEmail, validateNotEmptyContact} from '../../utils/validators';
+import {validateNotNecessaryEmail, validatePhoneNumber} from '../../utils/validators';
 import {ACCESS_TOKEN, USER_LEVEL, moderateScale, getHeight} from '../../common/constants';
 import {isNotEmptyString} from '../../utils/_support_functions';
 import {styles} from '../../themes';
@@ -48,7 +48,7 @@ const FinishProfile = props => {
   const BlurredIconStyle = colors.grayScale5;
   const FocusedIconStyle = colors.primary;
 
-  const [email, setEmail] = useState(userCred['email']);
+  const [email, setEmail] = useState('');
   const [phoneNo, setPhoneNo] = useState(userCred['phone']);
 
   const [emailInputStyle, setEmailInputStyle] = useState(BlurredStyle);
@@ -58,6 +58,7 @@ const FinishProfile = props => {
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [contactError, setContactError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
   const [selectImage, setSelectImage] = useState('');
   const [callingCodeLib, setCallingCodeLib] = useState(+52);
   const [countryCodeLib, setCountryCodeLib] = useState('MX');
@@ -72,14 +73,15 @@ const FinishProfile = props => {
 
   useEffect(() => {
     if (
-      (isNotEmptyString(email) || isNotEmptyString(phoneNo)) &&
-      !contactError
+      isNotEmptyString(phoneNo) &&
+      !contactError &&
+      !emailError
     ) {
       setIsSubmitDisabled(false);
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [email, phoneNo, contactError]);
+  }, [phoneNo, contactError, emailError]);
 
   const onFocusEmail = () => {
     onFocusInput(setEmailInputStyle);
@@ -100,12 +102,12 @@ const FinishProfile = props => {
   };
 
   const onChangedEmail = text => {
-    const {msg} = validateEmail(text.trim(), phoneNo);
+    const {msg} = validateNotNecessaryEmail(text.trim(), phoneNo);
     setEmail(text);
-    setContactError(msg);
+    setEmailError(msg);
   };
   const onChangedPhoneNo = text => {
-    const {msg} = validateNotEmptyContact(email, text.trim());
+    const {msg} = validatePhoneNumber(text.trim());
     setPhoneNo(text);
     setContactError(msg);
   };
@@ -252,23 +254,6 @@ const FinishProfile = props => {
         </TouchableOpacity>
 
         <ZInput
-          placeHolder={strings.email}
-          keyBoardType={'email-address'}
-          _value={email}
-          _errorText={contactError}
-          autoCapitalize={'none'}
-          toGetTextFieldValue={onChangedEmail}
-          rightAccessory={() => <EmailIcon />}
-          inputContainerStyle={[
-            {backgroundColor: colors.inputBg},
-            localStyles.inputContainerStyle,
-            emailInputStyle,
-          ]}
-          _onFocus={onFocusEmail}
-          onBlur={onBlurEmail}
-        />
-
-        <ZInput
           placeHolder={strings.phoneNumber}
           keyBoardType={'number-pad'}
           _value={phoneNo}
@@ -283,6 +268,23 @@ const FinishProfile = props => {
           ]}
           _onFocus={onFocusPhoneNo}
           onBlur={onBlurPhoneNo}
+        />
+
+        <ZInput
+          placeHolder={strings.email}
+          keyBoardType={'email-address'}
+          _value={email}
+          _errorText={emailError}
+          autoCapitalize={'none'}
+          toGetTextFieldValue={onChangedEmail}
+          rightAccessory={() => <EmailIcon />}
+          inputContainerStyle={[
+            {backgroundColor: colors.inputBg},
+            localStyles.inputContainerStyle,
+            emailInputStyle,
+          ]}
+          _onFocus={onFocusEmail}
+          onBlur={onBlurEmail}
         />
       </ZKeyBoardAvoidWrapper>
 

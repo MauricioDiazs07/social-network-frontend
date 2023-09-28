@@ -90,24 +90,7 @@ const validateEmail = email => {
   }
 };
 
-//Email validation
-const validateOptionalEmail = email => {
-  if (!email) {
-    return {
-      status: false,
-      msg: "",
-    };
-  } else {
-    return emailRegex.test(email)
-      ? {status: true, msg: ''}
-      : {
-          status: false,
-          msg: strings.validEmail,
-        };
-  }
-};
-
-const validateNotNecessatyEmail = email => {
+const validateNotNecessaryEmail = email => {
   if (!email) {
     return {
       status: true,
@@ -293,7 +276,7 @@ const validatePhoneNumber = (phoneNumber) => {
 
 export {
   validateEmail,
-  validateNotNecessatyEmail,
+  validateNotNecessaryEmail,
   validatePassword,
   validateConfirmPassword,
   validateName,
@@ -305,5 +288,4 @@ export {
   validateINE,
   validateSection,
   validatePhoneNumber,
-  validateOptionalEmail,
 };

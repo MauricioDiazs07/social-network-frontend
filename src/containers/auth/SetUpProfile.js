@@ -248,7 +248,7 @@ const SetUpProfile = props => {
         {showPicker && (
           <DateTimePicker
             mode="date"
-            display={checkPlatform() === 'ios'? "inline": "spinner"}
+            display="inline"
             value={date}
             onChange={onChangeDatePicker}
             themeVariant={checkPlatform() === 'ios'? "dark": ""}

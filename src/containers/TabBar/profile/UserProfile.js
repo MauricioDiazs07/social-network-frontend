@@ -32,7 +32,7 @@ import ZButton from '../../../components/common/ZButton';
 import {validateNotEmptyContact} from '../../../utils/validators';
 import ZText from '../../../components/common/ZText';
 import {userProfile} from '../../../api/constant';
-import { validateNotNecessatyEmail } from '../../../utils/validators';
+import { validateNotNecessaryEmail } from '../../../utils/validators';
 import { getAsyncStorageData } from '../../../utils/helpers';
 
 
@@ -153,7 +153,7 @@ const UserProfile = props => {
       setEmail(text.trim());
     const {msg} = validateNotEmptyContact(text.trim(), phoneNo);
     setContactError(msg);
-    const msg_email = validateNotNecessatyEmail(text.trim()).msg;
+    const msg_email = validateNotNecessaryEmail(text.trim()).msg;
     setEmailError(msg_email);
   };
   const onChangedPhoneNo = text => {
