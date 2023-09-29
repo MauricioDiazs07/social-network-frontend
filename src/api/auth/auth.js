@@ -8,7 +8,8 @@ import {
  } from "../../utils/api_constants";
 
 const getAuthToken = async (phoneNumber, password) => {
-
+    console.log('phoneNumber:', phoneNumber);
+    console.log('password:', password);
     const response = await fetch(URL_API + LOGIN, {
         method: "POST", 
         body: JSON.stringify({
@@ -152,6 +153,7 @@ const signUp2 = async (
     }
     
     form.append('identification_photo', imageData);
+    console.log(form);
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: form,

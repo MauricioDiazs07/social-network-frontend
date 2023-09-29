@@ -60,7 +60,7 @@ const FinishProfile = props => {
   const [contactError, setContactError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [selectImage, setSelectImage] = useState('');
-  const [callingCodeLib, setCallingCodeLib] = useState(+52);
+  const [callingCodeLib, setCallingCodeLib] = useState('');
   const [countryCodeLib, setCountryCodeLib] = useState('MX');
   const [visiblePiker, setVisiblePiker] = useState(false);
   const [isSnackbarVisible, setIsSnackbarVisible] = React.useState(false);
@@ -193,7 +193,7 @@ const FinishProfile = props => {
       .then(resp => {
         if (resp) {
           getAuthToken(
-            userCred_['email'],
+            usser_['phone'],
             userCred_['password']
           )
             .then(async (token) => {
