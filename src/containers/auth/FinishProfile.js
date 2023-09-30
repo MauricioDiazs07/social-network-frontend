@@ -178,17 +178,16 @@ const FinishProfile = props => {
       email: email,
       password: userCred['password'],
     };
-    
     const phoneNo_ = phoneNo.toString() != '' ?
-                callingCodeLib.toString() + phoneNo.toString() : '';
-
+    callingCodeLib.toString() + phoneNo.toString() : '';
+    
     const usser_ = {
       ...userCred_,
       profile_photo: selectImage,
       phone: phoneNo_,
       ...userInfo
     };
-
+    
     signUp2(usser_)
       .then(resp => {
         if (resp) {
