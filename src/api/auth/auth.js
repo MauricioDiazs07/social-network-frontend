@@ -125,35 +125,38 @@ const signUp2 = async (
 ) => {
 
     const form = new FormData()
-    form.append('email', user['email'])
+    form.append('phone', user['phone'])
     form.append('password', user['password'])
     form.append('name', user['name'])
     form.append('gender', user['gender'])
     form.append('state', user['state'])
     form.append('municipality', user['municipality'])
+    form.append('section', user['section'])
     form.append('address', user['address'])
     form.append('birthday', user['birthday'])
     form.append('curp', user['curp'])
-    form.append('phone', user['phone'])
+    form.append('email', user['email'])
     
     const value = user['identification_photo'];
-    const imageData = {
+    console.log(value);
+    const imageData1 = {
         uri: value,
         name: `img_${1}.jpg`,
         type: 'image/jpg',
     }
+    console.log(imageData1);
 
     if (user['profile_photo'] != ''){
-        const imageData = {
+        const imageData2 = {
             uri: user['profile_photo'].path,
             name: user['profile_photo'].path.split("/").pop(),
             type: user['profile_photo'].mime,
         }
-        form.append('profile_photo', imageData)
+        form.append('profile_photo', imageData2)
     }
-    
-    form.append('identification_photo', imageData);
-    console.log(form);
+    console.log("Datos");
+    form.append('identification_photo', imageData1);
+    console.log("Datos de registro: ",form);
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: form,
@@ -161,7 +164,7 @@ const signUp2 = async (
             'Content-Type': 'multipart/form-data',
         },
     });
-    
+    console.log(response);
     resp = await response.json();
     if (response.ok){
         return resp;
