@@ -1,5 +1,6 @@
 export const TabNav = {
   Home: 'Home',
+  MasterHome: 'MasterHome',
   Profile: 'Profile',
   Discover: 'Discover',
   Shorts: 'Shorts',
@@ -63,5 +64,6 @@ export const StackNav = {
   CameraRegister: 'CameraRegister',
   FinishProfile: 'FinishProfile',
   PostComments: 'PostComments',
-  HistoryDetail: 'HistoryDetail'
+  HistoryDetail: 'HistoryDetail',
+  MasterHome: 'MasterHome',
 };

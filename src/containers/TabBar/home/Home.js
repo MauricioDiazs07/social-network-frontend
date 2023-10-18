@@ -3,7 +3,10 @@ import { View,
         StyleSheet,
         ScrollView,
         RefreshControl,
-        ActivityIndicator } from 'react-native';
+        ActivityIndicator,
+        AppRegistry,
+        Text,
+        processColor } from 'react-native';
 import React, { useMemo, createRef, useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +16,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import images from '../../../assets/images';
+import _, { forEach } from 'lodash';
+import {LineChart} from 'react-native-charts-wrapper';
+import {PieChart} from 'react-native-charts-wrapper';
+
+import {BarChart} from 'react-native-charts-wrapper';
 
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import { getHeight, moderateScale } from '../../../common/constants';
@@ -37,6 +45,7 @@ import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
 import { transformfPosts, transformfHistoy } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
+import { getGeneralData } from '../../../api/master/masterData';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -203,6 +212,299 @@ const Home = () => {
   const [postData, setPostData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [masterData, setMasterData] = useState([]);
+  const [genderPieChart, setGenderPieChart] = useState([]);
+  const [interestLineChart, setInterestLineChart] = useState([]);
+  const [ageBarChart, setAgeBarChart] = useState([]);
+
+  useEffect(() => {
+    getAsyncStorageData("PROFILE_PHOTO").then(photo => {
+      setProfilePhoto(photo)
+    });
+    getGeneralData().then(data => {
+      setMasterData(data);
+      setGenderPieChart(data);
+    });
+  });
+
+  const data = {
+    "age": {
+        "classified": {
+            "11 - 20 años": 0,
+            "21 - 30 años": 0,
+            "31 - 40 años": 0,
+            "41 - 50 años": 0,
+            "51 - 60 años": 0,
+            "61 - 70 años": 0,
+            "71 - 80 años": 0,
+            "Mayor 80 años": 0,
+            "Menor o igual 10 años": 0
+        },
+        "data": {}
+    },
+    "gender": {
+        "M": 2
+    },
+    "interests": [
+        {
+            "count": 0,
+            "description": "Ciencia y tecnología",
+            "id": 1
+        },
+        {
+            "count": 0,
+            "description": "Programas sociales",
+            "id": 2
+        },
+        {
+            "count": 0,
+            "description": "Deportes",
+            "id": 3
+        },
+        {
+            "count": 0,
+            "description": "Cultura",
+            "id": 4
+        },
+        {
+            "count": 0,
+            "description": "Medio ambiente",
+            "id": 5
+        },
+        {
+            "count": 0,
+            "description": "Economía",
+            "id": 6
+        },
+        {
+            "count": 0,
+            "description": "Seguridad",
+            "id": 7
+        }
+    ],
+    "seccion": {}
+};
+
+const va = _;
+const getLinearChartData = () => {
+  const int = [
+    {
+        "count": 1,
+        "description": "Ciencia y tecnología",
+        "id": 1
+    },
+    {
+        "count": 0,
+        "description": "Programas sociales",
+        "id": 2
+    },
+    {
+        "count": 0,
+        "description": "Deportes",
+        "id": 3
+    },
+    {
+        "count": 1,
+        "description": "Cultura",
+        "id": 4
+    },
+    {
+        "count": 0,
+        "description": "Medio ambiente",
+        "id": 5
+    },
+    {
+        "count": 1,
+        "description": "Economía",
+        "id": 6
+    },
+    {
+        "count": 0,
+        "description": "Seguridad",
+        "id": 7
+    }
+];
+const list_ = [];
+
+int.forEach((x) => {
+  list_.push({y: x['count'], marker: x['description'], x: x['id']})
+});
+
+return {dataSets: [{ values: list_, 
+  label: '',
+  config: {
+    lineWidth: 1.5,
+    drawCircles: false,
+    drawCubicIntensity: 0.3,
+    drawCubic: true,
+    drawHighlightIndicators: false,
+    color: COLOR_PURPLE,
+    drawFilled: true,
+    fillColor: COLOR_PURPLE,
+    fillAlpha: 90
+  }}]};
+}
+
+const getBarchartData = () => {
+  const ages = {
+    "11 - 20 años": 0,
+    "21 - 30 años": 1,
+    "31 - 40 años": 0,
+    "41 - 50 años": 0,
+    "51 - 60 años": 0,
+    "61 - 70 años": 0,
+    "71 - 80 años": 0,
+    "Mayor 80 años": 0,
+    "Menor o igual 10 años": 0
+  };
+
+  const keys_ = Object.keys(ages);
+
+  const list_ = [];
+
+  keys_.forEach((x) => {
+    list_.push({y: ages[x], marker: x})
+  });
+  
+  const data_ = {
+    dataSets: [{
+      values: list_,
+      label: 'Bar dataSet',
+      config: {
+        color: processColor('teal'),
+        barShadowColor: processColor('lightgrey'),
+        highlightAlpha: 90,
+        highlightColor: processColor('red'),
+      }
+    }],
+
+    config: {
+      barWidth: 0.7,
+    }
+  }
+
+  console.log("BARCHART DATA:", data_);
+
+  return data_;
+
+
+}
+
+const COLOR_PURPLE = processColor('#697dfb');
+
+const barState = {
+  legend: {
+    enabled: true,
+    textSize: 14,
+    form: 'SQUARE',
+    formSize: 14,
+    xEntrySpace: 10,
+    yEntrySpace: 5,
+    formToTextSpace: 5,
+    wordWrapEnabled: true,
+    maxSizePercent: 0.5
+  },
+  data: getBarchartData(),
+  highlights: [{x: 3}, {x: 6}],
+  xAxis: {
+    valueFormatter: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+    granularityEnabled: true,
+    granularity : 1,
+  }
+};
+
+  const state = {
+    data: {
+      set: {
+        dataSets: [{
+          values: [
+            {
+              x: 10,
+              y: 10,
+              marker: "#hola",
+            }
+          ],
+          label: '',
+          config: {
+            lineWidth: 1.5,
+            drawCircles: false,
+            drawCubicIntensity: 0.3,
+            drawCubic: true,
+            drawHighlightIndicators: false,
+            color: COLOR_PURPLE,
+            drawFilled: true,
+            fillColor: COLOR_PURPLE,
+            fillAlpha: 90
+          }
+        }],
+      }
+    },
+    xAxis: {
+      $set: {
+        textColor: processColor('red'),
+        textSize: 16,
+        gridColor: processColor('red'),
+        gridLineWidth: 1,
+        axisLineColor: processColor('darkgray'),
+        axisLineWidth: 1.5,
+        gridDashedLine: {
+          lineLength: 10,
+          spaceLength: 10
+        },
+        avoidFirstLastClipping: true,
+        position: 'BOTTOM'
+      }
+    },
+    yAxis: {
+      $set: {
+        left: {
+          drawGridLines: false
+        },
+        right: {
+          enabled: false
+        }
+      }
+    },
+  };
+
+  const pieState = {
+    legend: {
+      enabled: false,
+      textSize: 15,
+      form: 'CIRCLE',
+
+      horizontalAlignment: "RIGHT",
+      verticalAlignment: "CENTER",
+      orientation: "VERTICAL",
+      wordWrapEnabled: false
+    },
+    data: {
+      dataSets: [{
+        values: [{value: 0, label: 'M'},
+          {value: 1, label: 'H'}],
+        label: 'Género',
+        config: {
+          colors: [processColor('#C0FF8C'), processColor('#FFF78C'), processColor('#FFD08C'), processColor('#8CEAFF'), processColor('#FF8C9D')],
+          valueTextSize: 20,
+          valueTextColor: processColor('green'),
+          sliceSpace: 5,
+          selectionShift: 13,
+          // xValuePosition: "OUTSIDE_SLICE",
+          // yValuePosition: "OUTSIDE_SLICE",
+          valueFormatter: "#.#'%'",
+          valueLineColor: processColor('green'),
+          valueLinePart1Length: 0.5
+        }
+      }],
+    },
+    highlights: [{x:2}],
+    description: {
+      text: 'Gráfica que muestra el género de los usuarios',
+      textSize: 15,
+      textColor: processColor('darkgray'),
+
+    }
+  };
   
   useEffect(() => {
     getAsyncStorageData("PROFILE_ID").then(profile => {
@@ -253,7 +555,7 @@ const Home = () => {
         rightIcon={rightHeaderIcon}
         isLeftIcon={leftHeaderIcon}
       />
-      <ScrollView 
+      {user_access !== "master" && (<ScrollView 
         refreshControl={
           <RefreshControl onRefresh={onRefresh} />
         }>
@@ -285,7 +587,73 @@ const Home = () => {
             </View>
           </View>
         )}
-      </ScrollView>
+      </ScrollView>)}
+
+      {user_access === "master" && (
+        <View style={{flex: 1, padding:20}}>
+          <View>
+            <ZText>Holaaa</ZText>
+          </View>
+          
+          <View style={[localStyles.container, {height: 50}]}>
+            <LineChart style={localStyles.chart}
+              data={getLinearChartData()}
+            />
+            
+          </View>
+
+<View style={localStyles.container}>
+          <PieChart
+            style={localStyles.chart}
+            logEnabled={true}
+            chartBackgroundColor={processColor('pink')}
+            chartDescription={pieState.description}
+            data={pieState.data}
+            legend={pieState.legend}
+            highlights={pieState.highlights}
+
+            extraOffsets={{left: 5, top: 5, right: 5, bottom: 5}}
+
+            entryLabelColor={processColor('green')}
+            entryLabelTextSize={20}
+            entryLabelFontFamily={'HelveticaNeue-Medium'}
+            drawEntryLabels={true}
+
+            rotationEnabled={true}
+            rotationAngle={45}
+            usePercentValues={true}
+            styledCenterText={{text:'Pie center text!', color: processColor('pink'), fontFamily: 'HelveticaNeue-Medium', size: 20}}
+            centerTextRadiusPercent={100}
+            holeRadius={40}
+            holeColor={processColor('#f0f0f0')}
+            transparentCircleRadius={45}
+            transparentCircleColor={processColor('#f0f0f088')}
+            maxAngle={350}
+            // onSelect={this.handleSelect.bind(this)}
+            // onChange={(event) => console.log(event.nativeEvent)}
+          />
+        </View>
+
+        <View style={localStyles.container}>
+          <BarChart
+            style={localStyles.chart}
+            data={barState.data}
+            xAxis={barState.xAxis}
+            animation={{durationX: 2000}}
+            legend={barState.legend}
+            gridBackgroundColor={processColor('#ffffff')}
+            visibleRange={{x: { min: 5, max: 5 }}}
+            drawBarShadow={false}
+            drawValueAboveBar={true}
+            drawHighlightArrow={true}
+            // onSelect={this.handleSelect.bind(this)}
+            highlights={barState.highlights}
+            // onChange={(event) => console.log(event.nativeEvent)}
+          />
+        </View>
+        </View>
+      )}
+
       <LogOut
         SheetRef={LogOutSheetRef}
         onPressLogOut={onPressYesLogOut}
@@ -335,6 +703,13 @@ const localStyles = StyleSheet.create({
   loadingPosts: {
     height: getHeight(200),
     ...styles.rowCenter
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#F5FCFF'
+  },
+  chart: {
+    flex: 1
   },
 });
 

@@ -133,7 +133,6 @@ const Login = ({navigation}) => {
         await setAsyncStorageData(USER_LEVEL, user_lvl);
         await setAsyncStorageData('PROFILE_ID', token['profile_id']);
 
-        console.log(user_lvl);
         getProfileData(token['profile_id']).then(resp => {
           setAsyncStorageData('PROFILE_PHOTO', resp['profile_photo']);
           setAsyncStorageData('USERNAME', resp['name']);
@@ -141,10 +140,18 @@ const Login = ({navigation}) => {
           setAsyncStorageData('DESCRIPTION', resp['description']);
         });
 
-        navigation.reset({
-          index: 0,
-          routes: [{name: StackNav.TabBar}],
-        });
+        // TODO: add new reset
+        if (user_lvl === "master") {
+          navigation.reset({
+            index: 0,
+            routes: [{name: StackNav.TabBar}],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{name: StackNav.TabBar}],
+          });
+        }
       } else {
         setSnackVisible(true);
         return;

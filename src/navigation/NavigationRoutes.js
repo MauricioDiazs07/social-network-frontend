@@ -61,9 +61,11 @@ import UserProfile from '../containers/TabBar/profile/UserProfile';
 import CameraRegister from '../containers/auth/CameraRegister';
 import FinishProfile from '../containers/auth/FinishProfile';
 import PostComments from '../containers/TabBar/home/UserPostFeed/PostComments';
+import MasterHome from '../containers/TabBar/home/MasterHome';
 
 export const TabRoute = {
   Home,
+  MasterHome,
   Profile,
   Discover,
   Shorts,
@@ -126,5 +128,5 @@ export const StackRoute = {
   CameraRegister,
   FinishProfile,
   PostComments,
-  HistoryDetail
+  HistoryDetail,
 };

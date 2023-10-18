@@ -25,12 +25,13 @@ import {UserResearch} from '../../assets/svgs';
 import {readINE, readINE_2, readINE_3} from '../../api/auth/auth';
 import {StackNav} from '../../navigation/NavigationKeys';
 import { getFormatedBirthday, translateBirthday } from '../../utils/_support_functions';
+import { AndroidCred, iOSCred } from '../../utils/api_constants';
 
 const licenseKey = Platform.select({
   // iOS license key for applicationID: com.jsm.Influex
-  ios: 'sRwAAAEPY29tLmpzbS5JbmZsdWV4DbDaTEeTkHWoDqWbqsnhy9UKkAiOCSauXMb81ao+3Xe/DpIn3v1SEYn2r581qej2GaArjVgd0hTUJJLlyKX0b9LyM98fvHBX46GMPSYeY09ayI3Epq+xogrQnkPUgUZVvkVZlBlYJo3XEbkZqxzf5YdOUAgllZ2/uNl1KBMPj5Yl88w1KkcT4awT9hPQh9PDilAIu5Ez8es9miWg7gFBtm+VzoWeSqZEbQ==',
+  ios: iOSCred,
   // android license key for applicationID: com.jsm.influex
-  android: 'sRwAAAAPY29tLmpzbS5pbmZsdWV4z/iWXqtmF/Jh0uiVw2VXq5CV8clV/h1djajxChpdK/JMfEMbAdB4rlmmdPIBnpEEDBRRSUNRuxaBsn8Q5gH9o2VLTB/T0MmiopLDChQIPzxE/Q1nSI1jw6BTOzYhCAjmVztz+OqiYYeYDtHZD7jJorBLND/WiTd+gyJD73I5K2Q3+9ISeghIpl4liMS6B7SbW32Edl+Q0pcEgliX+sl7MRvQkD5tDzcnzw=='
+  android: AndroidCred
 })
 
 const CameraRegister = props => {

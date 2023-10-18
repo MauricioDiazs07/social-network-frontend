@@ -29,6 +29,7 @@ const getUserLevel = async () => {
   await AsyncStorage.getItem(USER_LEVEL)
     .then((data) => {
       user_access = JSON.parse(data);
+      console.log("TABBAR USERACCESS:", user_access, user_access == "master");
     }).catch(err => console.log("ERROR:", err));
 };
 
@@ -77,17 +78,19 @@ export default function TabBarNavigation({navigation}) {
         ],
         tabBarShowLabel: false,
       }}
-      initialRouteName={TabNav.Home}>
+      initialRouteName={user_access == "master" ? TabNav.MasterHome : TabNav.Home}>
       <Tab.Screen
-        name={TabNav.Home}
-        component={TabRoute.Home}
+        name={user_access == "master" ? TabNav.MasterHome : TabNav.Home}
+        component={user_access == "master" ? TabRoute.MasterHome : TabRoute.Home}
         options={{
           tabBarIcon: ({focused}) => (
-            <TabText
-              text={strings.home}
-              focused={focused}
-              icon={focused ? <Home_Dark /> : <Home_Light />}
-            />
+            <View>
+              {user_access !== "master" && (<TabText
+                text={strings.home}
+                focused={focused}
+                icon={focused ? <Home_Dark /> : <Home_Light />}
+              />)}
+            </View>
           ),
         }}
       />
@@ -123,11 +126,13 @@ export default function TabBarNavigation({navigation}) {
         component={TabRoute.Shorts}
         options={{
           tabBarIcon: ({focused}) => (
-            <TabText
-              text={strings.shorts}
-              focused={focused}
-              icon={focused ? <Inbox_Dark /> : <Inbox_Light />}
-            />
+            <View>
+              {user_access !== "master" &&(<TabText
+                text={strings.shorts}
+                focused={focused}
+                icon={focused ? <Inbox_Dark /> : <Inbox_Light />}
+              />)}
+            </View>
           ),
         }}
       />

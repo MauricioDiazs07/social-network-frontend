@@ -8,8 +8,6 @@ import {
  } from "../../utils/api_constants";
 
 const getAuthToken = async (phoneNumber, password) => {
-    console.log('phoneNumber:', phoneNumber);
-    console.log('password:', password);
     const response = await fetch(URL_API + LOGIN, {
         method: "POST", 
         body: JSON.stringify({
