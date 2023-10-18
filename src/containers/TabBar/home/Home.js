@@ -208,7 +208,7 @@ const Home = () => {
   const navigation = useNavigation();
   const rightHeaderIcon = useMemo(() => <RightHeaderIcons />, []);
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
-
+  
   const [postData, setPostData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -216,15 +216,17 @@ const Home = () => {
   const [genderPieChart, setGenderPieChart] = useState([]);
   const [interestLineChart, setInterestLineChart] = useState([]);
   const [ageBarChart, setAgeBarChart] = useState([]);
-
+  const [isData, setIsData] = useState(false);
+  
   useEffect(() => {
-    getAsyncStorageData("PROFILE_PHOTO").then(photo => {
-      setProfilePhoto(photo)
-    });
-    getGeneralData().then(data => {
-      setMasterData(data);
-      setGenderPieChart(data);
-    });
+    if (!isData) {
+      getGeneralData().then(data => {
+        setMasterData(data);
+        setGenderPieChart(data);
+        console.log("MASTARDATADONE", data);
+      });
+      setIsData(true);
+    }
   });
 
   const data = {
