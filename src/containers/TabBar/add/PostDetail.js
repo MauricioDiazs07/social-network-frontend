@@ -13,7 +13,6 @@ import {useSelector} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Snackbar, Button} from '@react-native-material/core';
 import ImagePicker from 'react-native-image-crop-picker';
-// import { SelectMultipleButton, SelectMultipleGroupButton } from 'react-native-selectmultiple-button';
 import { FlashList } from '@shopify/flash-list';
 import {useNavigation} from '@react-navigation/native';
 
@@ -35,6 +34,7 @@ import { StackNav } from '../../../navigation/NavigationKeys';
 import { getColor } from '../../../utils/_support_functions';
 import { InterestDetail } from '../../../api/constant';
 import flex from '../../../themes/flex';
+import { colors } from 'react-native-swiper-flatlist/src/themes';
 
 export default function PostDetail() {
   const colors = useSelector(state => state.theme.theme);
@@ -53,7 +53,7 @@ export default function PostDetail() {
   const [index, setIndex] = React.useState(1);
   const [chars, setChars] = React.useState(0);
   const [selectInterest, setSelectInterest] = React.useState([]);
-  const [isSelected, setIsSelected] = React.useState(false);
+  const [invalidPost, setInvalidPost] = React.useState(false);
 
   const onChangeText = val => {
     setText(val);
@@ -64,14 +64,12 @@ export default function PostDetail() {
 
   const closeSnackbar = () => setIsSnackbarVisible(false);
 
-  const handleButtonInterests = (id, value) => {
-    const pressedButton = selectInterest.find((button) => button.id === id);
-
-    if (!pressedButton) {
-      setSelectInterest([...selectInterest, { id, value }]);
-      setIsSelected(true);
+  const handleButtonInterests = (interestId) => {
+    if (selectInterest.includes(interestId)) {  
+      setSelectInterest(selectInterest.filter(id => id !== interestId));
+    } else {
+      setSelectInterest([...selectInterest, interestId]);
     }
-    console.log("selectInterest", selectInterest);
   };
 
   useEffect(() => {
@@ -168,7 +166,7 @@ export default function PostDetail() {
     formData.append("description", text);
     formData.append("profile_id", profile_id.profile_id);
     formData.append("share_type", "POST");
-    // formData.append("interest", JSON.stringify(selectInterest));
+    formData.append("interest", JSON.stringify(selectInterest));
     
     selectImage.forEach((value, index) => {
       const imageData = {
@@ -276,26 +274,132 @@ export default function PostDetail() {
               gap: 5,
               marginTop:10,
           }}>
-            {InterestDetail.map(interest => (
-                <ZButton
-                  key={interest.id}
-                  title={interest.value}
-                  textType={'b18'}
-                  color={colors.dark ? colors.white : colors.primary}
-                  containerStyle={localStyles.btnInterest}
-                  style={{  
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '60%', 
-                    textAlign: 'center',
-                    fontSize: 16,
-                    fontWeight: '600',
-                  }}
-                  bgColor={colors.dark3}
-                  onPress={() => handleButtonInterests(interest.id, interest.value)}            
-                >
-                </ZButton>
-            ))}
+            <ZButton
+              key={InterestDetail[0].id}
+              title={InterestDetail[0].value}
+              textType={'b18'}
+              color={colors.dark ? colors.white : colors.primary}
+              containerStyle={localStyles.btnInterest}
+              style={{  
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60%', 
+                textAlign: 'center',
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+              bgColor={selectInterest.includes(1) ? colors.primary : colors.dark3}
+              onPress={() => handleButtonInterests(InterestDetail[0].id, InterestDetail[0].value)}            
+            >
+            </ZButton>
+            <ZButton
+              key={InterestDetail[1].id}
+              title={InterestDetail[1].value}
+              textType={'b18'}
+              color={colors.dark ? colors.white : colors.primary}
+              containerStyle={localStyles.btnInterest}
+              style={{  
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60%', 
+                textAlign: 'center',
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+              bgColor={selectInterest.includes(2) ? colors.primary : colors.dark3}
+              onPress={() => handleButtonInterests(InterestDetail[1].id, InterestDetail[1].value)}            
+            >
+            </ZButton>
+            <ZButton
+              key={InterestDetail[2].id}
+              title={InterestDetail[2].value}
+              textType={'b18'}
+              color={colors.dark ? colors.white : colors.primary}
+              containerStyle={localStyles.btnInterest}
+              style={{  
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60%', 
+                textAlign: 'center',
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+              bgColor={selectInterest.includes(3) ? colors.primary : colors.dark3}
+              onPress={() => handleButtonInterests(InterestDetail[2].id, InterestDetail[2].value)}            
+            >
+            </ZButton>
+            <ZButton
+              key={InterestDetail[3].id}
+              title={InterestDetail[3].value}
+              textType={'b18'}
+              color={colors.dark ? colors.white : colors.primary}
+              containerStyle={localStyles.btnInterest}
+              style={{  
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60%', 
+                textAlign: 'center',
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+              bgColor={selectInterest.includes(4) ? colors.primary : colors.dark3}
+              onPress={() => handleButtonInterests(InterestDetail[3].id, InterestDetail[3].value)}            
+            >
+            </ZButton>
+            <ZButton
+              key={InterestDetail[4].id}
+              title={InterestDetail[4].value}
+              textType={'b18'}
+              color={colors.dark ? colors.white : colors.primary}
+              containerStyle={localStyles.btnInterest}
+              style={{  
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60%', 
+                textAlign: 'center',
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+              bgColor={selectInterest.includes(5) ? colors.primary : colors.dark3}
+              onPress={() => handleButtonInterests(InterestDetail[4].id, InterestDetail[4].value)}            
+            >
+            </ZButton>
+            <ZButton
+              key={InterestDetail[5].id}
+              title={InterestDetail[5].value}
+              textType={'b18'}
+              color={colors.dark ? colors.white : colors.primary}
+              containerStyle={localStyles.btnInterest}
+              style={{  
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60%', 
+                textAlign: 'center',
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+              bgColor={selectInterest.includes(6) ? colors.primary : colors.dark3}
+              onPress={() => handleButtonInterests(InterestDetail[5].id, InterestDetail[5].value)}            
+            >
+            </ZButton>
+            <ZButton
+              key={InterestDetail[6].id}
+              title={InterestDetail[6].value}
+              textType={'b18'}
+              color={colors.dark ? colors.white : colors.primary}
+              containerStyle={localStyles.btnInterest}
+              style={{  
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60%', 
+                textAlign: 'center',
+                fontSize: 16,
+                fontWeight: '600',
+              }}
+              bgColor={selectInterest.includes(7) ? colors.primary : colors.dark3}
+              onPress={() => handleButtonInterests(InterestDetail[6].id, InterestDetail[6].value)}            
+            >
+            </ZButton>
           </View>
         </View>
         <View
@@ -500,10 +604,11 @@ const localStyles = StyleSheet.create({
     width: '45%',
   },
   btnInterest: {
-    width: '45%'
+    width: '45%',
   },
   btnInterestSelected: {
-    width: '80%'
+    width: '60%',
+    backgroundColor: colors.primary
   },
   image: {
     ...styles.m5,

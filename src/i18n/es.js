@@ -212,6 +212,7 @@ export default {
     validatePhoneNumber:'El numero de telefono debe contener 10 digitos',
     validCurp: 'Por favor, introduce un CURP válido',
     validEmail: 'Por favor, ingrese un email válido',
+    validInterest: 'Elige al menos un interés',
     validSect: 'La sección debe constar de cuatro dígitos',
     verify: 'Verificar',
     viaEmail: 'vía Email',
