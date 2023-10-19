@@ -4,7 +4,8 @@ import {
     SIGNUP,
     READ_INE,
     READ_INE_2,
-    INTERESTS_LIST
+    INTERESTS_LIST,
+    UPDATE_INTERESTS,
  } from "../../utils/api_constants";
 
 const getAuthToken = async (phoneNumber, password) => {
@@ -113,7 +114,6 @@ const signUp = async (
 
     resp = await response.json();
     if (response.ok){
-        
         return resp;
     }
 }
@@ -121,7 +121,6 @@ const signUp = async (
 const signUp2 = async (
     user
 ) => {
-
     const form = new FormData()
     form.append('phone', user['phone'])
     form.append('password', user['password'])
@@ -180,6 +179,28 @@ const getInterests = async () => {
     }
 }
 
+const updateInterests = async (
+    profile_id,
+    interests
+) => {
+    const response = await fetch(URL_API + UPDATE_INTERESTS, {
+        method: "POST", 
+        body: JSON.stringify({
+            profile_id: profile_id,
+            interest: interests
+        }),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+
+    resp = await response.json();
+    if (response.ok){
+        
+        return resp;
+    }
+}
+
 export {
     getAuthToken,
     readINE,
@@ -188,4 +209,5 @@ export {
     signUp,
     signUp2,
     getInterests,
+    updateInterests,
 };

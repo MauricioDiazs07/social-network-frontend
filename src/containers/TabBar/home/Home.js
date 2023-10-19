@@ -212,16 +212,15 @@ const Home = () => {
   const [postData, setPostData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [masterData, setMasterData] = useState([]);
   const [genderPieChart, setGenderPieChart] = useState([]);
   const [interestLineChart, setInterestLineChart] = useState([]);
   const [ageBarChart, setAgeBarChart] = useState([]);
   const [isData, setIsData] = useState(false);
   
   useEffect(() => {
-    if (!isData) {
+    if (!isData && user_access === "master") {
       getGeneralData().then(data => {
-        setMasterData(data);
+        console.log("MASTERDATA:", data);
         setGenderPieChart(data['gender']);
         setAgeBarChart(data['age']);
         setInterestLineChart(data['interests']['data']);
