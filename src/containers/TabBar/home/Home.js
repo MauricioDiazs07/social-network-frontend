@@ -230,244 +230,66 @@ const Home = () => {
     }
   });
 
-  const data = {
-    "age": {
-        "classified": {
-            "11 - 20 años": 0,
-            "21 - 30 años": 0,
-            "31 - 40 años": 0,
-            "41 - 50 años": 0,
-            "51 - 60 años": 0,
-            "61 - 70 años": 0,
-            "71 - 80 años": 0,
-            "Mayor 80 años": 0,
-            "Menor o igual 10 años": 0
-        },
-        "data": {}
-    },
-    "gender": {
-        "M": 2
-    },
-    "interests": [
-        {
-            "count": 0,
-            "description": "Ciencia y tecnología",
-            "id": 1
-        },
-        {
-            "count": 0,
-            "description": "Programas sociales",
-            "id": 2
-        },
-        {
-            "count": 0,
-            "description": "Deportes",
-            "id": 3
-        },
-        {
-            "count": 0,
-            "description": "Cultura",
-            "id": 4
-        },
-        {
-            "count": 0,
-            "description": "Medio ambiente",
-            "id": 5
-        },
-        {
-            "count": 0,
-            "description": "Economía",
-            "id": 6
-        },
-        {
-            "count": 0,
-            "description": "Seguridad",
-            "id": 7
-        }
-    ],
-    "seccion": {}
-};
-
-const va = _;
 const getLinearChartData = () => {
-  const int = [
-    {
-        "count": 1,
-        "description": "Ciencia y tecnología",
-        "id": 1
-    },
-    {
-        "count": 0,
-        "description": "Programas sociales",
-        "id": 2
-    },
-    {
-        "count": 0,
-        "description": "Deportes",
-        "id": 3
-    },
-    {
-        "count": 1,
-        "description": "Cultura",
-        "id": 4
-    },
-    {
-        "count": 0,
-        "description": "Medio ambiente",
-        "id": 5
-    },
-    {
-        "count": 1,
-        "description": "Economía",
-        "id": 6
-    },
-    {
-        "count": 0,
-        "description": "Seguridad",
-        "id": 7
-    }
-];
-// const list_ = [];
 
-// int.forEach((x) => {
-//   list_.push({y: x['count'], marker: x['description'], x: x['id']})
-// });
-
-return {dataSets: [{ values: interestLineChart, 
-  label: '',
-  config: {
-    lineWidth: 1.5,
-    drawCircles: false,
-    drawCubicIntensity: 0.3,
-    drawCubic: true,
-    drawHighlightIndicators: false,
-    color: COLOR_PURPLE,
-    drawFilled: true,
-    fillColor: COLOR_PURPLE,
-    fillAlpha: 90
-  }}]};
-}
-
-const getBarchartData = () => {
-  const ages = {
-    "11 - 20 años": 0,
-    "21 - 30 años": 1,
-    "31 - 40 años": 0,
-    "41 - 50 años": 0,
-    "51 - 60 años": 0,
-    "61 - 70 años": 0,
-    "71 - 80 años": 0,
-    "Mayor 80 años": 0,
-    "Menor o igual 10 años": 0
-  };
-
-  // const keys_ = Object.keys(ages);
-
-  // const list_ = [];
-
-  // keys_.forEach((x) => {
-  //   list_.push({y: ages[x], marker: x})
-  // });
-  
-  const data_ = {
-    dataSets: [{
-      values: ageBarChart,
-      label: 'Bar dataSet',
-      config: {
-        color: processColor('teal'),
-        barShadowColor: processColor('lightgrey'),
-        highlightAlpha: 90,
-        highlightColor: processColor('red'),
-      }
-    }],
-
+  return {dataSets: [{ values: interestLineChart, 
+    label: '',
     config: {
-      barWidth: 0.7,
-    }
+      lineWidth: 1.5,
+      drawCircles: false,
+      drawCubicIntensity: 0.3,
+      drawCubic: true,
+      drawHighlightIndicators: false,
+      color: COLOR_PURPLE,
+      drawFilled: true,
+      fillColor: COLOR_PURPLE,
+      fillAlpha: 90
+    }}]};
   }
 
-  console.log("BARCHART DATA:", data_);
-
-  return data_;
-
-
-}
-
-const COLOR_PURPLE = processColor('#697dfb');
-
-const barState = {
-  legend: {
-    enabled: true,
-    textSize: 14,
-    form: 'SQUARE',
-    formSize: 14,
-    xEntrySpace: 10,
-    yEntrySpace: 5,
-    formToTextSpace: 5,
-    wordWrapEnabled: true,
-    maxSizePercent: 0.5
-  },
-  data: getBarchartData(),
-  highlights: [{x: 3}, {x: 6}],
-  xAxis: {
-    valueFormatter: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-    granularityEnabled: true,
-    granularity : 1,
-  }
-};
-
-  const state = {
-    data: {
-      set: {
-        dataSets: [{
-          values: [
-            {
-              x: 10,
-              y: 10,
-              marker: "#hola",
-            }
-          ],
-          label: '',
-          config: {
-            lineWidth: 1.5,
-            drawCircles: false,
-            drawCubicIntensity: 0.3,
-            drawCubic: true,
-            drawHighlightIndicators: false,
-            color: COLOR_PURPLE,
-            drawFilled: true,
-            fillColor: COLOR_PURPLE,
-            fillAlpha: 90
-          }
-        }],
-      }
-    },
-    xAxis: {
-      $set: {
-        textColor: processColor('red'),
-        textSize: 16,
-        gridColor: processColor('red'),
-        gridLineWidth: 1,
-        axisLineColor: processColor('darkgray'),
-        axisLineWidth: 1.5,
-        gridDashedLine: {
-          lineLength: 10,
-          spaceLength: 10
-        },
-        avoidFirstLastClipping: true,
-        position: 'BOTTOM'
-      }
-    },
-    yAxis: {
-      $set: {
-        left: {
-          drawGridLines: false
-        },
-        right: {
-          enabled: false
+  const getBarchartData = () => {
+    
+    const data_ = {
+      dataSets: [{
+        values: ageBarChart,
+        label: 'Bar dataSet',
+        config: {
+          color: processColor('teal'),
+          barShadowColor: processColor('lightgrey'),
+          highlightAlpha: 90,
+          highlightColor: processColor('red'),
         }
+      }],
+
+      config: {
+        barWidth: 0.7,
       }
+    }
+
+    return data_;
+  }
+
+  const COLOR_PURPLE = processColor('#697dfb');
+
+  const barState = {
+    legend: {
+      enabled: true,
+      textSize: 14,
+      form: 'SQUARE',
+      formSize: 14,
+      xEntrySpace: 10,
+      yEntrySpace: 5,
+      formToTextSpace: 5,
+      wordWrapEnabled: true,
+      maxSizePercent: 0.5
     },
+    data: getBarchartData(),
+    highlights: [{x: 3}, {x: 6}],
+    xAxis: {
+      valueFormatter: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      granularityEnabled: true,
+      granularity : 1,
+    }
   };
 
   const pieState = {
@@ -601,58 +423,57 @@ const barState = {
             <LineChart style={localStyles.chart}
               data={getLinearChartData()}
             />
-            
           </View>
 
-<View style={localStyles.container}>
-          <PieChart
-            style={localStyles.chart}
-            logEnabled={true}
-            chartBackgroundColor={processColor('pink')}
-            chartDescription={pieState.description}
-            data={pieState.data}
-            legend={pieState.legend}
-            highlights={pieState.highlights}
+          <View style={localStyles.container}>
+            <PieChart
+              style={localStyles.chart}
+              logEnabled={true}
+              chartBackgroundColor={processColor('pink')}
+              chartDescription={pieState.description}
+              data={pieState.data}
+              legend={pieState.legend}
+              highlights={pieState.highlights}
 
-            extraOffsets={{left: 5, top: 5, right: 5, bottom: 5}}
+              extraOffsets={{left: 5, top: 5, right: 5, bottom: 5}}
 
-            entryLabelColor={processColor('green')}
-            entryLabelTextSize={20}
-            entryLabelFontFamily={'HelveticaNeue-Medium'}
-            drawEntryLabels={true}
+              entryLabelColor={processColor('green')}
+              entryLabelTextSize={20}
+              entryLabelFontFamily={'HelveticaNeue-Medium'}
+              drawEntryLabels={true}
 
-            rotationEnabled={true}
-            rotationAngle={45}
-            usePercentValues={true}
-            styledCenterText={{text:'Pie center text!', color: processColor('pink'), fontFamily: 'HelveticaNeue-Medium', size: 20}}
-            centerTextRadiusPercent={100}
-            holeRadius={40}
-            holeColor={processColor('#f0f0f0')}
-            transparentCircleRadius={45}
-            transparentCircleColor={processColor('#f0f0f088')}
-            maxAngle={350}
-            // onSelect={this.handleSelect.bind(this)}
-            // onChange={(event) => console.log(event.nativeEvent)}
-          />
-        </View>
+              rotationEnabled={true}
+              rotationAngle={45}
+              usePercentValues={true}
+              styledCenterText={{text:'Pie center text!', color: processColor('pink'), fontFamily: 'HelveticaNeue-Medium', size: 20}}
+              centerTextRadiusPercent={100}
+              holeRadius={40}
+              holeColor={processColor('#f0f0f0')}
+              transparentCircleRadius={45}
+              transparentCircleColor={processColor('#f0f0f088')}
+              maxAngle={350}
+              // onSelect={this.handleSelect.bind(this)}
+              // onChange={(event) => console.log(event.nativeEvent)}
+            />
+          </View>
 
-        <View style={localStyles.container}>
-          <BarChart
-            style={localStyles.chart}
-            data={barState.data}
-            xAxis={barState.xAxis}
-            animation={{durationX: 2000}}
-            legend={barState.legend}
-            gridBackgroundColor={processColor('#ffffff')}
-            visibleRange={{x: { min: 5, max: 5 }}}
-            drawBarShadow={false}
-            drawValueAboveBar={true}
-            drawHighlightArrow={true}
-            // onSelect={this.handleSelect.bind(this)}
-            highlights={barState.highlights}
-            // onChange={(event) => console.log(event.nativeEvent)}
-          />
-        </View>
+          <View style={localStyles.container}>
+            <BarChart
+              style={localStyles.chart}
+              data={barState.data}
+              xAxis={barState.xAxis}
+              animation={{durationX: 2000}}
+              legend={barState.legend}
+              gridBackgroundColor={processColor('#ffffff')}
+              visibleRange={{x: { min: 5, max: 5 }}}
+              drawBarShadow={false}
+              drawValueAboveBar={true}
+              drawHighlightArrow={true}
+              // onSelect={this.handleSelect.bind(this)}
+              highlights={barState.highlights}
+              // onChange={(event) => console.log(event.nativeEvent)}
+            />
+          </View>
         </View>
       )}
 
