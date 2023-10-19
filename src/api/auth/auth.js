@@ -58,8 +58,7 @@ const readINE_2 = async (ine_pic) => {
         uri: ine_pic.path,
         name: `img_${1}.jpg`,
         type: ine_pic.mime,
-    } 
-    console.log('imageData', imageData);
+    }
     formData.append("ine", imageData);
     const response = await fetch(URL_API + READ_INE_2, {
         method: "POST", 
@@ -102,25 +101,6 @@ const readINE_3 = async (ine_pic) => {
 const signUp = async (
     user
 ) => {
-    const response = await fetch(URL_API + SIGNUP, {
-        method: "POST", 
-        body: JSON.stringify({
-            ...user
-        }),
-        headers: {
-            'Content-type': 'application/json'
-        }
-    });
-
-    resp = await response.json();
-    if (response.ok){
-        return resp;
-    }
-}
-
-const signUp2 = async (
-    user
-) => {
     const form = new FormData()
     form.append('phone', user['phone'])
     form.append('password', user['password'])
@@ -135,13 +115,11 @@ const signUp2 = async (
     form.append('email', user['email'])
     
     const value = user['identification_photo'];
-    console.log(value);
     const imageData1 = {
         uri: value,
         name: `img_${1}.jpg`,
         type: 'image/jpg',
     }
-    console.log(imageData1);
 
     if (user['profile_photo'] != ''){
         const imageData2 = {
@@ -151,9 +129,8 @@ const signUp2 = async (
         }
         form.append('profile_photo', imageData2)
     }
-    console.log("Datos");
     form.append('identification_photo', imageData1);
-    console.log("Datos de registro: ",form);
+    
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: form,
@@ -161,7 +138,7 @@ const signUp2 = async (
             'Content-Type': 'multipart/form-data',
         },
     });
-    console.log(response);
+    
     resp = await response.json();
     if (response.ok){
         return resp;
@@ -207,7 +184,6 @@ export {
     readINE_2,
     readINE_3,
     signUp,
-    signUp2,
     getInterests,
     updateInterests,
 };

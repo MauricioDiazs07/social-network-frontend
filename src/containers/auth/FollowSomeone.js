@@ -15,10 +15,11 @@ import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
 import {moderateScale, getHeight} from '../../common/constants';
 import ZSearch from '../../components/common/ZSearch';
-import { signUp2, getAuthToken, getInterests, updateInterests } from '../../api/auth/auth';
+import { signUp, getAuthToken, getInterests, updateInterests } from '../../api/auth/auth';
 import { getProfileData } from '../../api/feed/interaction';
 import { USER_LEVEL, ACCESS_TOKEN } from '../../common/constants';
-import { getAccessLevel, setAsyncStorageData } from '../../utils/_support_functions';
+import { getAccessLevel } from '../../utils/_support_functions';
+import { setAsyncStorageData } from '../../utils/helpers';
 
 const FollowSomeone = props => {
   const colors = useSelector(state => state.theme.theme);
@@ -79,7 +80,7 @@ const FollowSomeone = props => {
   const onPressContinue = () => {
     setIsLoading(true);
 
-    signUp2(usser_)
+    signUp(usser_)
       .then(resp => {
         if (resp) {
           getAuthToken(
@@ -101,7 +102,6 @@ const FollowSomeone = props => {
                   setAsyncStorageData("GENDER", resp['gender']);
                   setAsyncStorageData("DESCRIPTION", resp['description']);
                 });
-                console.log("HOLA");
 
                 updateInterests(token['profile_id'], interests)
                 .then(resp => console.log("interestsAPI", resp));
