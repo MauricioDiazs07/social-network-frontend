@@ -225,7 +225,6 @@ const Home = () => {
         setGenderPieChart(data['gender']);
         setAgeBarChart(data['age']);
         setInterestLineChart(data['interests']['data']);
-        console.log("MASTARDATADONE", data);
       });
       setIsData(true);
     }
