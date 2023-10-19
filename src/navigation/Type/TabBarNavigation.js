@@ -78,10 +78,10 @@ export default function TabBarNavigation({navigation}) {
         ],
         tabBarShowLabel: false,
       }}
-      initialRouteName={user_access == "master" ? TabNav.MasterHome : TabNav.Home}>
+      initialRouteName={TabNav.Home}>
       <Tab.Screen
-        name={user_access == "master" ? TabNav.MasterHome : TabNav.Home}
-        component={user_access == "master" ? TabRoute.MasterHome : TabRoute.Home}
+        name={TabNav.Home}
+        component={TabRoute.Home}
         options={{
           tabBarIcon: ({focused}) => (
             <View>

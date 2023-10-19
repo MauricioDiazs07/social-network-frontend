@@ -208,7 +208,7 @@ const Home = () => {
   const navigation = useNavigation();
   const rightHeaderIcon = useMemo(() => <RightHeaderIcons />, []);
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
-
+  
   const [postData, setPostData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -216,15 +216,19 @@ const Home = () => {
   const [genderPieChart, setGenderPieChart] = useState([]);
   const [interestLineChart, setInterestLineChart] = useState([]);
   const [ageBarChart, setAgeBarChart] = useState([]);
-
+  const [isData, setIsData] = useState(false);
+  
   useEffect(() => {
-    getAsyncStorageData("PROFILE_PHOTO").then(photo => {
-      setProfilePhoto(photo)
-    });
-    getGeneralData().then(data => {
-      setMasterData(data);
-      setGenderPieChart(data);
-    });
+    if (!isData) {
+      getGeneralData().then(data => {
+        setMasterData(data);
+        setGenderPieChart(data['gender']);
+        setAgeBarChart(data['age']);
+        setInterestLineChart(data['interests']['data']);
+        console.log("MASTARDATADONE", data);
+      });
+      setIsData(true);
+    }
   });
 
   const data = {
@@ -324,13 +328,13 @@ const getLinearChartData = () => {
         "id": 7
     }
 ];
-const list_ = [];
+// const list_ = [];
 
-int.forEach((x) => {
-  list_.push({y: x['count'], marker: x['description'], x: x['id']})
-});
+// int.forEach((x) => {
+//   list_.push({y: x['count'], marker: x['description'], x: x['id']})
+// });
 
-return {dataSets: [{ values: list_, 
+return {dataSets: [{ values: interestLineChart, 
   label: '',
   config: {
     lineWidth: 1.5,
@@ -358,17 +362,17 @@ const getBarchartData = () => {
     "Menor o igual 10 años": 0
   };
 
-  const keys_ = Object.keys(ages);
+  // const keys_ = Object.keys(ages);
 
-  const list_ = [];
+  // const list_ = [];
 
-  keys_.forEach((x) => {
-    list_.push({y: ages[x], marker: x})
-  });
+  // keys_.forEach((x) => {
+  //   list_.push({y: ages[x], marker: x})
+  // });
   
   const data_ = {
     dataSets: [{
-      values: list_,
+      values: ageBarChart,
       label: 'Bar dataSet',
       config: {
         color: processColor('teal'),
@@ -480,8 +484,7 @@ const barState = {
     },
     data: {
       dataSets: [{
-        values: [{value: 0, label: 'M'},
-          {value: 1, label: 'H'}],
+        values: genderPieChart,
         label: 'Género',
         config: {
           colors: [processColor('#C0FF8C'), processColor('#FFF78C'), processColor('#FFD08C'), processColor('#8CEAFF'), processColor('#FF8C9D')],
