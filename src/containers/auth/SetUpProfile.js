@@ -203,7 +203,8 @@ const SetUpProfile = props => {
         state: state_,
         municipality: municipality,
         curp: curp,
-        identification_photo: id_photo
+        identification_photo: id_photo,
+        section: section
     };
 
     navigation.navigate(StackNav.FinishProfile, {

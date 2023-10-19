@@ -271,7 +271,7 @@ const CameraRegister = props => {
               user_["section"] = resp['section'];
               user_["state"] = resp['state'];
               user_["municipality"] = resp['municipality'];
-
+              console.log("Datos del user en camera", user_);
               navigation.navigate(StackNav.SetUpProfile, {
                 title: headerTitle,
                 userCred: {
