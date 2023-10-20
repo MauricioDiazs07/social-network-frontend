@@ -17,7 +17,7 @@ import ZButton from '../../components/common/ZButton';
 import { validateEmail } from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 
-const ForgotPassword = ({navigation}) => {
+const UserValidation = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
 
   const FocusedStyle = {
@@ -72,6 +72,12 @@ const ForgotPassword = ({navigation}) => {
     onBlurIcon(setEmailIcon);
   };
 
+  const onPressContinue = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: StackNav.TabBar}],
+    });
+  };
   const onPressPinContinue = () =>
     navigation.navigate(StackNav.ForgotPasswordOtp,
                           {email2Send: email}
@@ -135,7 +141,7 @@ const ForgotPassword = ({navigation}) => {
   );
 };
 
-export default ForgotPassword;
+export default UserValidation;
 
 const localStyles = StyleSheet.create({
   root: {
