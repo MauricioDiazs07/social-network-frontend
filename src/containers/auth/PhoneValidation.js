@@ -17,9 +17,10 @@ import {StackNav} from '../../navigation/NavigationKeys';
 import typography from '../../themes/typography';
 import ZButton from '../../components/common/ZButton';
 
-const UserValidation = props => {
+const PhoneValidation = props => {
   const { navigation } = props;
-  const email = props.route.params.email2Send;
+  // const email = props.route.params.email2Send;
+  const phone = props.route.params.phone
 
   const colors = useSelector(state => state.theme.theme);
 
@@ -28,6 +29,22 @@ const UserValidation = props => {
   const [isTimeOver, setIsTimeOver] = useState(false);
   const [counter, setCounter] = useState(10);
 
+  
+  // TWILIO CODE*************
+  // const accountSid = 'ACcbd70358aa76ae1a66cba60ad187a99c';
+  // const authToken = '9765c162ce965ee7555095e1828c2417';
+
+  // const client = require('twilio')(accountSid, authToken);
+
+  // client.messages
+  //   .create({
+  //     body: 'Hello from twilio-node',
+  //     to: '+12345678901', // Text your number
+  //     from: '+12345678901', // From a valid Twilio number
+  //   })
+  //   .then((message) => console.log(message.sid));
+
+/******** */
   const onOtpChange = code => setOtp(code);
   const onPressVerify = () => navigation.navigate(StackNav.CreateNewPassword);
 
@@ -48,7 +65,7 @@ const UserValidation = props => {
       <ZKeyBoardAvoidWrapper contentContainerStyle={styles.flexGrow1}>
         <View style={localStyles.root}>
           <ZText type={'r18'} align={'center'} style={styles.mb20}>
-            {strings.codeSendOn + email}
+            {/* {strings.codeSendOn + email} */}
           </ZText>
           <OTPInputView
             pinCount={4}
@@ -118,7 +135,7 @@ const UserValidation = props => {
   );
 };
 
-export default UserValidation;
+export default PhoneValidation;
 
 const localStyles = StyleSheet.create({
   root: {

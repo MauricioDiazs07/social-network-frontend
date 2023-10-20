@@ -75,7 +75,9 @@ const Register = ({navigation}) => {
   };
 
   const onPressSignWithPassword = () => {
-    navigation.navigate(StackNav.CameraRegister, {
+    // navigation.navigate(StackNav.CameraRegister, {
+    navigation.navigate(StackNav.FollowSomeone, {
+
       title: strings.fillYourProfile,
       phone: phoneNumber,
       password: password

@@ -64,5 +64,5 @@ export const StackNav = {
   FinishProfile: 'FinishProfile',
   PostComments: 'PostComments',
   HistoryDetail: 'HistoryDetail',
-  UserValidation: 'UserValidation'
+  PhoneValidation: 'PhoneValidation'
 };

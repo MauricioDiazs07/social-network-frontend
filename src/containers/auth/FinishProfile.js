@@ -211,8 +211,9 @@ const FinishProfile = props => {
                   setAsyncStorageData("GENDER", resp['gender']);
                   setAsyncStorageData("DESCRIPTION", resp['description']);
                 });
-
-                navigation.navigate(StackNav.UserValidation);
+// Navegación correcta
+                navigation.navigate(StackNav.FollowSomeone,
+                  {usser: usser_});
             }})
             .catch(err => {
               setIsLoading(false);
