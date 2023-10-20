@@ -212,7 +212,7 @@ const FinishProfile = props => {
                   setAsyncStorageData("DESCRIPTION", resp['description']);
                 });
 
-                navigation.navigate(StackNav.FollowSomeone);
+                navigation.navigate(StackNav.UserValidation);
             }})
             .catch(err => {
               setIsLoading(false);

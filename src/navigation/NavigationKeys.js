@@ -3,7 +3,7 @@ export const TabNav = {
   Profile: 'Profile',
   Discover: 'Discover',
   Shorts: 'Shorts',
-};
+}; 
 
 export const StackNav = {
   Profile: 'Profile',
@@ -63,5 +63,6 @@ export const StackNav = {
   CameraRegister: 'CameraRegister',
   FinishProfile: 'FinishProfile',
   PostComments: 'PostComments',
-  HistoryDetail: 'HistoryDetail'
+  HistoryDetail: 'HistoryDetail',
+  UserValidation: 'UserValidation'
 };

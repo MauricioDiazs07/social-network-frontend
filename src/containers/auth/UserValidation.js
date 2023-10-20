@@ -1,142 +1,119 @@
-import { StyleSheet, View } from 'react-native';
-import React, { useEffect } from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+// Library import
+import {StyleSheet, View, TouchableOpacity} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {useSelector} from 'react-redux';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
+import CountDownTimer from 'react-native-countdown-timer-hooks';
+
+// Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import ZHeader from '../../components/common/ZHeader';
 import strings from '../../i18n/strings';
-import {styles} from '../../themes';
 import ZText from '../../components/common/ZText';
-import {useSelector} from 'react-redux';
-import {
-  ForgotPassword_Dark,
-  ForgotPassword_Light
-} from '../../assets/svgs';
+import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
+import {styles} from '../../themes';
 import {getHeight, moderateScale} from '../../common/constants';
 import {StackNav} from '../../navigation/NavigationKeys';
+import typography from '../../themes/typography';
 import ZButton from '../../components/common/ZButton';
-import { validateEmail } from '../../utils/validators';
-import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 
-const UserValidation = ({navigation}) => {
+const UserValidation = props => {
+  const { navigation } = props;
+  const email = props.route.params.email2Send;
+
   const colors = useSelector(state => state.theme.theme);
 
-  const FocusedStyle = {
-    backgroundColor: colors.primaryTransparent,
-    borderColor: colors.primary,
-  };
-  const BlurredStyle = {
-    backgroundColor: colors.inputBg,
-    borderColor: colors.bColor,
-  };
-  const FocusedIconStyle = colors.primary;
-  const BlurredIconStyle = colors.grayScale5;
-  
-  const [email, setEmail] = React.useState('');
-  const [emailError, setEmailError] = React.useState('');
-  const [emailInputStyle, setEmailInputStyle] = React.useState(BlurredStyle);
-  const [emailIcon, setEmailIcon] = React.useState(BlurredIconStyle);
-  const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
+  const [otp, setOtp] = useState('');
+  const [counterId, setCounterId] = useState('1');
+  const [isTimeOver, setIsTimeOver] = useState(false);
+  const [counter, setCounter] = useState(10);
 
-  const onFocusInput = onHighlight => onHighlight(FocusedStyle);
-  const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
-  const onBlurInput = onUnHighlight => onUnHighlight(BlurredStyle);
-  const onBlurIcon = onUnHighlight => onUnHighlight(BlurredIconStyle);
+  const onOtpChange = code => setOtp(code);
+  const onPressVerify = () => navigation.navigate(StackNav.CreateNewPassword);
 
-  useEffect(() => {
-    if (
-      email.length > 0 &&
-      !emailError
-    ) {
-      setIsSubmitDisabled(false);
-    } else {
-      setIsSubmitDisabled(true);
-    }
-  }, [email, emailError]);
-  
-  const onChangedEmail = val => {
-    const {msg} = validateEmail(val.trim());
-    setEmail(val.trim());
-    setEmailError(msg);
-  };
+  const onFinishTimer = () => setIsTimeOver(true);
 
-  const EmailIcon = () => {
-    return <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />;
-  };
+  const refTimer = useRef();
 
-  const onFocusEmail = () => {
-    onFocusInput(setEmailInputStyle);
-    onFocusIcon(setEmailIcon);
+  const onPressResend = () => {
+    setCounter(counter + 20);
+    setCounterId(counterId + '1');
+    setIsTimeOver(false);
+    setOtp('');
   };
-  const onBlurEmail = () => {
-    onBlurInput(setEmailInputStyle);
-    onBlurIcon(setEmailIcon);
-  };
-
-  const onPressContinue = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: StackNav.TabBar}],
-    });
-  };
-  const onPressPinContinue = () =>
-    navigation.navigate(StackNav.ForgotPasswordOtp,
-                          {email2Send: email}
-                        );
 
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.forgotPassword} />
-        <ZKeyBoardAvoidWrapper>
-          <View style={localStyles.emailContainer}>
-            <View style={[styles.mv20, styles.selfCenter]}>
-              {colors.dark ? (
-                <ForgotPassword_Dark
-                  width={moderateScale(305)}
-                  height={getHeight(200)}
+      <ZKeyBoardAvoidWrapper contentContainerStyle={styles.flexGrow1}>
+        <View style={localStyles.root}>
+          <ZText type={'r18'} align={'center'} style={styles.mb20}>
+            {strings.codeSendOn + email}
+          </ZText>
+          <OTPInputView
+            pinCount={4}
+            code={otp}
+            onCodeChanged={onOtpChange}
+            autoFocusOnLoad={false}
+            codeInputFieldStyle={[
+              localStyles.pinInputStyle,
+              {
+                color: colors.textColor,
+                backgroundColor: colors.inputBg,
+                borderColor: colors.bColor,
+              },
+            ]}
+            codeInputHighlightStyle={{
+              backgroundColor: colors.inputFocusColor,
+              borderColor: colors.primary,
+            }}
+            style={localStyles.inputStyle}
+            secureTextEntry={false}
+          />
+          <View style={styles.rowCenter}>
+            {isTimeOver ? (
+              <TouchableOpacity
+                onPress={onPressResend}
+                disabled={isTimeOver ? false : true}
+                style={styles.p5}>
+                <ZText type={'m18'} color={colors.primary} align={'center'}>
+                  {strings.resendCode}
+                </ZText>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.rowCenter}>
+                <ZText type={'m18'} align={'center'}>
+                  {strings.resendCodeIn}
+                </ZText>
+                <CountDownTimer
+                  ref={refTimer}
+                  timestamp={counter}
+                  timerCallback={onFinishTimer}
+                  containerStyle={{backgroundColor: colors.backgroundColor}}
+                  textStyle={[
+                    localStyles.digitStyle,
+                    {color: colors.primary},
+                  ]}
                 />
-              ) : (
-                <ForgotPassword_Light
-                  width={moderateScale(305)}
-                  height={getHeight(200)}
-                />
-              )}
-            </View>
-
-            <View style={localStyles.inputContainer}>
-              <ZText type={'r18'}>{strings.forgotPasswordDesc}</ZText>
-
-              <ZInput
-                placeHolder={strings.email}
-                keyBoardType={'email-address'}
-                _value={email}
-                _errorText={emailError}
-                autoCapitalize={'none'}
-                insideLeftIcon={() => <EmailIcon />}
-                toGetTextFieldValue={onChangedEmail}
-                inputContainerStyle={[
-                  {backgroundColor: colors.inputBg},
-                  localStyles.inputContainerStyle,
-                  emailInputStyle,
-                ]}
-                inputBoxStyle={[localStyles.inputBoxStyle]}
-                _onFocus={onFocusEmail}
-                onBlur={onBlurEmail}
-              />
-            </View>
-            
-            <ZButton
-              textType={'b18'}
-              color={colors.white}
-              title={strings.continue}
-              onPress={onPressPinContinue}
-              containerStyle={[
-                localStyles.continueBtn,
-                isSubmitDisabled && {opacity: 0.5},
-              ]}
-              disabled={isSubmitDisabled}
-            />
+                <ZText type={'m18'} align={'center'}>
+                  {strings.second}
+                </ZText>
+              </View>
+            )}
           </View>
-        </ZKeyBoardAvoidWrapper>
+        </View>
+        <ZButton
+          textType={'b18'}
+          color={colors.white}
+          title={strings.verify}
+          onPress={onPressVerify}
+          containerStyle={[
+            localStyles.btnContainerStyle,
+            otp.length < 4 && {opacity: 0.5}
+          ]}
+          disabled={otp.length === 4 ? false : true}
+        />
+      </ZKeyBoardAvoidWrapper>
     </ZSafeAreaView>
   );
 };
@@ -145,29 +122,27 @@ export default UserValidation;
 
 const localStyles = StyleSheet.create({
   root: {
-    ...styles.ph20,
-    ...styles.selfCenter,
+    ...styles.ph30,
+    ...styles.justifyCenter,
     ...styles.flex,
   },
-  mainContainer: {
-    ...styles.p15,
-    ...styles.flexRow,
-    ...styles.mt20,
-    ...styles.itemsCenter,
-    borderWidth: moderateScale(1),
-    borderRadius: moderateScale(30),
+  pinInputStyle: {
+    height: moderateScale(60),
+    width: moderateScale(75),
+    fontSize: moderateScale(26),
+    borderRadius: moderateScale(15),
   },
-  continueBtn: {
-    position: 'relative',
-    bottom: moderateScale(0),
-    width: '100%',
-    ...styles.selfCenter,
+  btnContainerStyle: {
+    ...styles.m20,
   },
-  emailContainer: {
-    ...styles.ph20
+  inputStyle: {
+    height: getHeight(60),
+    ...styles.mv30,
   },
-  inputContainer: {
-    ...styles.mt20,
-    ...styles.mb20,
-  }
+  digitStyle: {
+    fontSize: moderateScale(18),
+    ...typography.fontWeights.Regular,
+    ...styles.ml5,
+    ...styles.mr5,
+  },
 });
