@@ -106,37 +106,6 @@ const interestsList = [
   'DIY'
 ];
 
-const InterestDetail = [
-  {
-    id: 1,
-    value: strings.scienceAndTech,
-  },
-  {
-    id: 2,
-    value: strings.socialPrograms,
-  },
-  {
-    id: 3,
-    value: strings.sports,
-  },
-  {
-    id: 4,
-    value: strings.culture,
-  },
-  {
-    id: 5,
-    value:  strings.environment,
-  },
-  {
-    id: 6,
-    value: strings.economy,
-  },
-  {
-    id: 7,
-    value: strings.safety,
-  },
-];
-
 /* posts in the feed */
 const postData = [
   {
@@ -1735,7 +1704,6 @@ export {
   users,
   usersLogin,
   interestsList,
-  InterestDetail,
   renderChips,
   ProfileSetting,
   helperCategoryData,
