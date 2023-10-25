@@ -279,7 +279,7 @@ const Home = () => {
     let genderList = formatGenderData(generalData['gender']);
 
     setGenderData(genderList);
-    setAgeChartData(generalData['age']);
+    setAgeChartParameters(generalData['age']);
 
     setIsChartLoading(false);
 
@@ -325,6 +325,7 @@ const Home = () => {
 
     ageData.forEach((x) => {
       labelsList.push(x['marker ']);
+      x['y'] = x['y'] * 60;
     });
 
     setAgeChartData(ageData);
@@ -370,22 +371,56 @@ const pieState = {
 
 const ageState = {
   legend: {
-    enabled: false,
-    textSize: 14,
-    form: 'SQUARE',
-    formSize: 14,
-    xEntrySpace: 10,
-    yEntrySpace: 5,
-    formToTextSpace: 5,
-    wordWrapEnabled: true,
-    maxSizePercent: 0.5
+    enabled: false
   },
-  data: ageChartData,
+  data: {
+    dataSets: [{
+      values: ageChartData,
+      label: '',
+      config: {
+        color: processColor(colors.primary),
+        barShadowColor: processColor(colors.grayScale1),
+        highlightAlpha: 90,
+        highlightColor: processColor('red'),
+        valueTextColor: processColor(colors.textColor),
+      }
+    }],
+    config: {
+      barWidth: 0.7,
+    }
+  },
   highlights: [{x: 3}, {x: 6}],
   xAxis: {
     valueFormatter: ageChartLabels,
     granularityEnabled: true,
-    granularity : 2,
+    granularity : 1,
+    textColor: processColor(colors.textColor),
+    labelRotationAngle: 60,
+    position: 'BOTTOM',
+    drawGridLines: false,
+    drawAxisLine: false
+  },
+  yAxis: {
+    right: {
+      enabled: false
+    },
+    left: {
+      enabled: true,
+      granularityEnabled: true,
+      granularity : 1,
+      textColor: processColor(colors.textColor),
+      drawGridLines: true,
+      gridLineWidth: 1,
+      drawAxisLine: true,
+      drawLabels: true,
+      labelCount: 1,
+      // labelCountForce: true,
+      position: "OUTSIDE_CHART",
+      textSize: 10 
+    }
+  },
+  description: {
+    text: ''
   }
 };
 
@@ -789,21 +824,21 @@ const getLinearChartData = () => {
                     {/* Age chart */}
                     {pageNumber === 2 && (
                       <BarChart
-                            style={localStyles.chart}
-                            data={ageState.data}
-                            xAxis={ageState.xAxis}
-                            animation={{durationX: 2000}}
-                            legend={ageState.legend}
-                            borderColor={processColor('#B042FF')}
-                            gridBackgroundColor={processColor('#ffffff')}
-                            visibleRange={{x: { min: 5, max: 5 }}}
-                            drawBarShadow={false}
-                            drawValueAboveBar={true}
-                            drawHighlightArrow={true}
-                            // onSelect={this.handleSelect.bind(this)}
-                            highlights={ageState.highlights}
-                            // onChange={(event) => console.log(event.nativeEvent)}
-                        />
+                        style={localStyles.chart}
+                        data={ageState.data}
+                        xAxis={ageState.xAxis}
+                        yAxis={ageState.yAxis}
+                        chartDescription={ageState.description}
+                        legend={ageState.legend}
+                        animation={{durationX: 2000}}
+                        borderColor={processColor(colors.textColor)}
+                        gridBackgroundColor={processColor(colors.textColor)}
+                        visibleRange={{x: { min: 5, max: 5 }}}
+                        drawBarShadow={false}
+                        drawValueAboveBar={true}
+                        drawHighlightArrow={true}
+                        highlights={ageState.highlights}
+                      />
                     )}
                     {/* Age chart */}
     
@@ -1023,7 +1058,7 @@ const localStyles = StyleSheet.create({
     height: moderateScale(370),
     padding: 10,
     borderRadius: moderateScale(20),
-    borderWidth: 2
+    borderWidth: 1
   },
   chart: {
     flex: 1
