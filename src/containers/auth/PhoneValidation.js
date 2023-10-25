@@ -1,6 +1,6 @@
 // Library import
 import {StyleSheet, View, TouchableOpacity, Button} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
@@ -54,30 +54,39 @@ const getTwilio = async () => {
   formData.append('To', '+527225572870');
   formData.append('Body', 'THIS IS A BRITA TEST');
 
+  // const formData = {
+  //   'From': '+16175054259',
+  //   'To': '+527225572870',
+  //   'Body': 'THIS IS A BRITA TEST'
+  // }
   // console.log('accountSid:', accountSid);
   // console.log('authToken:', authToken);
   console.log('formData:', formData);
+  const url = 'https://api.twilio.com/2010-04-01/Accounts/ACcbd70358aa76ae1a66cba60ad187a99c/Messages.json';
+  console.log('url:', url);
 
+  
   try{
-    const url = 'https://api.twilio.com/2010-04-01/Accounts/ACcbd70358aa76ae1a66cba60ad187a99c/Messages.json';
+    // const url = 'https://api.twilio.com/2010-04-01/Accounts/ACcbd70358aa76ae1a66cba60ad187a99c/Messages.json';
     const response = await fetch(url, {
       method: "POST", 
       body: formData,  
       headers: {
-        'Content-type': 'application/x-www-form-urlencoded',
+        // 'Content-type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
         'Authorization': 'Basic ' + encode(`${accountSid}:${authToken}`),
       },
     });
     const token = await response.json();
     console.log('response:', response);
     console.log('token:', token);
+    console.log('url:', url);
+
   } catch(error){
     console.error('Error en API Twilio:', error);
+    console.log('response:', response);    
+    console.log('token:', token);
   }
-  
-
-
-
   
   // if (token && response.ok){
   //     return token;
@@ -91,6 +100,10 @@ const getTwilio = async () => {
       // }
   // }
 }
+
+// useEffect(() => {
+//   getTwilio()
+// },[])
   const onOtpChange = code => setOtp(code);
   const onPressVerify = () => navigation.navigate(StackNav.CreateNewPassword);
 
