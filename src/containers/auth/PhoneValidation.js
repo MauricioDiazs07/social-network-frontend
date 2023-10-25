@@ -1,9 +1,10 @@
 // Library import
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, TouchableOpacity, Button} from 'react-native';
 import React, {useRef, useState} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
+import { encode } from 'base-64';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -31,8 +32,8 @@ const PhoneValidation = props => {
 
   
   // TWILIO CODE*************
-  // const accountSid = 'ACcbd70358aa76ae1a66cba60ad187a99c';
-  // const authToken = '9765c162ce965ee7555095e1828c2417';
+  const accountSid = 'ACcbd70358aa76ae1a66cba60ad187a99c';
+  const authToken = '9765c162ce965ee7555095e1828c2417';
 
   // const client = require('twilio')(accountSid, authToken);
 
@@ -45,6 +46,51 @@ const PhoneValidation = props => {
   //   .then((message) => console.log(message.sid));
 
 /******** */
+const getTwilio = async () => {
+  const formData = new FormData();
+
+  // Agrega los datos al objeto FormData
+  formData.append('From', '+16175054259');
+  formData.append('To', '+527225572870');
+  formData.append('Body', 'THIS IS A BRITA TEST');
+
+  // console.log('accountSid:', accountSid);
+  // console.log('authToken:', authToken);
+  console.log('formData:', formData);
+
+  try{
+    const url = 'https://api.twilio.com/2010-04-01/Accounts/ACcbd70358aa76ae1a66cba60ad187a99c/Messages.json';
+    const response = await fetch(url, {
+      method: "POST", 
+      body: formData,  
+      headers: {
+        'Content-type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + encode(`${accountSid}:${authToken}`),
+      },
+    });
+    const token = await response.json();
+    console.log('response:', response);
+    console.log('token:', token);
+  } catch(error){
+    console.error('Error en API Twilio:', error);
+  }
+  
+
+
+
+  
+  // if (token && response.ok){
+  //     return token;
+  // } else {
+  // console.log('ERROR!!!!');
+
+      // return {
+      //     success: false,
+      //     error: 'Email o contraseña incorrectos',
+          
+      // }
+  // }
+}
   const onOtpChange = code => setOtp(code);
   const onPressVerify = () => navigation.navigate(StackNav.CreateNewPassword);
 
@@ -87,6 +133,7 @@ const PhoneValidation = props => {
             style={localStyles.inputStyle}
             secureTextEntry={false}
           />
+          <Button title={'ON'} onPress={getTwilio} />
           <View style={styles.rowCenter}>
             {isTimeOver ? (
               <TouchableOpacity
