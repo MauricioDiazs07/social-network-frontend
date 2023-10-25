@@ -155,7 +155,7 @@ const RightHeaderIcons = React.memo(() => {
 
   return (
     <View style={localStyles.headerRightIcon}>
-      <TouchableOpacity 
+      {user_access !== "master" ? (<TouchableOpacity 
         onPress={onPressProfileIcon}
         style={localStyles.rightBtns}
       >
@@ -171,7 +171,7 @@ const RightHeaderIcons = React.memo(() => {
           />
         )}
 
-      </TouchableOpacity>
+      </TouchableOpacity>): (<View></View>)}
 
       <TouchableOpacity
         onPress={onPressThemeBtn}
@@ -210,41 +210,21 @@ const Home = () => {
   const colors = useSelector(state => state.theme.theme);
   const rightHeaderIcon = useMemo(() => <RightHeaderIcons />, []);
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
-
-  const sectionList = [];
-  const values = [
-    { label: 'Item 1', value: '1' },
-    { label: 'Item 2', value: '2' },
-    { label: 'Item 3', value: '3' },
-    { label: 'Item 4', value: '4' },
-    { label: 'Item 5', value: '5' },
-    { label: 'Item 6', value: '6' },
-    { label: 'Item 7', value: '7' },
-    { label: 'Item 8', value: '8' },
-  ];
   
   // posts variables
   const [postData, setPostData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   // charts variables
-  const [pageNumber, setPageNumber] = useState(1  );
-  const [isData, setIsData] = useState(false);
+  const [pageNumber, setPageNumber] = useState(1);
   const [isChartLoading, setIsChartLoading] = useState(false);
   const [pieChartLabel, setPieChartLabel] = useState('');
   const [genderData, setGenderData] = useState([]);
-  const [ageChartData, setAgeChartData] = useState([]);
-  const [ageChartLabels, setAgeChartLabels] = useState([]);
-  
-  const [interestLineChart, setInterestLineChart] = useState([]);
-  const [ageBarChart, setAgeBarChart] = useState([]);
+  const [barChartData, setBarChartData] = useState([]);
+  const [barChartLabels, setBarChartLabels] = useState([]);
+  const [dropdownData, setDropdownData] = useState([]);
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
-  const [barSectionState, setBarSectionState] = useState({});
-  const [sectionLoaded, setSectionLoaded] = useState(false);
-  const [barInterestsState, setBarInterestsState] = useState({});
-  const [interestsLoaded, setInterestsLoaded] = useState(false);
-  const [dropdownData, setDropdownData] = useState(values);
   
   useEffect(() => {
     initApp();
@@ -257,7 +237,6 @@ const Home = () => {
       getPostsList();
     } else {
       getData();
-      setIsData(true);
     }
   }
 
@@ -272,39 +251,46 @@ const Home = () => {
     setIsLoaded(true);
   }
 
-  const getData = async () => {
+  const getData = async (index = 1) => {
     setIsChartLoading(true);
 
     let generalData = await getGeneralData();
     let genderList = formatGenderData(generalData['gender']);
 
     setGenderData(genderList);
-    setAgeChartParameters(generalData['age']);
+    let ddItems = [];
+    if (index === 2) {
+      setBarChartParameters(generalData['age']);
+    }
+    if (index === 3) {
+      ddItems = getDropdownItems(generalData['section']['array']);
+      setBarChartParameters(generalData['section']['data']);
+    }
+    if (index === 4) {
+      ddItems = getDropdownItems(generalData['interests']['array']);
+      setBarChartParameters(generalData['interests']['data']);
+    }
 
+    setDropdownData(ddItems);
+    setValue(null);
     setIsChartLoading(false);
+  }
 
-    // setInterestLineChart(generalData['interests']['data']);
+  const getSectionChartData = async (section) => {
+    let sectionData = await getSectionData(section);
+    setBarChartParameters(sectionData['interests']);
+  }
 
-    // getGeneralData().then(data => {
-    //   setInterestLineChart(data['interests']['data']);
-    //   var section_data = data['section']['array'];
-      
-    //   section_data.forEach((x) => {
-    //     sectionList.push({label: `${x}asd`, value: x});
-    //   });
-
-    //   getSectionInfo('1234');
-    //   getInterestsInfo('7');
-
-    //   setIsChartLoading(false);
-    // });
+  const getInterestChartData = async (interest) => {
+    let interestsData = await getInterestsData(interest);
+    setBarChartParameters(interestsData['section']);
   }
 
   const changePage = (index) => {
     if (index == pageNumber) {
       return;
     }
-    getData();
+    getData(index);
     setPageNumber(index);
   }
 
@@ -320,16 +306,25 @@ const Home = () => {
     return genderData;
   }
 
-  const setAgeChartParameters = (ageData) => {
+  const getDropdownItems = (valuesList) => {
+    let newList = [];
+
+    valuesList.forEach((x, index) => {
+      newList.push({ label: x, value: index })
+    });
+
+    return newList;
+  } 
+
+  const setBarChartParameters = (ageData) => {
     const labelsList = [];
 
     ageData.forEach((x) => {
-      labelsList.push(x['marker ']);
-      x['y'] = x['y'] * 60;
+      labelsList.push(x['marker']);
     });
 
-    setAgeChartData(ageData);
-    setAgeChartLabels(labelsList);
+    setBarChartData(ageData);
+    setBarChartLabels(labelsList);
   }
 
 /* Charts states */
@@ -369,13 +364,13 @@ const pieState = {
   }
 };
 
-const ageState = {
+const barState = {
   legend: {
     enabled: false
   },
   data: {
     dataSets: [{
-      values: ageChartData,
+      values: barChartData,
       label: '',
       config: {
         color: processColor(colors.primary),
@@ -391,7 +386,7 @@ const ageState = {
   },
   highlights: [{x: 3}, {x: 6}],
   xAxis: {
-    valueFormatter: ageChartLabels,
+    valueFormatter: barChartLabels,
     granularityEnabled: true,
     granularity : 1,
     textColor: processColor(colors.textColor),
@@ -414,7 +409,6 @@ const ageState = {
       drawAxisLine: true,
       drawLabels: true,
       labelCount: 1,
-      // labelCountForce: true,
       position: "OUTSIDE_CHART",
       textSize: 10 
     }
@@ -423,57 +417,6 @@ const ageState = {
     text: ''
   }
 };
-
-const getLinearChartData = () => {
-
-  return {dataSets: [{ values: interestLineChart, 
-    label: '',
-    config: {
-      lineWidth: 1.5,
-      drawCircles: false,
-      drawCubicIntensity: 0.3,
-      drawCubic: true,
-      drawHighlightIndicators: false,
-      color: COLOR_PURPLE,
-      drawFilled: true,
-      fillColor: COLOR_PURPLE,
-      fillAlpha: 90
-    }}]};
-  }
-
-  const getBarchartData = () => {
-    
-    const data_ = {
-      dataSets: [{
-        values: ageBarChart,
-        label: 'Bar dataSet',
-        config: {
-          color: processColor('teal'),
-          barShadowColor: processColor('lightgrey'),
-          highlightAlpha: 90,
-          highlightColor: processColor('red'),
-        }
-      }],
-
-      config: {
-        barWidth: 0.7,
-      }
-    }
-
-    return data_;
-  }
-
-  const getBarchartLabels = () => {
-    const list_ = [];
-
-    ageBarChart.forEach((x) => {
-      list_.push(x['marker ']);
-    });
-
-    return list_;
-  }
-
-  const COLOR_PURPLE = processColor('#697dfb');
 
   const onRefresh = () => navigation.reset({
                                           index: 0,
@@ -512,106 +455,6 @@ const getLinearChartData = () => {
     const percentage = value * 100;
     const text = `${percentage}%\n${label}`;
     setPieChartLabel(text);
-  }
-
-  getSectionInfo = async (section) => {
-    getSectionData(section)
-      .then((resp) => {
-        var section_list = [];
-        resp['interests'].forEach((x) => {
-          section_list.push(x['marker']);
-        });
-
-        var data_ = {
-          legend: {
-            enabled: false,
-            textSize: 14,
-            form: 'SQUARE',
-            formSize: 14,
-            xEntrySpace: 10,
-            yEntrySpace: 5,
-            formToTextSpace: 5,
-            wordWrapEnabled: true,
-            maxSizePercent: 0.5
-          },
-          data: {
-            dataSets: [{
-              values: [{"marker": "Ciencia y tecnología", "x": 0, "y": 0}, {"marker": "Programas sociales", "x": 1, "y": 0}, {"marker": "Deportes", "x": 2, "y": 0}, {"marker": "Cultura", "x": 3, "y": 0}, {"marker": "Medio ambiente", "x": 4, "y": 0}, {"marker": "Economía", "x": 5, "y": 0}, {"marker": "Seguridad", "x": 6, "y": 0}],
-              label: 'Bar dataSet',
-              config: {
-                color: processColor('teal'),
-                barShadowColor: processColor('lightgrey'),
-                highlightAlpha: 90,
-                highlightColor: processColor('red'),
-              }
-            }],
-      
-            config: {
-              barWidth: 0.7,
-            }
-          },
-          highlights: [{x: 3}, {x: 6}],
-          xAxis: {
-            valueFormatter: ["Ciencia y tecnología", "Programas sociales", "Deportes", "Cultura", "Medio ambiente", "Economía", "Seguridad"],
-            granularityEnabled: true,
-            granularity : 2,
-          }
-        };
-
-        setBarSectionState(data_);
-        setSectionLoaded(true);
-
-      });
-  }
-
-  getInterestsInfo = async (interest) => {
-    getInterestsData(interest)
-      .then((resp) => {
-        var section_list = [];
-        // resp['section'].forEach((x) => {
-        //   section_list.push(x['marker']);
-        // });
-
-        var data_ = {
-          legend: {
-            enabled: false,
-            textSize: 14,
-            form: 'SQUARE',
-            formSize: 14,
-            xEntrySpace: 10,
-            yEntrySpace: 5,
-            formToTextSpace: 5,
-            wordWrapEnabled: true,
-            maxSizePercent: 0.5
-          },
-          data: {
-            dataSets: [{
-              values: [],
-              label: 'Bar dataSet',
-              config: {
-                color: processColor('teal'),
-                barShadowColor: processColor('lightgrey'),
-                highlightAlpha: 90,
-                highlightColor: processColor('red'),
-              }
-            }],
-      
-            config: {
-              barWidth: 0.7,
-            }
-          },
-          highlights: [{x: 3}, {x: 6}],
-          xAxis: {
-            valueFormatter: [],
-            granularityEnabled: true,
-            granularity : 2,
-          }
-        };
-
-        setBarInterestsState(data_);
-        setInterestsLoaded(true);
-
-      });
   }
 
   return (
@@ -820,35 +663,17 @@ const getLinearChartData = () => {
                       />
                     )}
                     {/* Gender chart */}
-    
-                    {/* Age chart */}
-                    {pageNumber === 2 && (
-                      <BarChart
-                        style={localStyles.chart}
-                        data={ageState.data}
-                        xAxis={ageState.xAxis}
-                        yAxis={ageState.yAxis}
-                        chartDescription={ageState.description}
-                        legend={ageState.legend}
-                        animation={{durationX: 2000}}
-                        borderColor={processColor(colors.textColor)}
-                        gridBackgroundColor={processColor(colors.textColor)}
-                        visibleRange={{x: { min: 5, max: 5 }}}
-                        drawBarShadow={false}
-                        drawValueAboveBar={true}
-                        drawHighlightArrow={true}
-                        highlights={ageState.highlights}
-                      />
-                    )}
-                    {/* Age chart */}
-    
-                    {(pageNumber === 3 || pageNumber === 4) && sectionLoaded ? (
+
+                    {/* Dropdown menu */}
+                    {(pageNumber === 3 || pageNumber === 4) ? (
                       <Dropdown
-                        style={[localStyles.dropdown, isFocus && { borderColor: colors.primary }, {backgroundColor: colors.backgroundColor}]}
-                        containerStyle={[{backgroundColor: colors.backgroundColor}]}
-                        // itemContainerStyle={[{backgroundColor: 'red'}]}
-                        itemContainerStyle={{alignContent: 'center'}}
-                        itemTextStyle={{color: colors.textColor, alignContent: 'center', justifyContent: 'center'}}
+                        style={[
+                          localStyles.dropdown,
+                          isFocus && { borderColor: colors.primary },
+                          {backgroundColor: colors.backgroundColor}
+                        ]}
+                        containerStyle={{backgroundColor: colors.backgroundColor}}
+                        itemTextStyle={{color: colors.textColor}}
                         activeColor={colors.primary}
                         placeholder={'Escoge una sección'}
                         placeholderStyle={[localStyles.placeholderStyle, {backgroundColor: colors.backgroundColor, color: colors.textColor}]}
@@ -864,63 +689,37 @@ const getLinearChartData = () => {
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}
                         onChange={item => {
-                          setValue(item.value);
+                          if (pageNumber === 3) {
+                            getSectionChartData(item.value);
+                          } else {
+                            getInterestChartData(item.value);
+                          }
                           setIsFocus(false);
                         }}
-                        // renderLeftIcon={() => (
-                        //   // <AntDesign
-                        //   //   style={styles.icon}
-                        //   //   color={isFocus ? 'blue' : 'black'}
-                        //   //   name="Safety"
-                        //   //   size={20}
-                        //   // />
-                        //   <Ionicons
-                        //     name={'game-controller'}
-                        //     size={moderateScale(45)}
-                        //     color={'black'}
-                        //     style={[styles.selfCenter, styles.mt10]}
-                        //   />
-                        // )}
                       />
                     ) : (<View></View>)}
+                    {/* Dropdown menu */}
     
-                {pageNumber === 3 && interestsLoaded ? (
-                  <BarChart
-                      style={localStyles.chart}
-                      data={barSectionState.data}
-                      xAxis={barSectionState.xAxis}
-                      animation={{durationX: 2000}}
-                      legend={barSectionState.legend}
-                      borderColor={processColor('#B042FF')}
-                      gridBackgroundColor={processColor('#ffffff')}
-                      visibleRange={{x: { min: 5, max: 5 }}}
-                      drawBarShadow={false}
-                      drawValueAboveBar={true}
-                      drawHighlightArrow={true}
-                      // onSelect={this.handleSelect.bind(this)}
-                      highlights={barSectionState.highlights}
-                      // onChange={(event) => console.log(event.nativeEvent)}
-                    />
-                  ) : (<View></View>)}
-    
-                {pageNumber === 4 && interestsLoaded ? (
-                  <BarChart
-                      style={localStyles.chart}
-                      data={barSectionState.data}
-                      xAxis={barSectionState.xAxis}
-                      animation={{durationX: 2000}}
-                      legend={barSectionState.legend}
-                      borderColor={processColor('#B042FF')}
-                      gridBackgroundColor={processColor('#ffffff')}
-                      visibleRange={{x: { min: 5, max: 5 }}}
-                      drawBarShadow={false}
-                      drawValueAboveBar={true}
-                      drawHighlightArrow={true}
-                      // onSelect={this.handleSelect.bind(this)}
-                      highlights={barSectionState.highlights}
-                      // onChange={(event) => console.log(event.nativeEvent)}
-                    />
-                  ) : (<View></View>)}
+                    {/* Age, section and interests chart */}
+                    {pageNumber !== 1 && (
+                      <BarChart
+                        style={localStyles.chart}
+                        data={barState.data}
+                        xAxis={barState.xAxis}
+                        yAxis={barState.yAxis}
+                        chartDescription={barState.description}
+                        legend={barState.legend}
+                        animation={{durationX: 2000}}
+                        borderColor={processColor(colors.textColor)}
+                        gridBackgroundColor={processColor(colors.textColor)}
+                        visibleRange={{x: { min: 5, max: 5 }}}
+                        drawBarShadow={false}
+                        drawValueAboveBar={true}
+                        drawHighlightArrow={true}
+                        highlights={barState.highlights}
+                      />
+                    )}
+                    {/* Age, section and interests chart */}
                 </View>
               </View>)
                 : (
@@ -930,71 +729,7 @@ const getLinearChartData = () => {
               )}
     
             </View>
-            
-            // <ScrollView 
-            // refreshControl={
-            //   <RefreshControl onRefresh={onRefresh} />
-            // }>
-              // 
-                
-              //   <View style={[localStyles.container, {height: 50}]}>
-              //     <LineChart style={localStyles.chart}
-              //       data={getLinearChartData()}
-              //     />
-              //   </View>
-    
-              //   <View style={localStyles.container}>
-              //     <PieChart
-              //       style={localStyles.chart}
-              //       logEnabled={true}
-              //       chartBackgroundColor={processColor('pink')}
-              //       chartDescription={pieState.description}
-              //       data={pieState.data}
-              //       legend={pieState.legend}
-              //       highlights={pieState.highlights}
-    
-              //       extraOffsets={{left: 5, top: 5, right: 5, bottom: 5}}
-    
-              //       entryLabelColor={processColor('green')}
-              //       entryLabelTextSize={20}
-              //       entryLabelFontFamily={'HelveticaNeue-Medium'}
-              //       drawEntryLabels={true}
-    
-              //       rotationEnabled={true}
-              //       rotationAngle={45}
-              //       usePercentValues={true}
-              //       styledCenterText={{text:'Pie center text!', color: processColor('pink'), fontFamily: 'HelveticaNeue-Medium', size: 20}}
-              //       centerTextRadiusPercent={100}
-              //       holeRadius={40}
-              //       holeColor={processColor('#f0f0f0')}
-              //       transparentCircleRadius={45}
-              //       transparentCircleColor={processColor('#f0f0f088')}
-              //       maxAngle={350}
-              //       // onSelect={this.handleSelect.bind(this)}
-              //       // onChange={(event) => console.log(event.nativeEvent)}
-              //     />
-              //   </View>
-    
-              //   <View style={localStyles.container}>
-              //     <BarChart
-              //       style={localStyles.chart}
-              //       data={barState.data}
-              //       xAxis={barState.xAxis}
-              //       animation={{durationX: 2000}}
-              //       legend={barState.legend}
-              //       gridBackgroundColor={processColor('#ffffff')}
-              //       visibleRange={{x: { min: 5, max: 5 }}}
-              //       drawBarShadow={false}
-              //       drawValueAboveBar={true}
-              //       drawHighlightArrow={true}
-              //       // onSelect={this.handleSelect.bind(this)}
-              //       highlights={barState.highlights}
-              //       // onChange={(event) => console.log(event.nativeEvent)}
-              //     />
-              //   </View>
-              // </View>
           )}
-            {/* </ScrollView> */}
         </View>
       ) : (
         <View style={localStyles.loadingPosts}>

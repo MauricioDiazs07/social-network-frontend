@@ -120,21 +120,23 @@ export default function TabBarNavigation({navigation}) {
           ),
         }}
       />
-      <Tab.Screen
-        name={TabNav.Shorts}
-        component={TabRoute.Shorts}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <View>
-              {user_access !== "master" &&(<TabText
-                text={strings.shorts}
-                focused={focused}
-                icon={focused ? <Inbox_Dark /> : <Inbox_Light />}
-              />)}
-            </View>
-          ),
-        }}
-      />
+      {user_access !== "master" && (
+        <Tab.Screen
+          name={TabNav.Shorts}
+          component={TabRoute.Shorts}
+          options={{
+            tabBarIcon: ({focused}) => (
+              <View>
+                <TabText
+                  text={strings.shorts}
+                  focused={focused}
+                  icon={focused ? <Inbox_Dark /> : <Inbox_Light />}
+                />
+              </View>
+            ),
+          }}
+        />
+        )}
     </Tab.Navigator>
   );
 }
