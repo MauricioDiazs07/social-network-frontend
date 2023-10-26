@@ -184,7 +184,7 @@ const FinishProfile = props => {
 
     const usser_ = {
       ...userCred_,
-      profile_photo: selectImage,
+      profile_photo: selectImage, 
       phone: phoneNo_,
       ...userInfo
     };
@@ -211,7 +211,7 @@ const FinishProfile = props => {
                   setAsyncStorageData("GENDER", resp['gender']);
                   setAsyncStorageData("DESCRIPTION", resp['description']);
                 });
-// Navegación correcta
+
                 navigation.navigate(StackNav.FollowSomeone,
                   {usser: usser_});
             }})

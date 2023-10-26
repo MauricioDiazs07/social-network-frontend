@@ -15,13 +15,11 @@ import {moderateScale} from '../../common/constants';
 import ZSearch from '../../components/common/ZSearch';
 import { getInterests } from '../../api/auth/auth';
 
-const FollowSomeone = (props) => {
+const FollowSomeone = props => {
   const {navigation} = props;
   const colors = useSelector(state => state.theme.theme);
-  // esta parte debe cambiarse a la ruta correcta!!!
-  const phone = props.route.params.phone
-  // const userCred = props.route.params.userCred;
-  console.log("phone: ", phone);
+  const usserCred = props.route.params.usser;
+  const userPhone = usser['phone'];
   const [interestsList, setInterestsList] = React.useState();
 
   useEffect(() => {
@@ -39,16 +37,9 @@ const FollowSomeone = (props) => {
     })
   }, []);
 
-  // const onPressContinue = () => {
-  //   navigation.reset({
-  //     index: 0,
-  //     routes: [{name: StackNav.TabBar}],
-  //   });
-  // };
-
   const onPressContinue = () => {
     navigation.navigate(StackNav.PhoneValidation, {
-      phone: phone
+      phone: userPhone
     });
   };
 
