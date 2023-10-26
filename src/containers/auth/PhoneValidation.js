@@ -17,115 +17,132 @@ import {getHeight, moderateScale} from '../../common/constants';
 import {StackNav} from '../../navigation/NavigationKeys';
 import typography from '../../themes/typography';
 import ZButton from '../../components/common/ZButton';
+import {
+  ACCOUNT_SID_TWILIO,
+  AUTH_TOKEN_TWILIO,
+  PHONE_TWILIO,
+  API_TWILIO } from '../../utils/api_constants';
 
 const PhoneValidation = props => {
   const { navigation } = props;
-  // const email = props.route.params.email2Send;
   const phone = props.route.params.phone
-
   const colors = useSelector(state => state.theme.theme);
 
   const [otp, setOtp] = useState('');
   const [counterId, setCounterId] = useState('1');
   const [isTimeOver, setIsTimeOver] = useState(false);
-  const [counter, setCounter] = useState(10);
+  const [counter, setCounter] = useState(15);
+  const [phoneCode, setPhoneCode] = useState(null);
+  const [isFailed, setIsFailed] = useState(false);
 
-  
-  // TWILIO CODE*************
-  const accountSid = 'ACcbd70358aa76ae1a66cba60ad187a99c';
-  const authToken = '9765c162ce965ee7555095e1828c2417';
+  const generateRandom4DigitNumber = () => {
+    const min = 1000; 
+    const max = 9999; 
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    setPhoneCode(randomNumber);
+    return randomNumber;
+  }  
 
-  // const client = require('twilio')(accountSid, authToken);
+  const getTwilio = async () => { 
+    const formData = new FormData();
 
-  // client.messages
-  //   .create({
-  //     body: 'Hello from twilio-node',
-  //     to: '+12345678901', // Text your number
-  //     from: '+12345678901', // From a valid Twilio number
-  //   })
-  //   .then((message) => console.log(message.sid));
+    formData.append('From', `${PHONE_TWILIO}`);
+    formData.append('To', `+52${phone}`);
+    formData.append('Body', strings.codeSMS +`${phoneCode}`);
 
-/******** */
-const getTwilio = async () => {
-  const formData = new FormData();
+    try{
+      if(phoneCode !== null) {
+        const response = await fetch(API_TWILIO, {
+        method: "POST", 
+        body: formData,  
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Basic ' + encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
+        },
+      });
+      }
 
-  // Agrega los datos al objeto FormData
-  formData.append('From', '+16175054259');
-  formData.append('To', '+527225572870');
-  formData.append('Body', 'THIS IS A BRITA TEST');
-
-  // const formData = {
-  //   'From': '+16175054259',
-  //   'To': '+527225572870',
-  //   'Body': 'THIS IS A BRITA TEST'
-  // }
-  // console.log('accountSid:', accountSid);
-  // console.log('authToken:', authToken);
-  console.log('formData:', formData);
-  const url = 'https://api.twilio.com/2010-04-01/Accounts/ACcbd70358aa76ae1a66cba60ad187a99c/Messages.json';
-  console.log('url:', url);
-
-  
-  try{
-    // const url = 'https://api.twilio.com/2010-04-01/Accounts/ACcbd70358aa76ae1a66cba60ad187a99c/Messages.json';
-    const response = await fetch(url, {
-      method: "POST", 
-      body: formData,  
-      headers: {
-        // 'Content-type': 'application/x-www-form-urlencoded',
-        'Content-Type': 'multipart/form-data',
-        'Authorization': 'Basic ' + encode(`${accountSid}:${authToken}`),
-      },
-    });
-    const token = await response.json();
-    console.log('response:', response);
-    console.log('token:', token);
-    console.log('url:', url);
-
-  } catch(error){
-    console.error('Error en API Twilio:', error);
-    console.log('response:', response);    
-    console.log('token:', token);
+    } catch(error){
+      console.error('Error in API Twilio:', error);
+    }
   }
-  
-  // if (token && response.ok){
-  //     return token;
-  // } else {
-  // console.log('ERROR!!!!');
 
-      // return {
-      //     success: false,
-      //     error: 'Email o contraseña incorrectos',
-          
-      // }
-  // }
-}
+  useEffect(() => {    
+    getTwilio()
+  },[phoneCode]);
 
-// useEffect(() => {
-//   getTwilio()
-// },[])
+  const onPressSend = () => {
+    generateRandom4DigitNumber();
+    getTwilio()
+  }
+
   const onOtpChange = code => setOtp(code);
-  const onPressVerify = () => navigation.navigate(StackNav.CreateNewPassword);
 
-  const onFinishTimer = () => setIsTimeOver(true);
+  const onPressVerify = () => {
+    const numberOtp = parseInt(otp, 10);
+    if(isTimeOver === false) {
+      if(numberOtp === phoneCode){
+        setIsFailed(false);
+        navigation.reset({
+              index: 0,
+              routes: [{name: StackNav.TabBar}],
+            });
+      } else {
+        setIsFailed(true);
+      }
+    } 
+  }
+
+  const onFinishTimer = () => {
+    setIsTimeOver(true)
+  };
 
   const refTimer = useRef();
 
   const onPressResend = () => {
-    setCounter(counter + 20);
+    generateRandom4DigitNumber();
+    getTwilio();
+    setCounter(counter + 10);
     setCounterId(counterId + '1');
     setIsTimeOver(false);
+    setIsFailed(false);
     setOtp('');
   };
-
+  
   return (
     <ZSafeAreaView>
-      <ZHeader title={strings.forgotPassword} />
+      <ZHeader title={strings.validateOtp} />
       <ZKeyBoardAvoidWrapper contentContainerStyle={styles.flexGrow1}>
         <View style={localStyles.root}>
-          <ZText type={'r18'} align={'center'} style={styles.mb20}>
-            {/* {strings.codeSendOn + email} */}
-          </ZText>
+          {(phoneCode === null) ? (
+            <TouchableOpacity
+                  onPress={onPressSend}
+                  disabled={phoneCode === null ? false : true}
+                  style={[
+                    {
+                      ...styles.p10,
+                      height: getHeight(75),
+                      borderRadius: moderateScale(40),
+                      borderWidth: moderateScale(1),
+                      backgroundColor: colors.primary,
+                      fontWeight: typography.fontWeights.SemiBold
+                    }
+                  ]}>
+                  <ZText type={'m18'} align={'center'}>
+                    {strings.sendCode +`+52 ${phone}`}
+                  </ZText>
+                </TouchableOpacity>
+                ) : (isTimeOver === false && (
+                  <TouchableOpacity>
+                    <ZText type={'r18'} align={'center'} style={styles.mb20}>
+                      {strings.codePhoneSendOn}
+                    </ZText>
+                    <ZText type={'m18'} color={colors.primary} align={'center'}>
+                      {`+52 ${phone}`}
+                    </ZText>
+                  </TouchableOpacity>
+                )) 
+          }
           <OTPInputView
             pinCount={4}
             code={otp}
@@ -145,38 +162,59 @@ const getTwilio = async () => {
             }}
             style={localStyles.inputStyle}
             secureTextEntry={false}
-          />
-          <Button title={'ON'} onPress={getTwilio} />
+          />          
           <View style={styles.rowCenter}>
-            {isTimeOver ? (
-              <TouchableOpacity
-                onPress={onPressResend}
-                disabled={isTimeOver ? false : true}
-                style={styles.p5}>
-                <ZText type={'m18'} color={colors.primary} align={'center'}>
-                  {strings.resendCode}
-                </ZText>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.rowCenter}>
+            {isTimeOver === true ? (
                 <ZText type={'m18'} align={'center'}>
-                  {strings.resendCodeIn}
+                  {strings.timeExceeded}
                 </ZText>
-                <CountDownTimer
-                  ref={refTimer}
-                  timestamp={counter}
-                  timerCallback={onFinishTimer}
-                  containerStyle={{backgroundColor: colors.backgroundColor}}
-                  textStyle={[
-                    localStyles.digitStyle,
-                    {color: colors.primary},
-                  ]}
-                />
-                <ZText type={'m18'} align={'center'}>
-                  {strings.second}
-                </ZText>
-              </View>
-            )}
+            )
+          : (
+            isFailed === true && (
+              <ZText type={'m18'} align={'center'}>
+                {strings.invalidCode}
+              </ZText>
+          )
+          )}
+          </View>
+          <View style={styles.rowCenter}>
+           {(phoneCode !== null) && (
+              isTimeOver ? (
+                <TouchableOpacity
+                  onPress={onPressResend}
+                  disabled={isTimeOver ? false : true}
+                  style={
+                    [{...styles.p10,
+                      ...styles.mt15,
+                      height: getHeight(55),
+                      borderRadius: moderateScale(30),
+                      borderWidth: moderateScale(1),
+                      backgroundColor: colors.primary}]
+                    }>
+                  <ZText type={'m18'}  align={'center'}>
+                    {strings.resendCode}
+                  </ZText>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.rowCenter}>
+                  <ZText type={'m18'} align={'center'}>
+                    {strings.resendCodeIn}
+                  </ZText>
+                  <CountDownTimer
+                    ref={refTimer}
+                    timestamp={counter}
+                    timerCallback={onFinishTimer}
+                    containerStyle={{backgroundColor: colors.backgroundColor}}
+                    textStyle={[
+                      localStyles.digitStyle,
+                      {color: colors.primary},
+                    ]}
+                  />
+                  <ZText type={'m18'} align={'center'}>
+                    {strings.second}
+                  </ZText>
+                </View>
+              ))}
           </View>
         </View>
         <ZButton
