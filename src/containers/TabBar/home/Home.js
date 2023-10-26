@@ -716,7 +716,6 @@ const barState = {
                         drawBarShadow={false}
                         drawValueAboveBar={true}
                         drawHighlightArrow={true}
-                        highlights={barState.highlights}
                       />
                     )}
                     {/* Age, section and interests chart */}
