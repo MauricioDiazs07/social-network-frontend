@@ -19,7 +19,7 @@ const FollowSomeone = props => {
   const {navigation} = props;
   const colors = useSelector(state => state.theme.theme);
   const usserCred = props.route.params.usser;
-  const userPhone = usser['phone'];
+  const userPhone = usserCred['phone'];
   const [interestsList, setInterestsList] = React.useState();
 
   useEffect(() => {
