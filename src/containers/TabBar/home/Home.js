@@ -18,7 +18,6 @@ import images from '../../../assets/images';
 import { PieChart } from 'react-native-charts-wrapper';
 import { Dropdown } from 'react-native-element-dropdown';
 import { BarChart } from 'react-native-charts-wrapper';
-import { LineChart } from 'react-native-charts-wrapper';
 
 // local imports
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
@@ -129,8 +128,18 @@ const RightHeaderIcons = React.memo(() => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [isDark, setIsDark] = useState(false);
+  const [userAccess, setUserAccess] = useState('');
 
-  getUserLevel();
+  useEffect(() => {
+    getUserAccess();
+    getUserLevel();
+  });
+
+  const getUserAccess = async () => {
+    let storageResp = await AsyncStorage.getItem(USER_LEVEL);
+    user_access = JSON.parse(storageResp);
+    setUserAccess(user_access);
+  }
 
   const onPressProfileIcon = () => {
     if (user_access == 'user') {
@@ -155,7 +164,7 @@ const RightHeaderIcons = React.memo(() => {
 
   return (
     <View style={localStyles.headerRightIcon}>
-      {user_access !== "master" ? (<TouchableOpacity 
+      {userAccess !== "master" && (<TouchableOpacity 
         onPress={onPressProfileIcon}
         style={localStyles.rightBtns}
       >
@@ -171,7 +180,7 @@ const RightHeaderIcons = React.memo(() => {
           />
         )}
 
-      </TouchableOpacity>): (<View></View>)}
+      </TouchableOpacity>)}
 
       <TouchableOpacity
         onPress={onPressThemeBtn}
