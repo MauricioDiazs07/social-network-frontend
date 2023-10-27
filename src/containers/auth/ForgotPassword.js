@@ -1,6 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Button } from 'react-native';
 import React, { useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Snackbar} from '@react-native-material/core';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import ZHeader from '../../components/common/ZHeader';
 import strings from '../../i18n/strings';
@@ -16,6 +17,7 @@ import {StackNav} from '../../navigation/NavigationKeys';
 import ZButton from '../../components/common/ZButton';
 import { validatePhoneNumber } from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
+import { getUserDataByPhone } from '../../api/user/user';
 
 const ForgotPassword = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -36,6 +38,9 @@ const ForgotPassword = ({navigation}) => {
   const [phoneInputStyle, setPhoneInputStyle] = React.useState(BlurredStyle);
   const [phoneIcon, setPhoneIcon] = React.useState(BlurredIconStyle);
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
+  const [snackVisible, setSnackVisible] = React.useState(false);
+  const [isUserInvalid, setIsUserInvalid] = React.useState(false);
+  const [userId, setUserId] = React.useState('');
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -47,11 +52,30 @@ const ForgotPassword = ({navigation}) => {
       phone.length > 0 &&
       !phoneError
     ) {
-      setIsSubmitDisabled(false);
+      const get_user_id = getUserByPhone(phone);          
+      setUserId(get_user_id );
     } else {
       setIsSubmitDisabled(true);
     }
   }, [phone, phoneError]);
+  
+  const getUserByPhone = (phoneNo) => {
+    try {
+      getUserDataByPhone(phoneNo).then(resp => { 
+        if(resp) {
+          const user_id =  resp['profile_id']
+          return user_id;
+        } else {
+          setIsUserInvalid(true);      
+          setSnackVisible(true); 
+          setIsSubmitDisabled(true);   
+        }
+      })
+    } catch(error) {
+      console.error('Error user:', error);
+    }
+   
+  };
   
   const onChangedPhone = val => {
     const {msg} = validatePhoneNumber(val.trim());
@@ -72,10 +96,16 @@ const ForgotPassword = ({navigation}) => {
     onBlurIcon(setPhoneIcon);
   };
 
-  const onPressPinContinue = () =>
-    navigation.navigate(StackNav.ForgotPasswordOtp,
-                          {phone2Send: phone}
-                        );
+  const onPressPinContinue = () => {
+    if(!isUserInvalid) {      
+      navigation.navigate(StackNav.ForgotPasswordOtp, {
+        phone2Send: phone,
+        userId: userId
+      });
+    }
+  }
+
+  const closeSnackBar = () => setSnackVisible(false);
 
   return (
     <ZSafeAreaView>
@@ -117,7 +147,22 @@ const ForgotPassword = ({navigation}) => {
                 onBlur={onBlurPhone}
               />
             </View>
-            
+            {snackVisible && (
+              <View style={{flex: 1}}>
+                <Snackbar
+                  message={strings.WrongPhone}
+                  action={
+                    <Button
+                      variant="text"
+                      title={strings.close}
+                      color={colors.primary}
+                      compact
+                      onPress={closeSnackBar}
+                    />
+                  }
+                />
+              </View>
+            )}            
             <ZButton
               textType={'b18'}
               color={colors.white}

@@ -25,6 +25,7 @@ import {
 const ForgotPasswordOtp = props => {
   const { navigation } = props;
   const phone = props.route.params.phone2Send;
+  const user_id = props.route.params.userId;
   const colors = useSelector(state => state.theme.theme);
 
   const [otp, setOtp] = useState('');
@@ -50,17 +51,16 @@ const ForgotPasswordOtp = props => {
     formData.append('Body', strings.codeSMS +`${phoneCode}`);
 
     try{
-      // if(phoneCode !== null) {
-      //   const response = await fetch(API_TWILIO, {
-      //   method: "POST", 
-      //   body: formData,  
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     'Authorization': 'Basic ' + encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
-      //   },
-      // });
-      // }
-console.log('Message content: ',formData)
+      if(phoneCode !== null) {
+        const response = await fetch(API_TWILIO, {
+        method: "POST", 
+        body: formData,  
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Basic ' + encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
+        },
+      });
+      }
     } catch(error){
       console.error('Error in API Twilio:', error);
     }
@@ -82,7 +82,7 @@ console.log('Message content: ',formData)
       if(numberOtp === phoneCode){
         setIsFailed(false);
         navigation.navigate(StackNav.CreateNewPassword, {
-          phone: phone
+          userId: user_id
         });
       } else {
         setIsFailed(true);
@@ -217,13 +217,6 @@ const localStyles = StyleSheet.create({
   },
   btnContainerStyle: {
     ...styles.m20,
-  },
-  btnSendCodeContainer: {
-    ...styles.p10,
-    height: getHeight(75),
-    borderRadius: moderateScale(40),
-    borderWidth: moderateScale(1),
-    fontWeight: typography.fontWeights.SemiBold
   },
   btnResendCodeContainer: {
     ...styles.p10,
