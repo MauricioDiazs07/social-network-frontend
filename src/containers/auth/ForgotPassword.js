@@ -14,7 +14,7 @@ import {
 import {getHeight, moderateScale} from '../../common/constants';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZButton from '../../components/common/ZButton';
-import { validateEmail } from '../../utils/validators';
+import { validatePhoneNumber } from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
 
 const ForgotPassword = ({navigation}) => {
@@ -31,10 +31,10 @@ const ForgotPassword = ({navigation}) => {
   const FocusedIconStyle = colors.primary;
   const BlurredIconStyle = colors.grayScale5;
   
-  const [email, setEmail] = React.useState('');
-  const [emailError, setEmailError] = React.useState('');
-  const [emailInputStyle, setEmailInputStyle] = React.useState(BlurredStyle);
-  const [emailIcon, setEmailIcon] = React.useState(BlurredIconStyle);
+  const [phone, setPhone] = React.useState('');
+  const [phoneError, setPhoneError] = React.useState('');
+  const [phoneInputStyle, setPhoneInputStyle] = React.useState(BlurredStyle);
+  const [phoneIcon, setPhoneIcon] = React.useState(BlurredIconStyle);
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
@@ -44,44 +44,44 @@ const ForgotPassword = ({navigation}) => {
 
   useEffect(() => {
     if (
-      email.length > 0 &&
-      !emailError
+      phone.length > 0 &&
+      !phoneError
     ) {
       setIsSubmitDisabled(false);
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [email, emailError]);
+  }, [phone, phoneError]);
   
-  const onChangedEmail = val => {
-    const {msg} = validateEmail(val.trim());
-    setEmail(val.trim());
-    setEmailError(msg);
+  const onChangedPhone = val => {
+    const {msg} = validatePhoneNumber(val.trim());
+    setPhone(val.trim());
+    setPhoneError(msg);
   };
 
-  const EmailIcon = () => {
-    return <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />;
+  const PhoneIcon = () => {
+    return <Ionicons name="call" size={moderateScale(20)} color={phoneIcon} />;
   };
 
-  const onFocusEmail = () => {
-    onFocusInput(setEmailInputStyle);
-    onFocusIcon(setEmailIcon);
+  const onFocusPhone = () => {
+    onFocusInput(setPhoneInputStyle);
+    onFocusIcon(setPhoneIcon);
   };
-  const onBlurEmail = () => {
-    onBlurInput(setEmailInputStyle);
-    onBlurIcon(setEmailIcon);
+  const onBlurPhone = () => {
+    onBlurInput(setPhoneInputStyle);
+    onBlurIcon(setPhoneIcon);
   };
 
   const onPressPinContinue = () =>
     navigation.navigate(StackNav.ForgotPasswordOtp,
-                          {email2Send: email}
+                          {phone2Send: phone}
                         );
 
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.forgotPassword} />
         <ZKeyBoardAvoidWrapper>
-          <View style={localStyles.emailContainer}>
+          <View style={localStyles.phoneContainer}>
             <View style={[styles.mv20, styles.selfCenter]}>
               {colors.dark ? (
                 <ForgotPassword_Dark
@@ -100,21 +100,21 @@ const ForgotPassword = ({navigation}) => {
               <ZText type={'r18'}>{strings.forgotPasswordDesc}</ZText>
 
               <ZInput
-                placeHolder={strings.email}
-                keyBoardType={'email-address'}
-                _value={email}
-                _errorText={emailError}
+                placeHolder={strings.phoneNumber}
+                keyBoardType={'numeric'}
+                _value={phone}
+                _errorText={phoneError}
                 autoCapitalize={'none'}
-                insideLeftIcon={() => <EmailIcon />}
-                toGetTextFieldValue={onChangedEmail}
+                insideLeftIcon={() => <PhoneIcon />}
+                toGetTextFieldValue={onChangedPhone}
                 inputContainerStyle={[
                   {backgroundColor: colors.inputBg},
-                  localStyles.inputContainerStyle,
-                  emailInputStyle,
+                  localStyles.inputContainer,
+                  phoneInputStyle,
                 ]}
                 inputBoxStyle={[localStyles.inputBoxStyle]}
-                _onFocus={onFocusEmail}
-                onBlur={onBlurEmail}
+                _onFocus={onFocusPhone}
+                onBlur={onBlurPhone}
               />
             </View>
             
@@ -157,7 +157,7 @@ const localStyles = StyleSheet.create({
     width: '100%',
     ...styles.selfCenter,
   },
-  emailContainer: {
+  phoneContainer: {
     ...styles.ph20
   },
   inputContainer: {

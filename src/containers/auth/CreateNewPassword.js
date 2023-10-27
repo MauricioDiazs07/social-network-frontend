@@ -24,6 +24,7 @@ import ZButton from '../../components/common/ZButton';
 
 const CreateNewPassword = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
+  const userPhone = props.route.params.phone;
 
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
@@ -123,7 +124,7 @@ const CreateNewPassword = ({navigation}) => {
     navigation.navigate(StackNav.Login);
   };
   const onPressModalClose = () => setModalVisible(false);
-
+  console.log('my new passwors?: ', password)
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.createNewPassword} />

@@ -75,7 +75,7 @@ export default {
     followSomeone: 'Suscribirse a alguien',
     followSomeoneDescription: 'Suscribirse a alguien que puedas conocer o puedes saltar este segmento.',
     forgotPassword: '¿Olvidaste la contraseña?',
-    forgotPasswordDesc: 'Ingresa tu correo electrónico para enviar un código de acceso',
+    forgotPasswordDesc: 'Ingresa tu número celular para enviar un código de acceso',
     fullName: 'Nombre completo',
     gender: 'Género',
     gift: 'Regalo',

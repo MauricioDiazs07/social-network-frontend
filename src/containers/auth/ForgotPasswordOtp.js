@@ -1,6 +1,6 @@
 // Library import
 import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
@@ -16,27 +16,88 @@ import {getHeight, moderateScale} from '../../common/constants';
 import {StackNav} from '../../navigation/NavigationKeys';
 import typography from '../../themes/typography';
 import ZButton from '../../components/common/ZButton';
+import {
+  ACCOUNT_SID_TWILIO,
+  AUTH_TOKEN_TWILIO,
+  PHONE_TWILIO,
+  API_TWILIO } from '../../utils/api_constants';
 
 const ForgotPasswordOtp = props => {
   const { navigation } = props;
-  const email = props.route.params.email2Send;
-
+  const phone = props.route.params.phone2Send;
   const colors = useSelector(state => state.theme.theme);
 
   const [otp, setOtp] = useState('');
   const [counterId, setCounterId] = useState('1');
   const [isTimeOver, setIsTimeOver] = useState(false);
-  const [counter, setCounter] = useState(10);
+  const [counter, setCounter] = useState(15);
+  const [phoneCode, setPhoneCode] = useState(null);
+  const [isFailed, setIsFailed] = useState(false);
+
+  const generateRandomNumber = () => {
+    const min = 1000; 
+    const max = 9999; 
+    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    setPhoneCode(randomNumber);
+    return randomNumber;
+  } 
+
+  const getTwilio = async () => { 
+    const formData = new FormData();
+
+    formData.append('From', `${PHONE_TWILIO}`);
+    formData.append('To', `+52${phone}`);
+    formData.append('Body', strings.codeSMS +`${phoneCode}`);
+
+    try{
+      // if(phoneCode !== null) {
+      //   const response = await fetch(API_TWILIO, {
+      //   method: "POST", 
+      //   body: formData,  
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //     'Authorization': 'Basic ' + encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
+      //   },
+      // });
+      // }
+console.log('Message content: ',formData)
+    } catch(error){
+      console.error('Error in API Twilio:', error);
+    }
+  }
+
+  useEffect(() => {    
+    generateRandomNumber();
+  },[]);
+
+  useEffect(() => {    
+    getTwilio()
+  },[phoneCode]);
 
   const onOtpChange = code => setOtp(code);
-  const onPressVerify = () => navigation.navigate(StackNav.CreateNewPassword);
+  
+  const onPressVerify = () => {
+    const numberOtp = parseInt(otp, 10);
+    if(isTimeOver === false) {
+      if(numberOtp === phoneCode){
+        setIsFailed(false);
+        navigation.navigate(StackNav.CreateNewPassword, {
+          phone: phone
+        });
+      } else {
+        setIsFailed(true);
+      }
+    } 
+  }
 
   const onFinishTimer = () => setIsTimeOver(true);
 
   const refTimer = useRef();
 
   const onPressResend = () => {
-    setCounter(counter + 20);
+    generateRandomNumber();
+    getTwilio();
+    setCounter(counter + 10);
     setCounterId(counterId + '1');
     setIsTimeOver(false);
     setOtp('');
@@ -47,9 +108,16 @@ const ForgotPasswordOtp = props => {
       <ZHeader title={strings.forgotPassword} />
       <ZKeyBoardAvoidWrapper contentContainerStyle={styles.flexGrow1}>
         <View style={localStyles.root}>
-          <ZText type={'r18'} align={'center'} style={styles.mb20}>
-            {strings.codeSendOn + email}
-          </ZText>
+          {!isTimeOver && (
+            <TouchableOpacity>
+              <ZText type={'r18'} align={'center'} style={styles.mb20}>
+                {strings.codePhoneSendOn}
+              </ZText>
+              <ZText type={'m18'} color={colors.primary} align={'center'}>
+                {phone}
+              </ZText>
+            </TouchableOpacity>
+          )}
           <OTPInputView
             pinCount={4}
             code={otp}
@@ -72,34 +140,50 @@ const ForgotPasswordOtp = props => {
           />
           <View style={styles.rowCenter}>
             {isTimeOver ? (
-              <TouchableOpacity
-                onPress={onPressResend}
-                disabled={isTimeOver ? false : true}
-                style={styles.p5}>
-                <ZText type={'m18'} color={colors.primary} align={'center'}>
-                  {strings.resendCode}
-                </ZText>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.rowCenter}>
+              <ZText type={'m18'} align={'center'}>
+                {strings.timeExceeded}
+              </ZText>
+              )
+            : (
+              isFailed === true && (
                 <ZText type={'m18'} align={'center'}>
-                  {strings.resendCodeIn}
+                  {strings.invalidCode}
                 </ZText>
-                <CountDownTimer
-                  ref={refTimer}
-                  timestamp={counter}
-                  timerCallback={onFinishTimer}
-                  containerStyle={{backgroundColor: colors.backgroundColor}}
-                  textStyle={[
-                    localStyles.digitStyle,
-                    {color: colors.primary},
-                  ]}
-                />
-                <ZText type={'m18'} align={'center'}>
-                  {strings.second}
-                </ZText>
-              </View>
-            )}
+            ))}
+          </View>
+          <View style={styles.rowCenter}>
+          {(phoneCode !== null) && (
+              isTimeOver ? (
+                <TouchableOpacity
+                  onPress={onPressResend}
+                  disabled={isTimeOver ? false : true}
+                  style={[
+                    localStyles.btnResendCodeContainer,
+                    {backgroundColor: colors.primary}]}>
+                  <ZText type={'m18'}  align={'center'}>
+                    {strings.resendCode}
+                  </ZText>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.rowCenter}>
+                  <ZText type={'m18'} align={'center'}>
+                    {strings.resendCodeIn}
+                  </ZText>
+                  <CountDownTimer
+                    ref={refTimer}
+                    timestamp={counter}
+                    timerCallback={onFinishTimer}
+                    containerStyle={{backgroundColor: colors.backgroundColor}}
+                    textStyle={[
+                      localStyles.digitStyle,
+                      {color: colors.primary},
+                    ]}
+                  />
+                  <ZText type={'m18'} align={'center'}>
+                    {strings.second}
+                  </ZText>
+                </View>
+              ))}
           </View>
         </View>
         <ZButton
@@ -119,7 +203,6 @@ const ForgotPasswordOtp = props => {
 };
 
 export default ForgotPasswordOtp;
-
 const localStyles = StyleSheet.create({
   root: {
     ...styles.ph30,
@@ -134,6 +217,20 @@ const localStyles = StyleSheet.create({
   },
   btnContainerStyle: {
     ...styles.m20,
+  },
+  btnSendCodeContainer: {
+    ...styles.p10,
+    height: getHeight(75),
+    borderRadius: moderateScale(40),
+    borderWidth: moderateScale(1),
+    fontWeight: typography.fontWeights.SemiBold
+  },
+  btnResendCodeContainer: {
+    ...styles.p10,
+    ...styles.mt15,
+    height: getHeight(55),
+    borderRadius: moderateScale(30),
+    borderWidth: moderateScale(1)
   },
   inputStyle: {
     height: getHeight(60),
