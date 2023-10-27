@@ -311,13 +311,15 @@ const CameraRegister = props => {
     setImg(img);
     readINE_2(img)
       .then(resp => {
-        console.log(resp);
         setIsLoading(false);
         if (!('name' in resp)) {
           setIsReadingError(true);
           setIsSnackbarVisible(true);
           return;
         }
+        const user = resp
+        birthday = user['birthday'].split("/");
+        user['birthday'] = getFormatedBirthday(birthday[0], birthday[1], birthday[2]);
         navigation.navigate(StackNav.SetUpProfile, {
           title: headerTitle,
           userCred: {
@@ -325,7 +327,7 @@ const CameraRegister = props => {
             password: passwordRegister,
           },
           identification_photo: img,
-          user: resp,
+          user: user,
         });
       })
       .catch(err => {
