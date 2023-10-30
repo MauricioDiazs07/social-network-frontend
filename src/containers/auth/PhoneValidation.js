@@ -4,7 +4,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
-import { encode } from 'base-64';
+import base64 from 'react-native-base64';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -52,12 +52,13 @@ const PhoneValidation = props => {
 
     try{
       if(phoneCode !== null) {
+
         const response = await fetch(API_TWILIO, {
         method: "POST", 
         body: formData,  
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': 'Basic ' + encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
+          'Authorization': 'Basic ' + base64.encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
         },
       });
       }

@@ -21,7 +21,7 @@ const getUserDataByPhone = async (phone_no) => {
     const response = await fetch(URL_API + USER_BY_PHONE + phone_no, {
         method: 'GET'
     });
-
+    
     try{
         const resp = await response.json();
 
