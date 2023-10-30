@@ -65,6 +65,6 @@ export const StackNav = {
   FinishProfile: 'FinishProfile',
   PostComments: 'PostComments',
   HistoryDetail: 'HistoryDetail',
-  MasterHome: 'MasterHome',
   PhoneValidation: 'PhoneValidation',
+  MasterHome: 'MasterHome',
 };

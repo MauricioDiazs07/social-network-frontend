@@ -35,7 +35,7 @@ const PhoneValidation = props => {
   const [phoneCode, setPhoneCode] = useState(null);
   const [isFailed, setIsFailed] = useState(false);
 
-  const generateRandom4DigitNumber = () => {
+  const generateRandomNumber = () => {
     const min = 1000; 
     const max = 9999; 
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -72,7 +72,7 @@ const PhoneValidation = props => {
   },[phoneCode]);
 
   const onPressSend = () => {
-    generateRandom4DigitNumber();
+    generateRandomNumber();
     getTwilio()
   }
 
@@ -80,7 +80,7 @@ const PhoneValidation = props => {
 
   const onPressVerify = () => {
     const numberOtp = parseInt(otp, 10);
-    if(isTimeOver === false) {
+    if(!isTimeOver) {
       if(numberOtp === phoneCode){
         setIsFailed(false);
         navigation.reset({
@@ -100,7 +100,7 @@ const PhoneValidation = props => {
   const refTimer = useRef();
 
   const onPressResend = () => {
-    generateRandom4DigitNumber();
+    generateRandomNumber();
     getTwilio();
     setCounter(counter + 10);
     setCounterId(counterId + '1');
@@ -119,26 +119,19 @@ const PhoneValidation = props => {
                   onPress={onPressSend}
                   disabled={phoneCode === null ? false : true}
                   style={[
-                    {
-                      ...styles.p10,
-                      height: getHeight(75),
-                      borderRadius: moderateScale(40),
-                      borderWidth: moderateScale(1),
-                      backgroundColor: colors.primary,
-                      fontWeight: typography.fontWeights.SemiBold
-                    }
-                  ]}>
+                    localStyles.btnSendCodeContainer,
+                    {backgroundColor: colors.primary}]}>
                   <ZText type={'m18'} align={'center'}>
-                    {strings.sendCode +`+52 ${phone}`}
+                    {strings.sendCode + phone}
                   </ZText>
                 </TouchableOpacity>
-                ) : (isTimeOver === false && (
+                ) : (!isTimeOver && (
                   <TouchableOpacity>
                     <ZText type={'r18'} align={'center'} style={styles.mb20}>
                       {strings.codePhoneSendOn}
                     </ZText>
                     <ZText type={'m18'} color={colors.primary} align={'center'}>
-                      {`+52 ${phone}`}
+                      {phone}
                     </ZText>
                   </TouchableOpacity>
                 )) 
@@ -164,18 +157,17 @@ const PhoneValidation = props => {
             secureTextEntry={false}
           />          
           <View style={styles.rowCenter}>
-            {isTimeOver === true ? (
-                <ZText type={'m18'} align={'center'}>
-                  {strings.timeExceeded}
-                </ZText>
-            )
-          : (
-            isFailed === true && (
+            {isTimeOver ? (
               <ZText type={'m18'} align={'center'}>
-                {strings.invalidCode}
+                {strings.timeExceeded}
               </ZText>
-          )
-          )}
+              )
+            : (
+              isFailed === true && (
+                <ZText type={'m18'} align={'center'}>
+                  {strings.invalidCode}
+                </ZText>
+            ))}
           </View>
           <View style={styles.rowCenter}>
            {(phoneCode !== null) && (
@@ -183,13 +175,9 @@ const PhoneValidation = props => {
                 <TouchableOpacity
                   onPress={onPressResend}
                   disabled={isTimeOver ? false : true}
-                  style={
-                    [{...styles.p10,
-                      ...styles.mt15,
-                      height: getHeight(55),
-                      borderRadius: moderateScale(30),
-                      borderWidth: moderateScale(1),
-                      backgroundColor: colors.primary}]
+                  style={[
+                    localStyles.btnResendCodeContainer,
+                    {backgroundColor: colors.primary}]
                     }>
                   <ZText type={'m18'}  align={'center'}>
                     {strings.resendCode}
@@ -249,6 +237,20 @@ const localStyles = StyleSheet.create({
   },
   btnContainerStyle: {
     ...styles.m20,
+  },
+  btnSendCodeContainer: {
+    ...styles.p10,
+    height: getHeight(75),
+    borderRadius: moderateScale(40),
+    borderWidth: moderateScale(1),
+    fontWeight: typography.fontWeights.SemiBold
+  },
+  btnResendCodeContainer: {
+    ...styles.p10,
+      ...styles.mt15,
+      height: getHeight(55),
+      borderRadius: moderateScale(30),
+      borderWidth: moderateScale(1)
   },
   inputStyle: {
     height: getHeight(60),

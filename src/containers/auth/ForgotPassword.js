@@ -1,6 +1,7 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Button } from 'react-native';
 import React, { useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Snackbar} from '@react-native-material/core';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import ZHeader from '../../components/common/ZHeader';
 import strings from '../../i18n/strings';
@@ -14,8 +15,9 @@ import {
 import {getHeight, moderateScale} from '../../common/constants';
 import {StackNav} from '../../navigation/NavigationKeys';
 import ZButton from '../../components/common/ZButton';
-import { validateEmail } from '../../utils/validators';
+import { validatePhoneNumber } from '../../utils/validators';
 import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper';
+import { getUserDataByPhone } from '../../api/user/user';
 
 const ForgotPassword = ({navigation}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -31,11 +33,14 @@ const ForgotPassword = ({navigation}) => {
   const FocusedIconStyle = colors.primary;
   const BlurredIconStyle = colors.grayScale5;
   
-  const [email, setEmail] = React.useState('');
-  const [emailError, setEmailError] = React.useState('');
-  const [emailInputStyle, setEmailInputStyle] = React.useState(BlurredStyle);
-  const [emailIcon, setEmailIcon] = React.useState(BlurredIconStyle);
+  const [phone, setPhone] = React.useState('');
+  const [phoneError, setPhoneError] = React.useState('');
+  const [phoneInputStyle, setPhoneInputStyle] = React.useState(BlurredStyle);
+  const [phoneIcon, setPhoneIcon] = React.useState(BlurredIconStyle);
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
+  const [snackVisible, setSnackVisible] = React.useState(false);
+  const [isUserInvalid, setIsUserInvalid] = React.useState(false);
+  const [userId, setUserId] = React.useState('');
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -44,44 +49,69 @@ const ForgotPassword = ({navigation}) => {
 
   useEffect(() => {
     if (
-      email.length > 0 &&
-      !emailError
+      phone.length > 0 &&
+      !phoneError
     ) {
-      setIsSubmitDisabled(false);
+      const get_user_id = getUserByPhone(phone);          
+      setUserId(get_user_id );
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [email, emailError]);
+  }, [phone, phoneError]);
   
-  const onChangedEmail = val => {
-    const {msg} = validateEmail(val.trim());
-    setEmail(val.trim());
-    setEmailError(msg);
+  const getUserByPhone = (phoneNo) => {
+    try {
+      getUserDataByPhone(phoneNo).then(resp => { 
+        if(resp) {
+          const user_id =  resp['profile_id']
+          return user_id;
+        } else {
+          setIsUserInvalid(true);      
+          setSnackVisible(true); 
+          setIsSubmitDisabled(true);   
+        }
+      })
+    } catch(error) {
+      console.error('Error user:', error);
+    }
+   
+  };
+  
+  const onChangedPhone = val => {
+    const {msg} = validatePhoneNumber(val.trim());
+    setPhone(val.trim());
+    setPhoneError(msg);
   };
 
-  const EmailIcon = () => {
-    return <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />;
+  const PhoneIcon = () => {
+    return <Ionicons name="call" size={moderateScale(20)} color={phoneIcon} />;
   };
 
-  const onFocusEmail = () => {
-    onFocusInput(setEmailInputStyle);
-    onFocusIcon(setEmailIcon);
+  const onFocusPhone = () => {
+    onFocusInput(setPhoneInputStyle);
+    onFocusIcon(setPhoneIcon);
   };
-  const onBlurEmail = () => {
-    onBlurInput(setEmailInputStyle);
-    onBlurIcon(setEmailIcon);
+  const onBlurPhone = () => {
+    onBlurInput(setPhoneInputStyle);
+    onBlurIcon(setPhoneIcon);
   };
 
-  const onPressPinContinue = () =>
-    navigation.navigate(StackNav.ForgotPasswordOtp,
-                          {email2Send: email}
-                        );
+  const onPressPinContinue = () => {
+    if(!isUserInvalid) {      
+      navigation.navigate(StackNav.ForgotPasswordOtp, {
+        phone2Send: phone,
+        userId: userId
+      });
+    }
+  }
+
+  const closeSnackBar = () => setSnackVisible(false);
 
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.forgotPassword} />
         <ZKeyBoardAvoidWrapper>
-          <View style={localStyles.emailContainer}>
+          <View style={localStyles.phoneContainer}>
             <View style={[styles.mv20, styles.selfCenter]}>
               {colors.dark ? (
                 <ForgotPassword_Dark
@@ -100,24 +130,39 @@ const ForgotPassword = ({navigation}) => {
               <ZText type={'r18'}>{strings.forgotPasswordDesc}</ZText>
 
               <ZInput
-                placeHolder={strings.email}
-                keyBoardType={'email-address'}
-                _value={email}
-                _errorText={emailError}
+                placeHolder={strings.phoneNumber}
+                keyBoardType={'numeric'}
+                _value={phone}
+                _errorText={phoneError}
                 autoCapitalize={'none'}
-                insideLeftIcon={() => <EmailIcon />}
-                toGetTextFieldValue={onChangedEmail}
+                insideLeftIcon={() => <PhoneIcon />}
+                toGetTextFieldValue={onChangedPhone}
                 inputContainerStyle={[
                   {backgroundColor: colors.inputBg},
-                  localStyles.inputContainerStyle,
-                  emailInputStyle,
+                  localStyles.inputContainer,
+                  phoneInputStyle,
                 ]}
                 inputBoxStyle={[localStyles.inputBoxStyle]}
-                _onFocus={onFocusEmail}
-                onBlur={onBlurEmail}
+                _onFocus={onFocusPhone}
+                onBlur={onBlurPhone}
               />
             </View>
-            
+            {snackVisible && (
+              <View style={{flex: 1}}>
+                <Snackbar
+                  message={strings.WrongPhone}
+                  action={
+                    <Button
+                      variant="text"
+                      title={strings.close}
+                      color={colors.primary}
+                      compact
+                      onPress={closeSnackBar}
+                    />
+                  }
+                />
+              </View>
+            )}            
             <ZButton
               textType={'b18'}
               color={colors.white}
@@ -157,7 +202,7 @@ const localStyles = StyleSheet.create({
     width: '100%',
     ...styles.selfCenter,
   },
-  emailContainer: {
+  phoneContainer: {
     ...styles.ph20
   },
   inputContainer: {

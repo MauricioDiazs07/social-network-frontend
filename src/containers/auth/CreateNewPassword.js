@@ -1,8 +1,9 @@
 // Librairies import
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, TouchableOpacity, Button} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
+import {Snackbar} from '@react-native-material/core';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -21,9 +22,15 @@ import {
 import {StackNav} from '../../navigation/NavigationKeys';
 import SuccessModal from '../../components/models/SuccessModal';
 import ZButton from '../../components/common/ZButton';
+import {
+  URL_API,
+  RESET_PASSWORD
+} from '../../utils/api_constants';
 
-const CreateNewPassword = ({navigation}) => {
+const CreateNewPassword = (props) => {
+  const {navigation} = props;
   const colors = useSelector(state => state.theme.theme);
+  const idUser = props.route.params.userId;
 
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
@@ -53,6 +60,7 @@ const CreateNewPassword = ({navigation}) => {
     useState(BlurredIconStyle);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [snackVisible, setSnackVisible] = React.useState(false);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -75,6 +83,37 @@ const CreateNewPassword = ({navigation}) => {
   const PasswordIcon = ({iconColor}) => (
     <Ionicons name="lock-closed" size={moderateScale(20)} color={iconColor} />
   );
+
+  const resetPassword = async (id, newPassword) => {
+    const userData = {
+      profileId: id,
+      password: newPassword,
+    };
+  
+    try {
+      const response = await fetch(URL_API + RESET_PASSWORD, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json', 
+        },
+        body: JSON.stringify(userData),
+      });
+  
+      if (response.ok) {
+        setModalVisible(true);        
+        navigation.navigate(StackNav.Login, {
+          newPassword: password
+        });
+      } else {
+        setModalVisible(false);
+        setSnackVisible(true);
+      }
+    } catch (error) {
+      console.error('Error Password');
+    }
+  };
+  
+  const closeSnackBar = () => setSnackVisible(false);
 
   const onFocusPassword = () => {
     onFocusInput(setPasswordInputStyle);
@@ -119,11 +158,11 @@ const CreateNewPassword = ({navigation}) => {
   };
 
   const onPressContinue = () => {
-    setModalVisible(true);
-    navigation.navigate(StackNav.Login);
+    resetPassword();
   };
+  
   const onPressModalClose = () => setModalVisible(false);
-
+  
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.createNewPassword} />
@@ -214,6 +253,22 @@ const CreateNewPassword = ({navigation}) => {
         visible={modalVisible}
         onPressModalClose={onPressModalClose}
       />
+      {snackVisible && (
+        <View style={{flex: 1}}>
+          <Snackbar
+            message={strings.WrongCredentials}
+            action={
+              <Button
+                variant="text"
+                title={strings.close}
+                color={colors.primary}
+                compact
+                onPress={closeSnackBar}
+              />
+            }
+          />
+        </View>
+      )}
     </ZSafeAreaView>
   );
 };

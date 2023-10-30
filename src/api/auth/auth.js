@@ -121,7 +121,7 @@ const signUp = async (
 const signUp2 = async (
     user
 ) => {
-
+    console.log("signUp2.user",user);
     const form = new FormData()
     form.append('phone', user['phone'])
     form.append('password', user['password'])
@@ -136,13 +136,11 @@ const signUp2 = async (
     form.append('email', user['email'])
     
     const value = user['identification_photo'];
-    console.log(value);
     const imageData1 = {
         uri: value,
         name: `img_${1}.jpg`,
         type: 'image/jpg',
     }
-    console.log(imageData1);
 
     if (user['profile_photo'] != ''){
         const imageData2 = {
@@ -152,7 +150,6 @@ const signUp2 = async (
         }
         form.append('profile_photo', imageData2)
     }
-    console.log("Datos");
     form.append('identification_photo', imageData1);
     console.log("Datos de registro: ",form);
     const response = await fetch(URL_API + SIGNUP, {
