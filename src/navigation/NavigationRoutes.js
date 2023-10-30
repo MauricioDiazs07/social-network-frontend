@@ -62,6 +62,7 @@ import CameraRegister from '../containers/auth/CameraRegister';
 import FinishProfile from '../containers/auth/FinishProfile';
 import PostComments from '../containers/TabBar/home/UserPostFeed/PostComments';
 import MasterHome from '../containers/TabBar/home/MasterHome';
+import PhoneValidation from '../containers/auth/PhoneValidation';
 
 export const TabRoute = {
   Home,
@@ -129,4 +130,5 @@ export const StackRoute = {
   FinishProfile,
   PostComments,
   HistoryDetail,
+  PhoneValidation,
 };

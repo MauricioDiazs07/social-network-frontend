@@ -184,7 +184,7 @@ const FinishProfile = props => {
 
     const usser_ = {
       ...userCred_,
-      profile_photo: selectImage,
+      profile_photo: selectImage, 
       phone: phoneNo_,
       ...userInfo
     };
@@ -212,7 +212,8 @@ const FinishProfile = props => {
                   setAsyncStorageData("DESCRIPTION", resp['description']);
                 });
 
-                navigation.navigate(StackNav.FollowSomeone);
+                navigation.navigate(StackNav.FollowSomeone,
+                  {usser: usser_});
             }})
             .catch(err => {
               setIsLoading(false);

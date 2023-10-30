@@ -53,6 +53,10 @@ export default function StackNavigation() {
           name={StackNav.FinishProfile}
           component={StackRoute.FinishProfile}
         />
+        <Stack.Screen
+          name={StackNav.PhoneValidation}
+          component={StackRoute.PhoneValidation}
+        />
       </Stack.Navigator>
     );
   }
@@ -206,6 +210,10 @@ export default function StackNavigation() {
         name={StackNav.PostComments}
         component={StackRoute.PostComments}
       />
+      <Stack.Screen
+          name={StackNav.PhoneValidation}
+          component={StackRoute.PhoneValidation}
+        />
     </Stack.Navigator>
   );
 }
