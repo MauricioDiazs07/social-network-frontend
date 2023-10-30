@@ -1,6 +1,7 @@
 import { URL_API,
     LIKE,
     DISLIKE,
+    ADD_COMMENT,
     USER_DATA,
     MASTER_DATA,
     PROFILE_DATA
@@ -44,6 +45,26 @@ const disLike = async (profile_id,share_id,share_type) => {
     }
 }
 
+const addComment = async (profileId, shareId, text) => {
+    const response = await fetch(URL_API + ADD_COMMENT, {
+        method: 'POST',
+        body: JSON.stringify({
+            profile_id: profileId,
+            share_id: shareId,
+            share_type: 'POST',
+            text: text
+        }),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+
+    const resp = await response.json();
+    if (response.ok) { 
+        return resp;
+    }
+}
+
 const getUserData = async (profile_id) => {
     const response = await fetch(URL_API + USER_DATA + profile_id, {
         method: 'GET'
@@ -81,6 +102,7 @@ const getMasterData = async (profile_id) => {
 export {
     addLike,
     disLike,
+    addComment,
     getUserData,
     getMasterData,
     getProfileData

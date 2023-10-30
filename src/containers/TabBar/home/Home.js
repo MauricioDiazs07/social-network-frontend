@@ -36,7 +36,7 @@ import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
-import { ACCESS_TOKEN, USER_LEVEL, THEME } from '../../../common/constants';
+import { USER_LEVEL, THEME } from '../../../common/constants';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
@@ -434,8 +434,7 @@ const barState = {
 
   const onPressYesLogOut = async () => {
     try {
-      await AsyncStorage.removeItem(ACCESS_TOKEN);
-      await AsyncStorage.removeItem(USER_LEVEL);
+      await AsyncStorage.clear();
       LogOutSheetRef?.current?.hide();
       setTimeout(() => {
         navigation.reset({
