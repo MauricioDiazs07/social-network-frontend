@@ -4,7 +4,7 @@ export const TabNav = {
   Profile: 'Profile',
   Discover: 'Discover',
   Shorts: 'Shorts',
-};
+}; 
 
 export const StackNav = {
   Profile: 'Profile',
@@ -65,5 +65,6 @@ export const StackNav = {
   FinishProfile: 'FinishProfile',
   PostComments: 'PostComments',
   HistoryDetail: 'HistoryDetail',
+  PhoneValidation: 'PhoneValidation',
   MasterHome: 'MasterHome',
 };

@@ -1,0 +1,28 @@
+# server variables
+JWT_KEY=BritaSecurityJWT
+SECRET_KEY=BritaSecurity
+
+#DB CONFIG PROD
+# POSTGRES_HOST=influexdb.ca0qqiem9mhw.us-east-2.rds.amazonaws.com
+# POSTGRES_USER=masterVemasmas
+# POSTGRES_PASSWORD=xkzp3H9iIn99mmW7KRJE
+# POSTGRES_DB=postgres
+
+#DB CONFIG QA
+POSTGRES_HOST=influexqa.ca0qqiem9mhw.us-east-2.rds.amazonaws.com
+POSTGRES_USER=masterVemasmas
+POSTGRES_PASSWORD=xkzp3H9iIn99mmW7KRJE
+POSTGRES_DB=postgres
+
+#DB CONFIG localhost
+# POSTGRES_HOST=influexqa.ca0qqiem9mhw.us-east-2.rds.amazonaws.com
+# POSTGRES_USER=masterVemasmas
+# POSTGRES_PASSWORD=xkzp3H9iIn99mmW7KRJE
+# POSTGRES_DB=postgres
+
+# Amazon S3
+AWS_BUCKET_NAME=influexs3
+AWS_ACCESS_KEY=AKIA4OKTIUCSDDHLFWMJ
+AWS_SECRET_ACCESS_KEY=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
+REGION_NAME=us-east-2
+SERVICE_NAME=s3

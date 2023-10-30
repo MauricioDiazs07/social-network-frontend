@@ -15,9 +15,11 @@ import {moderateScale} from '../../common/constants';
 import ZSearch from '../../components/common/ZSearch';
 import { getInterests } from '../../api/auth/auth';
 
-const FollowSomeone = ({navigation}) => {
+const FollowSomeone = props => {
+  const {navigation} = props;
   const colors = useSelector(state => state.theme.theme);
-
+  const usserCred = props.route.params.usser;
+  const userPhone = usserCred['phone'];
   const [interestsList, setInterestsList] = React.useState();
 
   useEffect(() => {
@@ -36,9 +38,8 @@ const FollowSomeone = ({navigation}) => {
   }, []);
 
   const onPressContinue = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: StackNav.TabBar}],
+    navigation.navigate(StackNav.PhoneValidation, {
+      phone: userPhone
     });
   };
 

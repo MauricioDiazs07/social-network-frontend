@@ -61,6 +61,7 @@ import UserProfile from '../containers/TabBar/profile/UserProfile';
 import CameraRegister from '../containers/auth/CameraRegister';
 import FinishProfile from '../containers/auth/FinishProfile';
 import PostComments from '../containers/TabBar/home/UserPostFeed/PostComments';
+import PhoneValidation from '../containers/auth/PhoneValidation';
 import MasterHome from '../containers/TabBar/home/MasterHome';
 
 export const TabRoute = {
@@ -129,4 +130,5 @@ export const StackRoute = {
   FinishProfile,
   PostComments,
   HistoryDetail,
+  PhoneValidation,
 };

@@ -1,9 +1,10 @@
 // Library import
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import React, {useRef, useState, useEffect} from 'react';
+import {StyleSheet, View, TouchableOpacity, Button} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
+import { encode } from 'base-64';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -22,10 +23,9 @@ import {
   PHONE_TWILIO,
   API_TWILIO } from '../../utils/api_constants';
 
-const ForgotPasswordOtp = props => {
+const PhoneValidation = props => {
   const { navigation } = props;
-  const phone = props.route.params.phone2Send;
-  const user_id = props.route.params.userId;
+  const phone = props.route.params.phone
   const colors = useSelector(state => state.theme.theme);
 
   const [otp, setOtp] = useState('');
@@ -41,7 +41,7 @@ const ForgotPasswordOtp = props => {
     const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
     setPhoneCode(randomNumber);
     return randomNumber;
-  } 
+  }  
 
   const getTwilio = async () => { 
     const formData = new FormData();
@@ -61,36 +61,41 @@ const ForgotPasswordOtp = props => {
         },
       });
       }
+
     } catch(error){
       console.error('Error in API Twilio:', error);
     }
   }
 
   useEffect(() => {    
-    generateRandomNumber();
-  },[]);
-
-  useEffect(() => {    
     getTwilio()
   },[phoneCode]);
 
+  const onPressSend = () => {
+    generateRandomNumber();
+    getTwilio()
+  }
+
   const onOtpChange = code => setOtp(code);
-  
+
   const onPressVerify = () => {
     const numberOtp = parseInt(otp, 10);
-    if(isTimeOver === false) {
+    if(!isTimeOver) {
       if(numberOtp === phoneCode){
         setIsFailed(false);
-        navigation.navigate(StackNav.CreateNewPassword, {
-          userId: user_id
-        });
+        navigation.reset({
+              index: 0,
+              routes: [{name: StackNav.TabBar}],
+            });
       } else {
         setIsFailed(true);
       }
     } 
   }
 
-  const onFinishTimer = () => setIsTimeOver(true);
+  const onFinishTimer = () => {
+    setIsTimeOver(true)
+  };
 
   const refTimer = useRef();
 
@@ -100,24 +105,37 @@ const ForgotPasswordOtp = props => {
     setCounter(counter + 10);
     setCounterId(counterId + '1');
     setIsTimeOver(false);
+    setIsFailed(false);
     setOtp('');
   };
-
+  
   return (
     <ZSafeAreaView>
-      <ZHeader title={strings.forgotPassword} />
+      <ZHeader title={strings.validateOtp} />
       <ZKeyBoardAvoidWrapper contentContainerStyle={styles.flexGrow1}>
         <View style={localStyles.root}>
-          {!isTimeOver && (
-            <TouchableOpacity>
-              <ZText type={'r18'} align={'center'} style={styles.mb20}>
-                {strings.codePhoneSendOn}
-              </ZText>
-              <ZText type={'m18'} color={colors.primary} align={'center'}>
-                {phone}
-              </ZText>
-            </TouchableOpacity>
-          )}
+          {(phoneCode === null) ? (
+            <TouchableOpacity
+                  onPress={onPressSend}
+                  disabled={phoneCode === null ? false : true}
+                  style={[
+                    localStyles.btnSendCodeContainer,
+                    {backgroundColor: colors.primary}]}>
+                  <ZText type={'m18'} align={'center'}>
+                    {strings.sendCode + phone}
+                  </ZText>
+                </TouchableOpacity>
+                ) : (!isTimeOver && (
+                  <TouchableOpacity>
+                    <ZText type={'r18'} align={'center'} style={styles.mb20}>
+                      {strings.codePhoneSendOn}
+                    </ZText>
+                    <ZText type={'m18'} color={colors.primary} align={'center'}>
+                      {phone}
+                    </ZText>
+                  </TouchableOpacity>
+                )) 
+          }
           <OTPInputView
             pinCount={4}
             code={otp}
@@ -137,7 +155,7 @@ const ForgotPasswordOtp = props => {
             }}
             style={localStyles.inputStyle}
             secureTextEntry={false}
-          />
+          />          
           <View style={styles.rowCenter}>
             {isTimeOver ? (
               <ZText type={'m18'} align={'center'}>
@@ -152,14 +170,15 @@ const ForgotPasswordOtp = props => {
             ))}
           </View>
           <View style={styles.rowCenter}>
-          {(phoneCode !== null) && (
+           {(phoneCode !== null) && (
               isTimeOver ? (
                 <TouchableOpacity
                   onPress={onPressResend}
                   disabled={isTimeOver ? false : true}
                   style={[
                     localStyles.btnResendCodeContainer,
-                    {backgroundColor: colors.primary}]}>
+                    {backgroundColor: colors.primary}]
+                    }>
                   <ZText type={'m18'}  align={'center'}>
                     {strings.resendCode}
                   </ZText>
@@ -202,7 +221,8 @@ const ForgotPasswordOtp = props => {
   );
 };
 
-export default ForgotPasswordOtp;
+export default PhoneValidation;
+
 const localStyles = StyleSheet.create({
   root: {
     ...styles.ph30,
@@ -218,12 +238,19 @@ const localStyles = StyleSheet.create({
   btnContainerStyle: {
     ...styles.m20,
   },
+  btnSendCodeContainer: {
+    ...styles.p10,
+    height: getHeight(75),
+    borderRadius: moderateScale(40),
+    borderWidth: moderateScale(1),
+    fontWeight: typography.fontWeights.SemiBold
+  },
   btnResendCodeContainer: {
     ...styles.p10,
-    ...styles.mt15,
-    height: getHeight(55),
-    borderRadius: moderateScale(30),
-    borderWidth: moderateScale(1)
+      ...styles.mt15,
+      height: getHeight(55),
+      borderRadius: moderateScale(30),
+      borderWidth: moderateScale(1)
   },
   inputStyle: {
     height: getHeight(60),

@@ -1,6 +1,7 @@
 import { URL_API,
     USER_DATA,
-    USER_UPDATE
+    USER_UPDATE,
+    USER_BY_PHONE
 } from "../../utils/api_constants";
 
 
@@ -13,6 +14,24 @@ const getUserData = async (profile_id) => {
     if (response.ok) {
         return resp;
     }
+}
+
+const getUserDataByPhone = async (phone_no) => {
+
+    const response = await fetch(URL_API + USER_BY_PHONE + phone_no, {
+        method: 'GET'
+    });
+
+    try{
+        const resp = await response.json();
+
+        if (response.ok) {
+            return resp;
+        }
+    } catch(error) {
+        console.log('Error get User Data By Phone', error)
+    }
+    
 }
 
 const updateUserData = async (profile_id, email, phone_number, profile_photo) => {
@@ -49,5 +68,6 @@ const updateUserData = async (profile_id, email, phone_number, profile_photo) =>
 
 export {
     getUserData,
-    updateUserData
+    updateUserData,
+    getUserDataByPhone
 }
