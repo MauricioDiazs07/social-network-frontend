@@ -53,10 +53,11 @@ export default function ProfileDetail({navigation, route}) {
   useEffect(() => {
     getMasterData(profileId).then(resp =>{
       setMasterData(resp);
-      const new_history = transformpHistoy(resp)
-      const feeds = transformFeed(resp)
-      setHistoryData(new_history)
-      setFeeds(feeds)
+      const new_history = transformpHistoy(resp);
+      const feeds = transformFeed(resp);
+      setHistoryData(new_history);
+      setFeeds(feeds);
+      console.log("MASTER DATA",masterData);
     })
   }, []);
 
@@ -180,13 +181,13 @@ export default function ProfileDetail({navigation, route}) {
             <ZText type="s14" align={'center'} style={styles.mt10}>
               {'CEO de empresa'}
             </ZText>
-            <ZText
+            {/* <ZText
               type="m14"
               align={'center'}
               color={colors.userDesc}
               style={styles.mt10}>
-              {masterData.description}
-            </ZText>
+              {masterData['description']}
+            </ZText> */}
           </View>
         </View>
         <View style={[styles.flexRow, styles.justifyEvenly]}>

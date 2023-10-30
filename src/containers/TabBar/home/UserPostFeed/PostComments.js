@@ -4,6 +4,7 @@ import { StyleSheet,
          View,
          TouchableOpacity,
          RefreshControl,
+         ActivityIndicator,
          ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { FlashList } from '@shopify/flash-list';
@@ -18,8 +19,8 @@ import ZText from '../../../../components/common/ZText';
 import ZInput from '../../../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../../../components/common/ZKeyBoardAvoidWrapper';
 import { getAsyncStorageData } from '../../../../utils/helpers';
-import { addLike, disLike } from '../../../../api/feed/interaction';
-import { moderateScale, screenWidth } from '../../../../common/constants';
+import { addLike, disLike, addComment } from '../../../../api/feed/interaction';
+import { getHeight, moderateScale, screenWidth } from '../../../../common/constants';
 import { StackNav } from '../../../../navigation/NavigationKeys';
 import { styles } from '../../../../themes';
 import { 
@@ -28,12 +29,13 @@ import {
     HeartIcon_Dark,
     HeartIcon_Light,
     LikedHeart } from '../../../../assets/svgs';
+import { getShare } from '../../../../api/feed/posts';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
 
-  const [isLiked, setIsLiked] = useState(item['likes']['like']);
   const [likes, setLikes] = useState(item['likes']['count']);
+  const [isLiked, setIsLiked] = useState(item['likes']['like']);
 
   const onPressLike = () => {
     // TODO: add catch in order to remove like if petition is not resolved
@@ -41,13 +43,12 @@ const BottomIconContainer = ({item}) => {
     if (!isLiked) {
       setLikes(likes + 1);
       getAsyncStorageData('PROFILE_ID').then(profile => {
-        addLike(profile, item['id'], item['postType']);
-        console.log(item);
+        addLike(profile, item['id'], item['shareType']);
       });
     } else {
       setLikes(likes - 1);
       getAsyncStorageData('PROFILE_ID').then(profile => {
-        disLike(profile, item['id'], item['postType']);
+        disLike(profile, item['id'], item['shareType']);
       });
     }
 
@@ -114,12 +115,23 @@ const PostComments = props => {
   
   const [addChat, setAddChat] = useState('');
   const [chatStyle, setChatStyle] = useState(BlurredStyle);
-  const [item, setItem] = useState(props.route.params.idPost);
-  console.log("ITEM", item);
+  const [item, setItem] = useState(props.route.params.item);
+  const [comments, setComments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    
+    if (isLoading) {
+      getPostInfo();
+    }
   });
+
+  const getPostInfo = async () => {
+    const resp = await getShare(item['id']);
+    setItem(resp);
+    setComments(resp['comments']['data']);
+    
+    setIsLoading(false);
+  }
 
   const onFocusInput = () => setChatStyle(FocusedStyle);
 
@@ -137,7 +149,7 @@ const PostComments = props => {
   );
   
   const renderPostImages = ({item}) => {
-    return <FastImage source={{uri: item}} style={localStyles.postImage} />;
+    return <FastImage source={{uri: item['archive_url']}} style={localStyles.postImage} />;
   };
 
   const renderComments = ({item}) => {
@@ -172,16 +184,28 @@ const PostComments = props => {
     });
   };
   
-  const onRefresh = () => navigation.reset({
-    // TODO: pass id of post
-    index: 0,
-    routes: [{name: StackNav.TabBar}]
-  });
+  const onRefresh = () => {
+    navigation.navigate(StackNav.PostComments,
+      {item: item});
+  }
   
   const onchangeComment = text => setAddChat(text);
 
   const onPressSend = () => {
-    console.log("Comentario enviado");
+    if (addChat.length > 0) {
+      addComment(item['profileId'], item['id'], addChat);
+      let commentsData = {
+        comment: addChat,
+        creation_date: item['creationDate'],
+        id: item['id'],
+        name: item['name'],
+        profile_id: item['profileId'],
+        profile_photo: item['profileImage']
+      }
+
+      setComments(prevComments => [...prevComments, commentsData]);
+      setAddChat('');
+    }
   };
 
   return (
@@ -192,7 +216,8 @@ const PostComments = props => {
               <RefreshControl onRefresh={onRefresh}/>
           }
         >
-          <View>
+          {!isLoading ? (
+            <View>
               <ZHeader />
               <View style={localStyles.headerContainer}>
               <TouchableOpacity
@@ -208,7 +233,7 @@ const PostComments = props => {
                   <ZText
                       type={'m14'}
                       color={colors.dark ? colors.grayScale4 : colors.grayScale7}>
-                      {item.subtitle}
+                      {item['creationDate']}
                   </ZText>
                   </View>
               </TouchableOpacity>
@@ -221,12 +246,12 @@ const PostComments = props => {
 
               <View style={[styles.mr20, styles.ml20]}>
               <ZText>{item.text}</ZText>
-              {item.image.length > 0 && (
+              {item['multimedia']['data'].length > 0 && (
                   <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
                   <FlashList
-                      data={item.image}
+                      data={item['multimedia']['data']}
                       showsHorizontalScrollIndicator={false}
-                      keyExtractor={image => image}
+                      keyExtractor={(item, index) => index.toString()}
                       horizontal
                       pagingEnabled
                       renderItem={renderPostImages}
@@ -237,12 +262,13 @@ const PostComments = props => {
           <BottomIconContainer item={item} />
 
           <FlashList
-              data={item.comments.data}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={image => image}
-              horizontal
-              pagingEnabled
-              renderItem={renderComments}
+            contentContainerStyle={localStyles.listContainer}
+            data={comments}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            // horizontal
+            pagingEnabled
+            renderItem={renderComments}
           />
 
           <View style={styles.m10}>
@@ -263,7 +289,11 @@ const PostComments = props => {
             />
           </View>
 
-          </View>
+          </View>) : (
+            <View style={localStyles.loadingPosts}>
+              <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+          )}
         </ScrollView>
       </ZKeyBoardAvoidWrapper>
     </ZSafeAreaView>
@@ -312,5 +342,13 @@ const localStyles = StyleSheet.create({
       borderRadius: moderateScale(20),
       borderWidth: moderateScale(1),
       ...styles.ph15,
+    },
+    loadingPosts: {
+      height: getHeight(200),
+      ...styles.rowCenter
+    },
+    listContainer: {
+      ...styles.ph20,
+      ...styles.flex0
     },
 });

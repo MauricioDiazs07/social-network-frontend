@@ -52,7 +52,7 @@ const BottomIconContainer = ({item}) => {
 
   const OnPressComments = () => {
     navigation.navigate(StackNav.PostComments,
-      {idPost: item});
+      {item: item});
   }
 
   return (
@@ -149,20 +149,20 @@ const UserPost = ({item}) => {
       </View>
       
       <View>
-          <ZText>{item.text}</ZText>
-          {item.image.length > 0 && (
-            <View style={item.text !== "" ? styles.mt20 : styles.mt5}>
-              <FlashList
-                data={item.image}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={image => image}
-                horizontal
-                pagingEnabled
-                renderItem={renderPostImages}
-              />
-            </View>
-          )}
-        </View>
+        <ZText>{item.text}</ZText>
+        {item.image.length > 0 && (
+          <View style={item.text !== "" ? styles.mt20 : styles.mt5}>
+            <FlashList
+              data={item.image}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={image => image}
+              horizontal
+              pagingEnabled
+              renderItem={renderPostImages}
+            />
+          </View>
+        )}
+      </View>
       <BottomIconContainer item={item} />
     </View>
   );

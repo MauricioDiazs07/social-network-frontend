@@ -29,7 +29,6 @@ const getUserLevel = async () => {
   await AsyncStorage.getItem(USER_LEVEL)
     .then((data) => {
       user_access = JSON.parse(data);
-      console.log("TABBAR USERACCESS:", user_access, user_access == "master");
     }).catch(err => console.log("ERROR:", err));
 };
 
@@ -121,21 +120,23 @@ export default function TabBarNavigation({navigation}) {
           ),
         }}
       />
-      <Tab.Screen
-        name={TabNav.Shorts}
-        component={TabRoute.Shorts}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <View>
-              {user_access !== "master" &&(<TabText
-                text={strings.shorts}
-                focused={focused}
-                icon={focused ? <Inbox_Dark /> : <Inbox_Light />}
-              />)}
-            </View>
-          ),
-        }}
-      />
+      {user_access !== "master" && (
+        <Tab.Screen
+          name={TabNav.Shorts}
+          component={TabRoute.Shorts}
+          options={{
+            tabBarIcon: ({focused}) => (
+              <View>
+                {user_access !== "master" ? (<TabText
+                  text={strings.shorts}
+                  focused={focused}
+                  icon={focused ? <Inbox_Dark /> : <Inbox_Light />}
+                />) : <View></View>}
+              </View>
+            ),
+          }}
+        />
+        )}
     </Tab.Navigator>
   );
 }

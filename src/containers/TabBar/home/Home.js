@@ -1,11 +1,10 @@
+// library imports
 import { View,
         TouchableOpacity,
         StyleSheet,
         ScrollView,
         RefreshControl,
         ActivityIndicator,
-        AppRegistry,
-        Text,
         processColor } from 'react-native';
 import React, { useMemo, createRef, useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -16,12 +15,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import images from '../../../assets/images';
-import _, { forEach } from 'lodash';
-import {LineChart} from 'react-native-charts-wrapper';
-import {PieChart} from 'react-native-charts-wrapper';
+import { PieChart } from 'react-native-charts-wrapper';
+import { Dropdown } from 'react-native-element-dropdown';
+import { BarChart } from 'react-native-charts-wrapper';
 
-import {BarChart} from 'react-native-charts-wrapper';
-
+// local imports
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import { getHeight, moderateScale } from '../../../common/constants';
 import {
@@ -38,24 +36,26 @@ import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
-import { ACCESS_TOKEN, USER_LEVEL, THEME } from '../../../common/constants';
+import { USER_LEVEL, THEME } from '../../../common/constants';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
 import { transformfPosts, transformfHistoy } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
-import { getGeneralData } from '../../../api/master/masterData';
+import { getGeneralData, getSectionData, getInterestsData } from '../../../api/master/masterData';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
 const onPressCancel = () => LogOutSheetRef?.current?.hide();
 let user_access = '';
+let pageIsLoading = true;
 
 const getUserLevel = async () => {
   await AsyncStorage.getItem(USER_LEVEL)
     .then((data) => {
       user_access = JSON.parse(data);
+      pageIsLoading = false;
     }).catch(err => console.log("ERROR:", err));
 };
 
@@ -128,8 +128,18 @@ const RightHeaderIcons = React.memo(() => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [isDark, setIsDark] = useState(false);
+  const [userAccess, setUserAccess] = useState('');
 
-  getUserLevel();
+  useEffect(() => {
+    getUserAccess();
+    getUserLevel();
+  });
+
+  const getUserAccess = async () => {
+    let storageResp = await AsyncStorage.getItem(USER_LEVEL);
+    user_access = JSON.parse(storageResp);
+    setUserAccess(user_access);
+  }
 
   const onPressProfileIcon = () => {
     if (user_access == 'user') {
@@ -154,7 +164,7 @@ const RightHeaderIcons = React.memo(() => {
 
   return (
     <View style={localStyles.headerRightIcon}>
-      <TouchableOpacity 
+      {userAccess !== "master" && (<TouchableOpacity 
         onPress={onPressProfileIcon}
         style={localStyles.rightBtns}
       >
@@ -170,7 +180,7 @@ const RightHeaderIcons = React.memo(() => {
           />
         )}
 
-      </TouchableOpacity>
+      </TouchableOpacity>)}
 
       <TouchableOpacity
         onPress={onPressThemeBtn}
@@ -206,142 +216,216 @@ const LeftHeaderIcon = React.memo(() => {
 
 const Home = () => {
   const navigation = useNavigation();
+  const colors = useSelector(state => state.theme.theme);
   const rightHeaderIcon = useMemo(() => <RightHeaderIcons />, []);
   const leftHeaderIcon = useMemo(() => <LeftHeaderIcon />, []);
   
+  // posts variables
   const [postData, setPostData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [masterData, setMasterData] = useState([]);
-  const [genderPieChart, setGenderPieChart] = useState([]);
-  const [interestLineChart, setInterestLineChart] = useState([]);
-  const [ageBarChart, setAgeBarChart] = useState([]);
-  const [isData, setIsData] = useState(false);
+  // charts variables
+  const [pageNumber, setPageNumber] = useState(1);
+  const [isChartLoading, setIsChartLoading] = useState(false);
+  const [pieChartLabel, setPieChartLabel] = useState('');
+  const [genderData, setGenderData] = useState([]);
+  const [barChartData, setBarChartData] = useState([]);
+  const [barChartLabels, setBarChartLabels] = useState([]);
+  const [dropdownData, setDropdownData] = useState([]);
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
   
   useEffect(() => {
-    if (!isData) {
-      getGeneralData().then(data => {
-        setMasterData(data);
-        setGenderPieChart(data['gender']);
-        setAgeBarChart(data['age']);
-        setInterestLineChart(data['interests']['data']);
-      });
-      setIsData(true);
+    initApp();
+  }, []);
+
+  const initApp = async () => {
+    let user_level = await getAsyncStorageData(USER_LEVEL);
+
+    if (user_level !== "master") {
+      getPostsList();
+    } else {
+      getData();
     }
-  });
-
-const getLinearChartData = () => {
-
-  return {dataSets: [{ values: interestLineChart, 
-    label: '',
-    config: {
-      lineWidth: 1.5,
-      drawCircles: false,
-      drawCubicIntensity: 0.3,
-      drawCubic: true,
-      drawHighlightIndicators: false,
-      color: COLOR_PURPLE,
-      drawFilled: true,
-      fillColor: COLOR_PURPLE,
-      fillAlpha: 90
-    }}]};
   }
 
-  const getBarchartData = () => {
-    
-    const data_ = {
-      dataSets: [{
-        values: ageBarChart,
-        label: 'Bar dataSet',
-        config: {
-          color: processColor('teal'),
-          barShadowColor: processColor('lightgrey'),
-          highlightAlpha: 90,
-          highlightColor: processColor('red'),
-        }
-      }],
+  const getPostsList = async () => {
+    let userID = await getAsyncStorageData("PROFILE_ID");
+    let postsList = await getPosts(userID);
+    let new_posts = transformfPosts(postsList['POST']);
+    let new_history = transformfHistoy(postsList['HISTORY']);
 
-      config: {
-        barWidth: 0.7,
+    setPostData(new_posts);
+    setHistoryData(new_history);
+    setIsLoaded(true);
+  }
+
+  const getData = async (index = 1) => {
+    setIsChartLoading(true);
+
+    let generalData = await getGeneralData();
+    let genderList = formatGenderData(generalData['gender']);
+
+    setGenderData(genderList);
+    let ddItems = [];
+    if (index === 2) {
+      setBarChartParameters(generalData['age']);
+    }
+    if (index === 3) {
+      ddItems = getDropdownItems(generalData['section']['array']);
+      setBarChartParameters(generalData['section']['data']);
+    }
+    if (index === 4) {
+      ddItems = getDropdownItems(generalData['interests']['array']);
+      setBarChartParameters(generalData['interests']['data']);
+    }
+
+    setDropdownData(ddItems);
+    setValue(null);
+    setIsChartLoading(false);
+  }
+
+  const getSectionChartData = async (section) => {
+    let sectionData = await getSectionData(section);
+    setBarChartParameters(sectionData['interests']);
+  }
+
+  const getInterestChartData = async (interest) => {
+    let interestsData = await getInterestsData(interest);
+    setBarChartParameters(interestsData['section']);
+  }
+
+  const changePage = (index) => {
+    if (index == pageNumber) {
+      return;
+    }
+    getData(index);
+    setPageNumber(index);
+  }
+
+  const formatGenderData = (genderData) => {
+    genderData.forEach((x) => {
+      if (x['label'] == 'M') {
+        x['label'] = 'Mujeres';
+      } else if (x['label'] == 'H') {
+        x['label'] = 'Hombres';
       }
-    }
+    });
 
-    return data_;
+    return genderData;
   }
 
-  const COLOR_PURPLE = processColor('#697dfb');
+  const getDropdownItems = (valuesList) => {
+    let newList = [];
 
-  const barState = {
-    legend: {
-      enabled: true,
-      textSize: 14,
-      form: 'SQUARE',
-      formSize: 14,
-      xEntrySpace: 10,
-      yEntrySpace: 5,
-      formToTextSpace: 5,
-      wordWrapEnabled: true,
-      maxSizePercent: 0.5
+    valuesList.forEach((x, index) => {
+      newList.push({ label: x, value: index })
+    });
+
+    return newList;
+  } 
+
+  const setBarChartParameters = (ageData) => {
+    const labelsList = [];
+
+    ageData.forEach((x) => {
+      labelsList.push(x['marker']);
+    });
+
+    setBarChartData(ageData);
+    setBarChartLabels(labelsList);
+  }
+
+/* Charts states */
+const pieState = {
+  legend: {
+    enabled: true,
+    textSize: 15,
+    form: 'CIRCLE',
+    textColor: processColor(colors.textColor),
+
+    horizontalAlignment: "CENTER",
+    verticalAlignment: "BOTTOM",
+    orientation: "VERTICAL",
+    wordWrapEnabled: true
+  },
+  data: {
+      dataSets: [{
+          values: genderData,
+          label: '',
+          config: {
+            colors: [processColor('#FF38E4'), processColor('#478BFF'), processColor('#38FF6D')],
+            valueTextSize: 20,
+            valueTextColor: processColor(colors.textColor),
+            sliceSpace: 2,
+            selectionShift: 13,
+            valueFormatter: "#.#'%'",
+            valueLineColor: processColor(colors.textColor),
+            valueLinePart1Length: 0.5
+          }
+        }],
+  },
+  highlights: [{x:2}],
+  description: {
+    text: '',
+    textSize: 15,
+    textColor: processColor('darkgray'),
+  }
+};
+
+const barState = {
+  legend: {
+    enabled: false
+  },
+  data: {
+    dataSets: [{
+      values: barChartData,
+      label: '',
+      config: {
+        color: processColor(colors.primary),
+        barShadowColor: processColor(colors.grayScale1),
+        highlightAlpha: 90,
+        highlightColor: processColor('red'),
+        valueTextColor: processColor(colors.textColor),
+      }
+    }],
+    config: {
+      barWidth: 0.7,
+    }
+  },
+  highlights: [{x: 3}, {x: 6}],
+  xAxis: {
+    valueFormatter: barChartLabels,
+    granularityEnabled: true,
+    granularity : 1,
+    textColor: processColor(colors.textColor),
+    labelRotationAngle: 60,
+    position: 'BOTTOM',
+    drawGridLines: false,
+    drawAxisLine: false
+  },
+  yAxis: {
+    right: {
+      enabled: false
     },
-    data: getBarchartData(),
-    highlights: [{x: 3}, {x: 6}],
-    xAxis: {
-      valueFormatter: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+    left: {
+      enabled: true,
       granularityEnabled: true,
       granularity : 1,
+      textColor: processColor(colors.textColor),
+      drawGridLines: true,
+      gridLineWidth: 1,
+      drawAxisLine: true,
+      drawLabels: true,
+      labelCount: 1,
+      position: "OUTSIDE_CHART",
+      textSize: 10 
     }
-  };
-
-  const pieState = {
-    legend: {
-      enabled: false,
-      textSize: 15,
-      form: 'CIRCLE',
-
-      horizontalAlignment: "RIGHT",
-      verticalAlignment: "CENTER",
-      orientation: "VERTICAL",
-      wordWrapEnabled: false
-    },
-    data: {
-      dataSets: [{
-        values: genderPieChart,
-        label: 'Género',
-        config: {
-          colors: [processColor('#C0FF8C'), processColor('#FFF78C'), processColor('#FFD08C'), processColor('#8CEAFF'), processColor('#FF8C9D')],
-          valueTextSize: 20,
-          valueTextColor: processColor('green'),
-          sliceSpace: 5,
-          selectionShift: 13,
-          // xValuePosition: "OUTSIDE_SLICE",
-          // yValuePosition: "OUTSIDE_SLICE",
-          valueFormatter: "#.#'%'",
-          valueLineColor: processColor('green'),
-          valueLinePart1Length: 0.5
-        }
-      }],
-    },
-    highlights: [{x:2}],
-    description: {
-      text: 'Gráfica que muestra el género de los usuarios',
-      textSize: 15,
-      textColor: processColor('darkgray'),
-
-    }
-  };
-  
-  useEffect(() => {
-    getAsyncStorageData("PROFILE_ID").then(profile => {
-      getPosts(profile)
-      .then(resp => {
-        const new_posts = transformfPosts(resp['POST']);
-        const new_history = transformfHistoy(resp['HISTORY'])
-        setPostData(new_posts);
-        setHistoryData(new_history)
-        setIsLoaded(true);
-      });
-    });
-  }, []);
+  },
+  description: {
+    text: ''
+  }
+};
 
   const onRefresh = () => navigation.reset({
                                           index: 0,
@@ -350,8 +434,7 @@ const getLinearChartData = () => {
 
   const onPressYesLogOut = async () => {
     try {
-      await AsyncStorage.removeItem(ACCESS_TOKEN);
-      await AsyncStorage.removeItem(USER_LEVEL);
+      await AsyncStorage.clear();
       LogOutSheetRef?.current?.hide();
       setTimeout(() => {
         navigation.reset({
@@ -371,6 +454,17 @@ const getLinearChartData = () => {
     );
   };
 
+  const setCenterPieChartLabel = (label, value) => {
+    if (label === undefined) {
+      setPieChartLabel('');
+      return;
+    }
+
+    const percentage = value * 100;
+    const text = `${percentage}%\n${label}`;
+    setPieChartLabel(text);
+  }
+
   return (
     <ZSafeAreaView>
       <ZHeader
@@ -379,103 +473,277 @@ const getLinearChartData = () => {
         rightIcon={rightHeaderIcon}
         isLeftIcon={leftHeaderIcon}
       />
-      {user_access !== "master" && (<ScrollView 
-        refreshControl={
-          <RefreshControl onRefresh={onRefresh} />
-        }>
-        {postData.length > 0 ? (
-          <FlashList
-            data={postData}
-            keyExtractor={item => item.id}
-            renderItem={({item}) => <UserPost item={item} dataLength={postData.length}/>}
-            ListHeaderComponent={headerStory}
-            showsVerticalScrollIndicator={false}
-          />
-        ) : !isLoaded ?
-        (<View>
-          {headerStory()}
-          <View style={localStyles.loadingPosts}>
-            <ActivityIndicator size="large" color="#B042FF" />
-          </View>
-        </View>)
-        : (
-          <View>
-            {headerStory()}
-            <View style={[styles.center, styles.p30]}>
-              <ZText type={'s28'} style={{textAlign: 'center'}}>
-                {strings.postsNotFound}
-              </ZText>
-              <View >
-                <SearchingPosts />
+      {!pageIsLoading ? (
+        <View style={{flex: 1}}>
+          {user_access !== "master" && (<ScrollView 
+            refreshControl={
+              <RefreshControl onRefresh={onRefresh} />
+            }>
+            {postData.length > 0 ? (
+              <FlashList
+                data={postData}
+                keyExtractor={item => item.id}
+                renderItem={({item}) => <UserPost item={item} dataLength={postData.length}/>}
+                ListHeaderComponent={headerStory}
+                showsVerticalScrollIndicator={false}
+              />
+            ) : !isLoaded ?
+            (<View>
+              {headerStory()}
+              <View style={localStyles.loadingPosts}>
+                <ActivityIndicator size="large" color={colors.primary} />
               </View>
+            </View>)
+            : (
+              <View>
+                {headerStory()}
+                <View style={[styles.center, styles.p30]}>
+                  <ZText type={'s28'} style={{textAlign: 'center'}}>
+                    {strings.postsNotFound}
+                  </ZText>
+                  <View >
+                    <SearchingPosts />
+                  </View>
+                </View>
+              </View>
+            )}
+          </ScrollView>)}
+    
+          {user_access === "master" && (
+            <View style={{flex: 1, padding: 10}}>
+              <View>
+                <ZText type={'s28'} style={styles.mb10}>Máster</ZText>
+              </View>
+              
+              {/* Buttons layer */}
+              <View style={localStyles.imgContainer}>
+                <TouchableOpacity 
+                  style={localStyles.image}
+                  onPress={() => changePage(1)}
+                >
+                  <View
+                    style={[localStyles.imageContainer,
+                            pageNumber === 1 && {backgroundColor: colors.primary},
+                            pageNumber !== 1 && {backgroundColor: '#555555'}]}
+                  >
+                    <Ionicons
+                      name={'male-female-outline'}
+                      size={moderateScale(45)}
+                      color={clr.textColor}
+                      style={[styles.selfCenter, styles.mt10]}
+                    />
+                  </View>
+                  <ZText
+                    type={'b16'}
+                    color={clr.white}
+                    align={'center'}
+                    style={localStyles.coverPhotoStyle}>
+                    Género
+                  </ZText>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={localStyles.image}
+                  onPress={() => changePage(2)}
+                >
+                  <View
+                    style={[localStyles.imageContainer,
+                            pageNumber === 2 && {backgroundColor: colors.primary},
+                            pageNumber !== 2 && {backgroundColor: '#555555'}]}
+                  >
+                    <Ionicons
+                      name={'people'}
+                      size={moderateScale(45)}
+                      color={clr.textColor}
+                      style={[styles.selfCenter, styles.mt10]}
+                    />
+                  </View>
+                  <ZText
+                    type={'b16'}
+                    color={clr.white}
+                    align={'center'}
+                    style={localStyles.coverPhotoStyle}>
+                    Edad
+                  </ZText>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={localStyles.image}
+                  onPress={() => changePage(3)}
+                >
+                  <View
+                    style={[localStyles.imageContainer,
+                            pageNumber === 3 && {backgroundColor: colors.primary},
+                            pageNumber !== 3 && {backgroundColor: '#555555'}]}
+                  >
+                    <Ionicons
+                      name={'navigate'}
+                      size={moderateScale(45)}
+                      color={clr.textColor}
+                      style={[styles.selfCenter, styles.mt10]}
+                    />
+                  </View>
+                  <ZText
+                    type={'b16'}
+                    color={clr.white}
+                    align={'center'}
+                    style={localStyles.coverPhotoStyle}>
+                    Sección
+                  </ZText>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={localStyles.image}
+                  onPress={() => changePage(4)}
+                >
+                  <View
+                    style={[localStyles.imageContainer,
+                            pageNumber === 4 && {backgroundColor: colors.primary},
+                            pageNumber !== 4 && {backgroundColor: '#555555'}]}
+                  >
+                    <Ionicons
+                      name={'game-controller'}
+                      size={moderateScale(45)}
+                      color={clr.textColor}
+                      style={[styles.selfCenter, styles.mt10]}
+                    />
+                  </View>
+                  <ZText
+                    type={'b16'}
+                    color={clr.white}
+                    align={'center'}
+                    style={localStyles.coverPhotoStyle}>
+                    Intereses
+                  </ZText>
+                </TouchableOpacity>
+              </View>
+              {/* Buttons layer */}
+    
+              {/* Charts */}
+              {!isChartLoading ? (
+                <View style={{flex: 1}}>
+                  <View style={styles.mb20}>
+                    <ZText 
+                      type={'b20'}
+                      color={colors.primary}
+                      align={'center'}>
+                      {pageNumber === 1 ? 'Género'
+                      : pageNumber === 2 ? 'Edad'
+                      : pageNumber === 3 ? 'Sección'
+                      : 'Intereses'}
+                    </ZText>
+                  </View>
+    
+                  <View style={[localStyles.container, 
+                                {alignSelf: 'center'},
+                                colors.dark && {borderColor: 'white'},
+                                colors.light && {borderColor: 'black'}]}>
+                    {/* Gender chart */}
+                    {pageNumber === 1 && (
+                      <PieChart
+                        style={localStyles.chart}
+                        logEnabled={true}
+                        chartBackgroundColor={processColor(colors.backgroundColor)}
+                        chartDescription={pieState.description}
+                        data={pieState.data}
+                        legend={pieState.legend}
+                        highlights={pieState.highlights}
+                        centerText={pieChartLabel}
+                        extraOffsets={{left: 5, top: 5, right: 5, bottom: 5}}
+                        entryLabelTextSize={0}
+                        entryLabelFontFamily={'HelveticaNeue-Medium'}
+                        drawEntryLabels={true}
+                        usePercentValues={true}
+                        styledCenterText={{text:pieChartLabel, color: processColor(colors.textColor), fontFamily: 'HelveticaNeue-Medium', size: 20}}
+                        centerTextRadiusPercent={100}
+                        holeRadius={60}
+                        holeColor={processColor(colors.backgroundColor)}
+                        transparentCircleRadius={45}
+                        transparentCircleColor={processColor('#f0f0f088')}
+                        maxAngle={350}
+                        onSelect={(x) => {
+                          if (Object.keys(x).length === 0) {
+                            setCenterPieChartLabel('');
+                          } else {
+                            setCenterPieChartLabel(x['nativeEvent']['label'], x['nativeEvent']['value']);
+                          }
+                        }}
+                      />
+                    )}
+                    {/* Gender chart */}
+
+                    {/* Dropdown menu */}
+                    {(pageNumber === 3 || pageNumber === 4) ? (
+                      <Dropdown
+                        style={[
+                          localStyles.dropdown,
+                          isFocus && { borderColor: colors.primary },
+                          {backgroundColor: colors.backgroundColor}
+                        ]}
+                        containerStyle={{backgroundColor: colors.backgroundColor}}
+                        itemTextStyle={{color: colors.textColor}}
+                        activeColor={colors.primary}
+                        placeholder={'Escoge una sección'}
+                        placeholderStyle={[localStyles.placeholderStyle, {backgroundColor: colors.backgroundColor, color: colors.textColor}]}
+                        selectedTextStyle={[localStyles.selectedTextStyle, {color: colors.textColor}]}
+                        inputSearchStyle={[localStyles.inputSearchStyle, {backgroundColor: colors.backgroundColor}]}
+                        data={dropdownData}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        searchPlaceholder="Buscar..."
+                        value={value}
+                        onFocus={() => setIsFocus(true)}
+                        onBlur={() => setIsFocus(false)}
+                        onChange={item => {
+                          if (pageNumber === 3) {
+                            getSectionChartData(item.value);
+                          } else {
+                            getInterestChartData(item.value);
+                          }
+                          setIsFocus(false);
+                        }}
+                      />
+                    ) : (<View></View>)}
+                    {/* Dropdown menu */}
+    
+                    {/* Age, section and interests chart */}
+                    {pageNumber !== 1 && (
+                      <BarChart
+                        style={localStyles.chart}
+                        data={barState.data}
+                        xAxis={barState.xAxis}
+                        yAxis={barState.yAxis}
+                        chartDescription={barState.description}
+                        legend={barState.legend}
+                        animation={{durationX: 2000}}
+                        borderColor={processColor(colors.textColor)}
+                        gridBackgroundColor={processColor(colors.textColor)}
+                        visibleRange={{x: { min: 5, max: 5 }}}
+                        drawBarShadow={false}
+                        drawValueAboveBar={true}
+                        drawHighlightArrow={true}
+                      />
+                    )}
+                    {/* Age, section and interests chart */}
+                </View>
+              </View>)
+                : (
+                <View style={localStyles.loadingPosts}>
+                  <ActivityIndicator size="large" color={colors.primary} />
+                </View>
+              )}
+    
             </View>
-          </View>
-        )}
-      </ScrollView>)}
-
-      {user_access === "master" && (
-        <View style={{flex: 1, padding:20}}>
-          <View>
-            <ZText>Holaaa</ZText>
-          </View>
-          
-          <View style={[localStyles.container, {height: 50}]}>
-            <LineChart style={localStyles.chart}
-              data={getLinearChartData()}
-            />
-          </View>
-
-          <View style={localStyles.container}>
-            <PieChart
-              style={localStyles.chart}
-              logEnabled={true}
-              chartBackgroundColor={processColor('pink')}
-              chartDescription={pieState.description}
-              data={pieState.data}
-              legend={pieState.legend}
-              highlights={pieState.highlights}
-
-              extraOffsets={{left: 5, top: 5, right: 5, bottom: 5}}
-
-              entryLabelColor={processColor('green')}
-              entryLabelTextSize={20}
-              entryLabelFontFamily={'HelveticaNeue-Medium'}
-              drawEntryLabels={true}
-
-              rotationEnabled={true}
-              rotationAngle={45}
-              usePercentValues={true}
-              styledCenterText={{text:'Pie center text!', color: processColor('pink'), fontFamily: 'HelveticaNeue-Medium', size: 20}}
-              centerTextRadiusPercent={100}
-              holeRadius={40}
-              holeColor={processColor('#f0f0f0')}
-              transparentCircleRadius={45}
-              transparentCircleColor={processColor('#f0f0f088')}
-              maxAngle={350}
-              // onSelect={this.handleSelect.bind(this)}
-              // onChange={(event) => console.log(event.nativeEvent)}
-            />
-          </View>
-
-          <View style={localStyles.container}>
-            <BarChart
-              style={localStyles.chart}
-              data={barState.data}
-              xAxis={barState.xAxis}
-              animation={{durationX: 2000}}
-              legend={barState.legend}
-              gridBackgroundColor={processColor('#ffffff')}
-              visibleRange={{x: { min: 5, max: 5 }}}
-              drawBarShadow={false}
-              drawValueAboveBar={true}
-              drawHighlightArrow={true}
-              // onSelect={this.handleSelect.bind(this)}
-              highlights={barState.highlights}
-              // onChange={(event) => console.log(event.nativeEvent)}
-            />
-          </View>
+          )}
+        </View>
+      ) : (
+        <View style={localStyles.loadingPosts}>
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       )}
+
 
       <LogOut
         SheetRef={LogOutSheetRef}
@@ -528,11 +796,58 @@ const localStyles = StyleSheet.create({
     ...styles.rowCenter
   },
   container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF'
+    width: moderateScale(340),
+    height: moderateScale(370),
+    padding: 10,
+    borderRadius: moderateScale(20),
+    borderWidth: 1
   },
   chart: {
     flex: 1
+  },
+  chartBtn: {
+    width: moderateScale(100),
+    height: moderateScale(100),
+    backgroundColor: 'grey'
+  },
+  image: {
+    ...styles.m5,
+  },
+  imgContainer: {
+    ...styles.rowSpaceBetween,
+    ...styles.wrap,
+    ...styles.mb10,
+  },
+  imageContainer: {
+    width: moderateScale(74),
+    height: getHeight(95),
+    borderRadius: moderateScale(20),
+  },
+  coverPhotoStyle: {
+    position: 'absolute',
+    bottom: moderateScale(10),
+    ...styles.selfCenter,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
   },
 });
 
