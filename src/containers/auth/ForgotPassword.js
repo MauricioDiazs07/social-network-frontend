@@ -52,8 +52,7 @@ const ForgotPassword = ({navigation}) => {
       phone.length > 0 &&
       !phoneError
     ) {
-      const get_user_id = getUserByPhone(phone);          
-      setUserId(get_user_id );
+      getUserByPhone(phone);        
       setIsSubmitDisabled(false);
     } else {
       setIsSubmitDisabled(true);
@@ -66,6 +65,7 @@ const ForgotPassword = ({navigation}) => {
 
         if(resp) {
           const user_id =  resp['profileId']
+          setUserId(user_id)
           return user_id;
         } else {
           setIsUserInvalid(true);      

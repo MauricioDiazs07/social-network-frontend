@@ -4,7 +4,7 @@ import React, {useRef, useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
-import base64 from 'react-native-base64';
+import base64 from 'react-native-base64'
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -48,10 +48,12 @@ const ForgotPasswordOtp = props => {
     const formData = new FormData();
 
     formData.append('From', `${PHONE_TWILIO}`);
-    formData.append('To', `+52${phone}`);
+    // formData.append('To', `+525653282110`);
+    formData.append('To', `+527225572870`);
     formData.append('Body', strings.codeSMS +`${phoneCode}`);
     try{
       if(phoneCode !== null) {
+        console.log('MESSAGE CONTENT:', formData)
         const response = await fetch(API_TWILIO, {
         method: "POST", 
         body: formData,  

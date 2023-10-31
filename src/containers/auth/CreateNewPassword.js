@@ -98,7 +98,6 @@ const CreateNewPassword = (props) => {
         },
         body: JSON.stringify(userData),
       });
-  
       if (response.ok) {
         setModalVisible(true);        
         navigation.navigate(StackNav.Login, {
@@ -158,7 +157,7 @@ const CreateNewPassword = (props) => {
   };
 
   const onPressContinue = () => {
-    resetPassword();
+    resetPassword(idUser, password);
   };
   
   const onPressModalClose = () => setModalVisible(false);
