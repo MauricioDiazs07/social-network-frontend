@@ -32,6 +32,9 @@ import ProfilePicture from '../../../components/models/ProfilePicture';
 import { getAsyncStorageData } from '../../../utils/helpers';
 import { StackNav } from '../../../navigation/NavigationKeys';
 import { getColor } from '../../../utils/_support_functions';
+import flex from '../../../themes/flex';
+import { colors } from 'react-native-swiper-flatlist/src/themes';
+import { getInterests } from '../../../api/auth/auth';
 
 export default function PostDetail() {
   const colors = useSelector(state => state.theme.theme);
@@ -49,6 +52,9 @@ export default function PostDetail() {
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [index, setIndex] = React.useState(1);
   const [chars, setChars] = React.useState(0);
+  const [interestList, setInterestList] = React.useState([]);
+  const [selectInterest, setSelectInterest] = React.useState([]);
+  const [idInterests, setIdInterests] = React.useState("");
 
   const onChangeText = val => {
     setText(val);
@@ -58,6 +64,30 @@ export default function PostDetail() {
   const onPressHome = () => navigation.navigate(TabNav.Home);
 
   const closeSnackbar = () => setIsSnackbarVisible(false);
+
+  const handleButtonInterests = (interestId) => {
+    if (selectInterest.includes(interestId)) {  
+      setSelectInterest(selectInterest.filter(id => id !== interestId));
+    } else {
+      setSelectInterest([...selectInterest, interestId]);
+    }        
+  };
+
+  useEffect(() => {    
+    setIdInterests(selectInterest.join(';'));
+  }, [selectInterest]);
+  
+  useEffect(() => {
+    const getInterestList = async() => {
+      try {
+        const data = await getInterests();
+        setInterestList(data);
+      } catch (error) {
+        console.error("Interests error: ", error);
+      }
+    } 
+    getInterestList();
+  }, []);
 
   useEffect(() => {
     ProfilePictureSheetRef?.current?.hide();
@@ -153,6 +183,7 @@ export default function PostDetail() {
     formData.append("description", text);
     formData.append("profile_id", profile_id.profile_id);
     formData.append("share_type", "POST");
+    formData.append("interests", idInterests);
     
     selectImage.forEach((value, index) => {
       const imageData = {
@@ -176,11 +207,11 @@ export default function PostDetail() {
       })
       .catch(err => console.log('Post error:', err));
   };
-
+  
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.post} />
-      <ScrollView
+      <ScrollView 
         bounces={false}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.mh20}>
@@ -221,6 +252,66 @@ export default function PostDetail() {
           >
               {chars}/{textLimit}
           </ZText>
+        </View>
+        <View
+          style={[
+            localStyles.categoryContainer,
+            {
+              borderBottomColor: colors.bColor,
+            },
+          ]}>
+        </View>
+        <View
+          style={{ 
+            flex: 1, 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            marginTop: 50 
+            }}>
+          <View
+            style={{
+            flexDirection: 'column',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+        }}
+          >
+            <ZText
+              type={'b16'}
+              color={colors.dark ? colors.white : colors.textColor}
+              align={'center'}
+              style={localStyles.coverPhotoStyle}>
+              {strings.interestsDescription}
+            </ZText>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              gap: 5,
+              marginTop:10,
+          }}>
+            {interestList.map((interest, index) => (
+              <ZButton
+                key={interest.id}
+                title={interest.description}
+                textType={'b18'}
+                color={colors.dark ? colors.white : colors.primary}
+                containerStyle={localStyles.btnInterest}
+                style={{  
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '60%', 
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: '600',
+                }}
+                bgColor={selectInterest.includes(index+1) ? colors.primary : colors.dark3}
+                onPress={() => handleButtonInterests(interest.id, interest.description)}            
+              >
+              </ZButton>
+            ))}
+          </View>
         </View>
         <View
           style={[
@@ -422,6 +513,13 @@ const localStyles = StyleSheet.create({
   },
   skipBtnContainer: {
     width: '45%',
+  },
+  btnInterest: {
+    width: '45%',
+  },
+  btnInterestSelected: {
+    width: '60%',
+    backgroundColor: colors.primary
   },
   image: {
     ...styles.m5,

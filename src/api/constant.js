@@ -751,7 +751,7 @@ const reportData = [
     lnName: 'Organización/individuo peligroso',
   },
   {
-    lnName: 'Draude',
+    lnName: 'Fraude',
   },
   {
     lnName: 'Información falsa',
