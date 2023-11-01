@@ -466,10 +466,6 @@ const barState = {
       return;
     }
 
-    console.log("VALUE");
-    console.log("GENDER DATA", genderData);
-    console.log("GENDER DATA LENGTH", genderDataLength);
-
     const percentage = (value / genderDataLength) * 100;
     const text = `${percentage}%\n${label}`;
     setPieChartLabel(text);
