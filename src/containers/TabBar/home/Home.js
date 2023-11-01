@@ -229,6 +229,7 @@ const Home = () => {
   const [isChartLoading, setIsChartLoading] = useState(false);
   const [pieChartLabel, setPieChartLabel] = useState('');
   const [genderData, setGenderData] = useState([]);
+  const [genderDataLength, setGenderDataLength] = useState(null);
   const [barChartData, setBarChartData] = useState([]);
   const [barChartLabels, setBarChartLabels] = useState([]);
   const [dropdownData, setDropdownData] = useState([]);
@@ -304,13 +305,18 @@ const Home = () => {
   }
 
   const formatGenderData = (genderData) => {
+    let sum_ = 0;
+
     genderData.forEach((x) => {
       if (x['label'] == 'M') {
         x['label'] = 'Mujeres';
       } else if (x['label'] == 'H') {
         x['label'] = 'Hombres';
       }
+      sum_ += x['value'];
     });
+
+    setGenderDataLength(sum_);
 
     return genderData;
   }
@@ -460,7 +466,11 @@ const barState = {
       return;
     }
 
-    const percentage = value * 100;
+    console.log("VALUE");
+    console.log("GENDER DATA", genderData);
+    console.log("GENDER DATA LENGTH", genderDataLength);
+
+    const percentage = (value / genderDataLength) * 100;
     const text = `${percentage}%\n${label}`;
     setPieChartLabel(text);
   }
