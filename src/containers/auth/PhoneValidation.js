@@ -53,13 +53,13 @@ const PhoneValidation = props => {
     try{
       if(phoneCode !== null) {
         const response = await fetch(API_TWILIO, {
-        method: "POST", 
-        body: formData,  
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Basic ' + encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
-        },
-      });
+          method: "POST", 
+          body: formData,  
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Basic ' + encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
+          },
+        });
       }
 
     } catch(error){

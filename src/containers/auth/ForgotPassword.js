@@ -54,6 +54,7 @@ const ForgotPassword = ({navigation}) => {
     ) {
       const get_user_id = getUserByPhone(phone);          
       setUserId(get_user_id );
+      setIsSubmitDisabled(false);
     } else {
       setIsSubmitDisabled(true);
     }
