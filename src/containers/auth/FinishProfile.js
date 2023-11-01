@@ -1,6 +1,6 @@
 // libraries import
 import React, {createRef, useState, useEffect} from 'react';
-import {StyleSheet, View, Image, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
 import {useSelector} from 'react-redux';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -10,8 +10,7 @@ import CountryPicker, {
   DARK_THEME,
   DEFAULT_THEME,
 } from 'react-native-country-picker-modal';
-import {Snackbar, Button} from '@react-native-material/core';
-import { getProfileData } from '../../api/feed/interaction';
+
 // local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import ZHeader from '../../components/common/ZHeader';
@@ -19,15 +18,12 @@ import ZKeyBoardAvoidWrapper from '../../components/common/ZKeyBoardAvoidWrapper
 import ZButton from '../../components/common/ZButton';
 import ProfilePicture from '../../components/models/ProfilePicture';
 import {validateNotNecessaryEmail, validatePhoneNumber} from '../../utils/validators';
-import {ACCESS_TOKEN, USER_LEVEL, moderateScale, getHeight} from '../../common/constants';
+import {moderateScale, getHeight} from '../../common/constants';
 import {isNotEmptyString} from '../../utils/_support_functions';
 import {styles} from '../../themes';
 import images from '../../assets/images';
 import strings from '../../i18n/strings';
-import {signUp, signUp2, getAuthToken, getAuthData} from '../../api/auth/auth';
 import {StackNav} from '../../navigation/NavigationKeys';
-import { getAccessLevel } from '../../utils/_support_functions';
-import {setAsyncStorageData} from '../../utils/helpers';
 
 const FinishProfile = props => {
   const {navigation} = props;
@@ -63,8 +59,6 @@ const FinishProfile = props => {
   const [callingCodeLib, setCallingCodeLib] = useState('');
   const [countryCodeLib, setCountryCodeLib] = useState('MX');
   const [visiblePiker, setVisiblePiker] = useState(false);
-  const [isSnackbarVisible, setIsSnackbarVisible] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -172,8 +166,6 @@ const FinishProfile = props => {
   const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
 
   const onPressContinue = async () => {
-    setIsLoading(true);
-    /* FINAL UPDATE ON SIGNUP */
     const userCred_ = {
       email: email,
       password: userCred['password'],
@@ -189,50 +181,7 @@ const FinishProfile = props => {
       ...userInfo
     };
 
-    signUp2(usser_)
-      .then(resp => {
-        if (resp) {
-          getAuthToken(
-            usser_['phone'],
-            userCred_['password']
-          )
-            .then(async (token) => {
-              if ("token" in token) {
-                const user_lvl = getAccessLevel(token['role_id']);
-                await setAsyncStorageData(ACCESS_TOKEN, token);
-                await setAsyncStorageData(USER_LEVEL, user_lvl);
-                await setAsyncStorageData("PROFILE_ID", token['profile_id']);
-                setIsLoading(false);
-
-                getProfileData(token['profile_id'])
-                .then(resp => {
-                  setAsyncStorageData("PROFILE_PHOTO", resp['profile_photo']);
-                  setAsyncStorageData("USERNAME", resp['name']);
-                  setAsyncStorageData("GENDER", resp['gender']);
-                  setAsyncStorageData("DESCRIPTION", resp['description']);
-                });
-
-                navigation.navigate(StackNav.FollowSomeone,
-                  {usser: usser_});
-            }})
-            .catch(err => {
-              setIsLoading(false);
-              setIsSnackbarVisible(true);
-              console.log(err);
-            });
-        } else {
-          setIsLoading(false);
-          setIsSnackbarVisible(true);
-        }
-      })
-      .catch(err => {
-        setIsLoading(false);
-        console.log(err)
-      });
-  };
-
-  const redirectLogin = () => {
-    navigation.navigate(StackNav.Login);
+    navigation.navigate(StackNav.FollowSomeone, {usser: usser_});
   };
 
   return (
@@ -297,25 +246,6 @@ const FinishProfile = props => {
         />
       </ZKeyBoardAvoidWrapper>
 
-      <View 
-        style={[{flex: 1}, 
-          !isSnackbarVisible && {display: 'none'}]}
-      >
-        <Snackbar
-          message={strings.userExists}
-          action={
-            <Button
-              variant="text"
-              color={colors.primary}
-              title={strings.loginRedirect}
-              onPress={redirectLogin}
-              compact
-            />
-          }
-          style={localStyles.snackbar}
-        />
-      </View>
-
       <View style={localStyles.btnContainer}>
         <ZButton
           title={strings.continue}
@@ -352,11 +282,6 @@ const FinishProfile = props => {
         }}
         theme={colors.dark ? DARK_THEME : DEFAULT_THEME}
       />
-
-      <View
-        style={[localStyles.loadingScreen, !isLoading && {display: 'none'}]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
     </ZSafeAreaView>
   );
 };

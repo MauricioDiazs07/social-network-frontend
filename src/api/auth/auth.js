@@ -4,7 +4,8 @@ import {
     SIGNUP,
     READ_INE,
     READ_INE_2,
-    INTERESTS_LIST
+    INTERESTS_LIST,
+    UPDATE_INTERESTS,
  } from "../../utils/api_constants";
 
 const getAuthToken = async (phoneNumber, password) => {
@@ -57,8 +58,7 @@ const readINE_2 = async (ine_pic) => {
         uri: ine_pic.path,
         name: `img_${1}.jpg`,
         type: ine_pic.mime,
-    } 
-    console.log('imageData', imageData);
+    }
     formData.append("ine", imageData);
     const response = await fetch(URL_API + READ_INE_2, {
         method: "POST", 
@@ -184,12 +184,34 @@ const getInterests = async () => {
     }
 }
 
+const updateInterests = async (
+    profile_id,
+    interests
+) => {
+    const response = await fetch(URL_API + UPDATE_INTERESTS, {
+        method: "POST", 
+        body: JSON.stringify({
+            profile_id: profile_id,
+            interest: interests
+        }),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+
+    resp = await response.json();
+    if (response.ok){
+        
+        return resp;
+    }
+}
+
 export {
     getAuthToken,
     readINE,
     readINE_2,
     readINE_3,
     signUp,
-    signUp2,
     getInterests,
+    updateInterests,
 };
