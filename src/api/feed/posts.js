@@ -1,6 +1,8 @@
 import { URL_API,
          GET_POSTS,
-         CREATE_POSTS
+         CREATE_POSTS,
+         EDIT_POST,
+         DELETE_POST
  } from "../../utils/api_constants";
 
 const getPosts = async (profile_id) => {
@@ -35,7 +37,41 @@ const createPost = async (form) => {
     }
 }
 
+const editPost = async (form) => {
+    const response = await fetch(URL_API + EDIT_POST, {
+        method: 'POST',
+        body: form,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+    });
+    const resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
+}
+
+const deletePost = async (post_id) => {
+    const response = await fetch(URL_API + DELETE_POST, {
+        method: 'DELETE',
+        body: JSON.stringify({
+            "shareId": post_id,
+            "shareType": "POST"
+        }),
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    const resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
+}
+
 export {
     getPosts,
-    createPost
+    createPost,
+    editPost,
+    deletePost
 }
