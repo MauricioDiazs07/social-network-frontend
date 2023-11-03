@@ -23,12 +23,16 @@ import images from '../../../assets/images';
 import ZButton from '../../../components/common/ZButton';
 import SwitchAccont from '../../../components/models/SwitchAccont';
 import ReelComponent from '../../../components/ReelComponent';
+import FeedComponent from '../../../components/FeedComponent';
 import {savedStorys, videoData} from '../../../api/constant';
 import UserStories from '../home/UserStory/UserStories';
 import ZHeader from '../../../components/common/ZHeader';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
-import { getMasterData } from '../../../api/feed/interaction';
-import {transformpHistoy,transformFeed } from '../../../utils/_support_functions';
+import { getMasterData, getProfilePostData } from '../../../api/feed/interaction';
+import { getPosts } from '../../../api/feed/posts';
+import {transformpHistoy, transformfPosts } from '../../../utils/_support_functions';
+import ProfilePost from '../home/UserPostFeed/ProfilePost';
+import UserPost from '../home/UserPostFeed/UserPost'
 
 const UserDetail = [
   {
@@ -53,25 +57,25 @@ export default function Profile({navigation}) {
   const [feeds, setFeeds] = useState([]);
   const [shorts, setShorts] = useState([]);
   const [tags, setTags] = useState([]);
-  const [masterData, setMasterData] = useState({
-    description: '',
-    name: '',
-    profile_photo: '',
-    shares: '',
-  });
+  const [masterData, setMasterData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
 
   useEffect(() => {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
-      getMasterData(profileId).then(resp =>{
-        setMasterData(resp);
-        const new_history = transformpHistoy(resp)
-        const feeds = transformFeed(resp)
-        setHistoryData(new_history)
-        setFeeds(feeds)
+      getMasterData(profileId).then(idResp => {
+        setMasterData(idResp);
+        getPosts(idResp).then(resp =>{
+          // const new_history = transformpHistoy(resp)
+          const postFeeds = transformfPosts(resp['POST'])
+          // setHistoryData(new_history)
+          setFeeds(postFeeds)
+      })
+      
+
       })
     });
   }, []);
+  // console.log('PROFILE ID: ', feeds)
 
   const categoryData = [
     {
@@ -145,8 +149,10 @@ export default function Profile({navigation}) {
   };
 
   const renderReelItem = ({item}) => (
-    <ReelComponent data={item?.views} reelUrl={item?.poster} isPlay={true} />
+    <FeedComponent data={item}/>
+    // console.log('THIS IS ITEEEEEM: ')
   );
+  // console.log('PROFILE ID: ', feeds)
 
   return (
     <ZSafeAreaView>
@@ -246,13 +252,18 @@ export default function Profile({navigation}) {
             <HeaderCategory item={item} key={index} />
           ))}
         </View> */}
-        <FlatList
-          data={feeds}
-          renderItem={renderReelItem}
-          numColumns={3}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.mt20}
-        />
+        <View style={styles.postContainer}>
+          <FlatList
+            data={feeds}
+            renderItem={renderReelItem}
+            // renderItem={({item}) => <UserPost item={item} dataLength={feeds.length} />}
+            // renderItem={({item}) => <ProfilePost item={item} dataLength={feeds.length} />}
+            numColumns={3}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={styles.mt20}
+            // showsVerticalScrollIndicator={true}
+          />
+        </View>
       </ScrollView>
       <SwitchAccont SheetRef={switchAccountRef} />
     </ZSafeAreaView>
@@ -275,6 +286,7 @@ const localStyles = StyleSheet.create({
   userImage: {
     width: moderateScale(100),
     height: moderateScale(100),
+    borderRadius: moderateScale(50),
   },
   editIcon: {
     position: 'absolute',
@@ -300,4 +312,5 @@ const localStyles = StyleSheet.create({
     ...styles.pv15,
     ...styles.rowSpaceBetween,
   },
+  postContainer: {}
 });

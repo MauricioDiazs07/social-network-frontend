@@ -181,6 +181,10 @@ export default function StackNavigation() {
         component={StackRoute.ReelsComponent}
       />
       <Stack.Screen
+        name={StackNav.FeedsComponent}
+        component={StackRoute.FeedsComponent}
+      />
+      <Stack.Screen
         name={StackNav.FindFriends}
         component={StackRoute.FindFriends}
       />

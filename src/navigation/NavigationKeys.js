@@ -54,6 +54,7 @@ export const StackNav = {
   PostDetail: 'PostDetail',
   PostSound: 'PostSound',
   ReelsComponent: 'ReelsComponent',
+  FeedsComponent: 'FeedsComponent',
   FindFriends: 'FindFriends',
   Live: 'Live',
   FollowSomeone: 'FollowSomeone',

@@ -3,7 +3,8 @@ import { URL_API,
     DISLIKE,
     USER_DATA,
     MASTER_DATA,
-    PROFILE_DATA
+    PROFILE_DATA,
+    PROFILE_POSTS
 } from "../../utils/api_constants";
 
 const addLike = async (profile_id,share_id,share_type) => {
@@ -78,10 +79,22 @@ const getMasterData = async (profile_id) => {
     }
 }
 
+const getProfilePostData = async (profile_id) => {
+    const response = await fetch(URL_API + PROFILE_POSTS + profile_id, {
+        method: 'GET'
+    });
+
+    const resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
+}
+
 export {
     addLike,
     disLike,
     getUserData,
     getMasterData,
-    getProfileData
+    getProfileData,
+    getProfilePostData
 }

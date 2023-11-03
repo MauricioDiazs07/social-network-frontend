@@ -52,6 +52,7 @@ import PostDetail from '../containers/TabBar/add/PostDetail';
 import HistoryDetail from '../containers/TabBar/add/HistoryDetail';
 import PostSound from '../containers/TabBar/add/PostSound';
 import ReelsComponent from '../containers/TabBar/home/ReelsComponent';
+import FeedsComponent from '../containers/TabBar/home/FeedsComponent';
 import Shorts from '../containers/TabBar/home/ReelsComponent';
 import FindFriends from '../containers/TabBar/profile/FindFriends';
 import Live from '../containers/TabBar/home/Live';
@@ -118,6 +119,7 @@ export const StackRoute = {
   PostDetail,
   PostSound,
   ReelsComponent,
+  FeedsComponent,
   FindFriends,
   Live,
   FollowSomeone,
