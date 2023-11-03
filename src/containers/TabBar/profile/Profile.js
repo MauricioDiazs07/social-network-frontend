@@ -64,7 +64,6 @@ export default function Profile({navigation}) {
   useEffect(() => {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
       getMasterData(profileId).then(resp =>{
-        console.log(resp);
         setMasterData(resp);
         const new_history = transformpHistoy(resp)
         const feeds = transformFeed(resp)
@@ -190,12 +189,12 @@ export default function Profile({navigation}) {
             </ZText>
           </View>
         </View>
-        <View style={[styles.flexRow, styles.justifyEvenly]}>
+        {/* <View style={[styles.flexRow, styles.justifyEvenly]}>
           {UserDetail.map((item, index) => (
             <RenderUserDetail item={item} key={index} />
           ))}
-        </View>
-        <View style={styles.rowSpaceBetween}>
+        </View> */}
+        {/* <View style={styles.rowSpaceBetween}>
           <ZButton
             title={strings.follow}
             // onPress={onPressEditProfile}
@@ -233,9 +232,9 @@ export default function Profile({navigation}) {
                 color={colors.primary}
               />}
           />
-        </View>
-        <UserStories stories={historyData} />
-        <View
+        </View> */}
+        {/* <UserStories stories={historyData} /> */}
+        {/* <View
           style={[
             localStyles.mainContainer,
             {
@@ -246,7 +245,7 @@ export default function Profile({navigation}) {
           {categoryData.map((item, index) => (
             <HeaderCategory item={item} key={index} />
           ))}
-        </View>
+        </View> */}
         <FlatList
           data={feeds}
           renderItem={renderReelItem}

@@ -125,7 +125,7 @@ const transformpHistoy = (post) => {
   historys = post['shares']['shares']
   historys.forEach(element => {
     if (element['shareType'] == 'HISTORY'){
-      console.log(element);
+      // console.log(element);
       const obj = {
         id: element['id'],
         name: '',
@@ -133,8 +133,8 @@ const transformpHistoy = (post) => {
         imgUrl: element['multimedia']['data'][0]['archive_url'],
         isFollow: false
       };
-      console.log("Historia 2");
-      console.log(obj);
+      // console.log("Historia 2");
+      // console.log(obj);
       new_historys.push(obj);
     }
   });
@@ -146,8 +146,9 @@ const transformFeed = (post) => {
   const new_historys = [];
   historys = post['shares']['shares']
   historys.forEach(element => {
-    if (element['shareType'] == 'POST'){
-      console.log(element);
+    const dataImg = element['multimedia']['data'];
+    if ((element['shareType'] == "POST") && (dataImg.length !== 0)){
+      // console.log(element);
       const obj = {
         id: element['id'],
         channelName: post['name'],
@@ -164,9 +165,8 @@ const transformFeed = (post) => {
         views: '0',
       };
       new_historys.push(obj);
-    }
+    }    
   });
-
   return new_historys.reverse();
 }
 
