@@ -1,5 +1,5 @@
 // libraries import
-import React, { useState, createRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -24,8 +24,6 @@ import {
 import {StackNav} from '../../../../navigation/NavigationKeys';
 import { addLike, disLike } from '../../../../api/feed/interaction';
 import {getAsyncStorageData} from '../../../../utils/helpers';
-import EditPostMenu from '../../../../components/models/EditPostMenu';
-import { deletePost } from '../../../../api/feed/posts';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -111,8 +109,6 @@ const BottomIconContainer = ({item}) => {
 const UserPost = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  const [isPostUpdate, setIsPostUpdate] = useState(false);
-  const EditPostMenuSheetRef = createRef();
 
   const renderPostImages = ({item}) => {
     return <FastImage source={{uri: item}} style={localStyels.postImage} />;
@@ -124,31 +120,6 @@ const UserPost = ({item}) => {
       userImage: userImage,
       profileId: profileId
     });
-  };
-
-  useEffect(() => {
-    EditPostMenuSheetRef?.current?.hide();
-  }, [isPostUpdate]);
-
-  const onPressEditPostMenu = () => {
-    EditPostMenuSheetRef?.current.show()};
-
-  const onPressEdit = () => {
-    setIsPostUpdate(true);
-    navigation.navigate(StackNav.EditPost,
-      {idPost: item});
-  };
-  
-  const onPressDelete = async (post) => {
-    await deletePost(post)
-    .then(
-      setIsPostUpdate(true),
-      navigation.reset({
-        index: 0,
-        routes: [{name: StackNav.TabBar}],
-      })
-    )
-    .catch(error => console.log('Delete error:', error));
   };
 
   return (
@@ -170,22 +141,7 @@ const UserPost = ({item}) => {
             </ZText>
           </View>
         </TouchableOpacity>
-        <EditPostMenu
-          onPressEdit={onPressEdit}
-          onPressDelete={() => onPressDelete(item.id)}
-          SheetRef={EditPostMenuSheetRef}
-        />
-        <TouchableOpacity
-        onPress={onPressEditPostMenu}
-        >
-          <Ionicons
-            name="ellipsis-horizontal" 
-            size={moderateScale(24)}
-            color={colors.reverse}
-          />          
-        </TouchableOpacity>
-      </View>
-      
+      </View>      
       <View>
           <ZText>{item.text}</ZText>
           {item.image.length > 0 && (

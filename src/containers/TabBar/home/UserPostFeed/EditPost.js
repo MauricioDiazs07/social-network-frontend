@@ -22,12 +22,6 @@ import { addLike, disLike } from '../../../../api/feed/interaction';
 import { moderateScale, screenWidth, getHeight } from '../../../../common/constants';
 import { StackNav } from '../../../../navigation/NavigationKeys';
 import { styles } from '../../../../themes';
-import { 
-    ChatIcon_Dark,
-    ChatIcon_Light,
-    HeartIcon_Dark,
-    HeartIcon_Light,
-    LikedHeart } from '../../../../assets/svgs';
 import ZButton from '../../../../components/common/ZButton';
 import { editPost } from '../../../../api/feed/posts';
 import typography from '../../../../themes/typography';
@@ -35,15 +29,6 @@ import typography from '../../../../themes/typography';
 const EditPost = props => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  
-  const BlurredStyle = {
-    backgroundColor: colors.inputBg,
-    borderColor: colors.btnColor1,
-  };
-  const FocusedStyle = {
-    backgroundColor: colors.inputFocusColor,
-    borderColor: colors.primary,
-  };
   
   const [item, setItem] = useState(props.route.params.idPost);
 
@@ -54,7 +39,7 @@ const EditPost = props => {
   const onPressProfile = (userName, userImage, profileId) => {
     navigation.navigate(StackNav.ProfileDetail, {
       userName: userName,
-      userImage: userImage,
+      userImage: userImage, 
       profileId: profileId
     });
   };
@@ -76,7 +61,10 @@ const EditPost = props => {
     formData.append("description", text);
     await editPost(formData)
     .then(
-    navigation.goBack()
+      navigation.reset({
+      index: 0,
+      routes: [{name: StackNav.TabBar}],
+    })
     )
     .catch(error => console.log('Edit error:', error));
   };

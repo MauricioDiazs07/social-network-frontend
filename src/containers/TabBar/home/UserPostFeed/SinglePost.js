@@ -1,5 +1,5 @@
 // libraries import
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import { StyleSheet,
          View,
          TouchableOpacity,
@@ -28,6 +28,8 @@ import {
     HeartIcon_Dark,
     HeartIcon_Light,
     LikedHeart } from '../../../../assets/svgs';
+import EditPostMenu from '../../../../components/models/EditPostMenu';
+import { deletePost } from '../../../../api/feed/posts';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -36,8 +38,6 @@ const BottomIconContainer = ({item}) => {
   const [likes, setLikes] = useState(item['likes']['count']);
 
   const onPressLike = () => {
-    // TODO: add catch in order to remove like if petition is not resolved
-    // TODO: add the same code in UserPost.js
     if (!isLiked) {
       setLikes(likes + 1);
       getAsyncStorageData('PROFILE_ID').then(profile => {
@@ -99,45 +99,20 @@ const BottomIconContainer = ({item}) => {
   );
 };
 
-const PostComments = props => {
+const SinglePost = props => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  
-  const BlurredStyle = {
-    backgroundColor: colors.inputBg,
-    borderColor: colors.btnColor1,
-  };
-  const FocusedStyle = {
-    backgroundColor: colors.inputFocusColor,
-    borderColor: colors.primary,
-  };
-  
-  const [addChat, setAddChat] = useState('');
-  const [chatStyle, setChatStyle] = useState(BlurredStyle);
-  const [item, setItem] = useState(props.route.params.idPost);
-  console.log("ITEM", item);
+  const [isPostUpdate, setIsPostUpdate] = useState(false);
+  const EditPostMenuSheetRef = createRef();
 
-  useEffect(() => {
-    
-  });
+  const [item, setItem] = useState(props.route.params.dataPost);
 
-  const onFocusInput = () => setChatStyle(FocusedStyle);
-
-  const onBlurInput = () => setChatStyle(BlurredStyle);
-  
-  const SendIcon = () => (
-    <TouchableOpacity
-      onPress={onPressSend}>
-      <Ionicons
-        name={'send'}
-        size={moderateScale(20)}
-        color={colors.primary}
-      />
-    </TouchableOpacity>
-  );
+  const dataImage = item?.image[0];
+  console.log("ITEM IMAGE", typeof dataImage);
+  console.log("ITEM TEXT",  item.text);
   
   const renderPostImages = ({item}) => {
-    return <FastImage source={{uri: item}} style={localStyles.postImage} />;
+    return <FastImage source={{uri: dataImage}} style={localStyles.postImage} />;
   };
 
   const renderComments = ({item}) => {
@@ -148,7 +123,7 @@ const PostComments = props => {
             onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}
           >
             <FastImage
-              source={{uri: item.profile_photo}}
+              source={{uri: item.profileImage}}
               style={localStyles.profileImage}
             />
             <View>
@@ -172,6 +147,31 @@ const PostComments = props => {
     });
   };
   
+  useEffect(() => {
+    EditPostMenuSheetRef?.current?.hide();
+  }, [isPostUpdate]);
+
+  const onPressEditPostMenu = () => {
+    EditPostMenuSheetRef?.current.show()};
+
+  const onPressEdit = () => {
+    setIsPostUpdate(true);
+    navigation.navigate(StackNav.EditPost,
+      {idPost: item});
+  };
+
+  const onPressDelete = async (post) => {
+    await deletePost(post)
+    .then(
+      setIsPostUpdate(true),
+      navigation.reset({
+        index: 0,
+        routes: [{name: StackNav.TabBar}],
+      })
+    )
+    .catch(error => console.log('Delete error:', error));
+  };
+
   const onRefresh = () => navigation.reset({
     // TODO: pass id of post
     index: 0,
@@ -212,16 +212,30 @@ const PostComments = props => {
                   </ZText>
                   </View>
               </TouchableOpacity>
+              <EditPostMenu
+                onPressEdit={onPressEdit}
+                onPressDelete={() => onPressDelete(item.id)}
+                SheetRef={EditPostMenuSheetRef}
+              />
+              <TouchableOpacity
+              onPress={onPressEditPostMenu}
+              >
+                <Ionicons
+                    name="ellipsis-horizontal"
+                    size={moderateScale(24)}
+                    color={colors.reverse}
+                />
+              </TouchableOpacity>
               </View>
 
               <View style={[styles.mr20, styles.ml20]}>
               <ZText>{item.text}</ZText>
-              {item.image.length > 0 && (
+              {dataImage.length > 0 && (
                   <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
                   <FlashList
-                      data={item.image}
+                      data={dataImage}
                       showsHorizontalScrollIndicator={false}
-                      keyExtractor={image => image}
+                      keyExtractor={dataImage => dataImage}
                       horizontal
                       pagingEnabled
                       renderItem={renderPostImages}
@@ -230,34 +244,14 @@ const PostComments = props => {
               )}
               </View>
           <BottomIconContainer item={item} />
-
           <FlashList
               data={item.comments.data}
               showsHorizontalScrollIndicator={false}
-              keyExtractor={image => image}
+              keyExtractor={dataImage => dataImage}
               horizontal
               pagingEnabled
               renderItem={renderComments}
           />
-
-          <View style={styles.m10}>
-            <ZInput
-              placeHolder={strings.message + '...'}
-              keyBoardType={'default'}
-              _value={addChat}
-              autoCapitalize={'none'}
-              rightAccessory={() => <SendIcon />}
-              toGetTextFieldValue={onchangeComment}
-              inputContainerStyle={[
-                {backgroundColor: colors.inputBg},
-                localStyles.inputContainerStyle,
-                chatStyle,
-              ]}
-              _onFocus={onFocusInput}
-              onBlur={onBlurInput}
-            />
-          </View>
-
           </View>
         </ScrollView>
       </ZKeyBoardAvoidWrapper>
@@ -265,7 +259,7 @@ const PostComments = props => {
   );
 };
 
-export default PostComments;
+export default SinglePost;
 
 const localStyles = StyleSheet.create({
     postContainer: {

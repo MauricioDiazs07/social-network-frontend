@@ -63,6 +63,7 @@ import CameraRegister from '../containers/auth/CameraRegister';
 import FinishProfile from '../containers/auth/FinishProfile';
 import PostComments from '../containers/TabBar/home/UserPostFeed/PostComments';
 import EditPost from '../containers/TabBar/home/UserPostFeed/EditPost';
+import SinglePost from '../containers/TabBar/home/UserPostFeed/SinglePost';
 
 export const TabRoute = {
   Home,
@@ -130,5 +131,6 @@ export const StackRoute = {
   FinishProfile,
   PostComments,
   HistoryDetail,
-  EditPost
+  EditPost,
+  SinglePost
 };

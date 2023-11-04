@@ -65,5 +65,6 @@ export const StackNav = {
   FinishProfile: 'FinishProfile',
   PostComments: 'PostComments',
   HistoryDetail: 'HistoryDetail',
-  EditPost: 'EditPost'
+  EditPost: 'EditPost',
+  SinglePost: 'SinglePost'
 };

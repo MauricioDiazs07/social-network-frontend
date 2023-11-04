@@ -31,8 +31,6 @@ import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers
 import { getMasterData, getProfilePostData } from '../../../api/feed/interaction';
 import { getPosts } from '../../../api/feed/posts';
 import {transformpHistoy, transformfPosts } from '../../../utils/_support_functions';
-import ProfilePost from '../home/UserPostFeed/ProfilePost';
-import UserPost from '../home/UserPostFeed/UserPost'
 
 const UserDetail = [
   {
@@ -75,7 +73,6 @@ export default function Profile({navigation}) {
       })
     });
   }, []);
-  // console.log('PROFILE ID: ', feeds)
 
   const categoryData = [
     {
@@ -150,9 +147,7 @@ export default function Profile({navigation}) {
 
   const renderReelItem = ({item}) => (
     <FeedComponent data={item}/>
-    // console.log('THIS IS ITEEEEEM: ')
   );
-  // console.log('PROFILE ID: ', feeds)
 
   return (
     <ZSafeAreaView>
@@ -256,12 +251,10 @@ export default function Profile({navigation}) {
           <FlatList
             data={feeds}
             renderItem={renderReelItem}
-            // renderItem={({item}) => <UserPost item={item} dataLength={feeds.length} />}
-            // renderItem={({item}) => <ProfilePost item={item} dataLength={feeds.length} />}
             numColumns={3}
             keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={styles.mt20}
-            // showsVerticalScrollIndicator={true}
+            showsVerticalScrollIndicator={true}
           />
         </View>
       </ScrollView>
