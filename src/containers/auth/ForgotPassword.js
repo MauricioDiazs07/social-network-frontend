@@ -63,8 +63,9 @@ const ForgotPassword = ({navigation}) => {
   const getUserByPhone = (phoneNo) => {
     try {
       getUserDataByPhone(phoneNo).then(resp => { 
+
         if(resp) {
-          const user_id =  resp['profile_id']
+          const user_id =  resp['profileId']
           return user_id;
         } else {
           setIsUserInvalid(true);      

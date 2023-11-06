@@ -6798,6 +6798,11 @@ react-native-actions-sheet@0.8.21:
   resolved "https://registry.yarnpkg.com/react-native-actions-sheet/-/react-native-actions-sheet-0.8.21.tgz#d9175e7d5d862217f990b2ccc8a216fb4fc35b06"
   integrity sha512-WUtrGbPSlY8YuVSxKVJ36f3PrVMGMOQ5Cp5dtpurc71Uih4LEGGhEEk8yme/QOquiGsu77be0sZT4CrSUOSXag==
 
+react-native-base64@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-base64/-/react-native-base64-0.2.1.tgz#3d0e73a649c4c0129f7b7695d3912456aebae847"
+  integrity sha512-eHgt/MA8y5ZF0aHfZ1aTPcIkDWxza9AaEk4GcpIX+ZYfZ04RcaNahO+527KR7J44/mD3efYfM23O2C1N44ByWA==
+
 react-native-charts-wrapper@^0.5.11:
   version "0.5.11"
   resolved "https://registry.yarnpkg.com/react-native-charts-wrapper/-/react-native-charts-wrapper-0.5.11.tgz#7a7016d28f0047691ee649678c58400a3e0f98ec"
