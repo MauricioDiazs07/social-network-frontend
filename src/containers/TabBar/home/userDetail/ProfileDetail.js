@@ -23,6 +23,7 @@ import {InstagramBg, LikeBg, LikeIconModal} from '../../../../assets/svgs';
 import {StackNav} from '../../../../navigation/NavigationKeys';
 import SuccessModal from '../../../../components/models/SuccessModal';
 import ReelComponent from '../../../../components/ReelComponent';
+import FeedComponent from '../../../../components/FeedComponent';
 import {
   userDetail,
   UserDetailCategory,
@@ -151,13 +152,13 @@ export default function ProfileDetail({navigation, route}) {
 
   return (
     <ZSafeAreaView>
-      <ZHeader title={userName} rightIcon={<RightIcon />} />
+      <ZHeader title={userName} />
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
         style={localStyles.root}>
         <View style={styles.itemsCenter}>
-            <Image style={localStyles.bgImg} source={{uri: 'https://marketplace.canva.com/EAFFI2trtnE/1/0/1600w/canva-black-minimalist-motivation-quote-linkedin-banner-cqVV-6-1kOk.jpg'}}></Image>
+            {/* <Image style={localStyles.bgImg} source={{uri: 'https://marketplace.canva.com/EAFFI2trtnE/1/0/1600w/canva-black-minimalist-motivation-quote-linkedin-banner-cqVV-6-1kOk.jpg'}}></Image> */}
           <TouchableOpacity onPress={onPressEditProfile} style={styles.mt25}>
             {!!userImage?.length ? (
               <Image
@@ -189,13 +190,13 @@ export default function ProfileDetail({navigation, route}) {
             </ZText>
           </View>
         </View>
-        <View style={[styles.flexRow, styles.justifyEvenly]}>
+        {/* <View style={[styles.flexRow, styles.justifyEvenly]}>
           {UserDetailCategory.map((item, index) => (
             <RenderUserDetail item={item} key={index} />
           ))}
-        </View>
-        <View style={localStyles.editProfileContainer}>
-          {/* <ZButton
+        </View> */}
+        <View style={styles.rowSpaceBetween}>
+          <ZButton
             title={strings.follow}
             onPress={onPressEditProfile}
             color={colors.white}
@@ -213,8 +214,8 @@ export default function ProfileDetail({navigation, route}) {
                 color={colors.white}
               />
             }
-          /> */}
-          {/* <ZButton
+          />
+          <ZButton
             title={strings.message}
             color={colors.primary}
             onPress={onPressMessage}
@@ -232,13 +233,15 @@ export default function ProfileDetail({navigation, route}) {
                 color={colors.primary}
               />
             }
-          /> */}
-          {/* <InstagramBg /> */}
-          {/* <TouchableOpacity onPress={onPressLike}>
+          />
+          {/* <InstagramBg />
+          <TouchableOpacity onPress={onPressLike}>
             <LikeBg />
           </TouchableOpacity> */}
         </View>
-        <UserStories stories={historyData} />
+        <View style={[localStyles.storiesContainer]}>
+          <UserStories stories={historyData} />
+        </View>
         <View
           style={[
             localStyles.mainContainer,
@@ -247,9 +250,9 @@ export default function ProfileDetail({navigation, route}) {
               borderBottomWidth: moderateScale(2),
             },
           ]}>
-          {categoryData.map((item, index) => (
+          {/* {categoryData.map((item, index) => (
             <HeaderCategory item={item} key={index} />
-          ))}
+          ))} */}
         </View>
         <FlatList
           data={feeds}
@@ -301,15 +304,25 @@ const localStyles = StyleSheet.create({
     ...styles.mt25,
   },
   buttonContainer: {
-    ...styles.ph15,
-    height: getHeight(40),
-    borderRadius: moderateScale(20),
+    // ...styles.mt5,
+    height: getHeight(45),
+    width: '48%',
+    borderRadius: moderateScale(22),
     borderWidth: moderateScale(1),
-    width: '30%',
+    // ...styles.ph15,
+    // height: getHeight(40),
+    // borderRadius: moderateScale(20),
+    // borderWidth: moderateScale(1),
+    // width: '30%',
+  },
+  storiesContainer: {
+    ...styles.mt15,
+    ...styles.flexRow,
+    height: moderateScale(100)
   },
   mainContainer: {
     ...styles.rowSpaceBetween,
-    width: '90%',
+    width: '100%',
     ...styles.mt15,
   },
   tabItemStyle: {

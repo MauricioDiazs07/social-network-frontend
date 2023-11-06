@@ -62,13 +62,12 @@ export default function Profile({navigation}) {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
       getMasterData(profileId).then(idResp => {
         setMasterData(idResp);
+        const new_history = transformpHistoy(idResp)
+        setHistoryData(new_history)
         getPosts(idResp).then(resp =>{
-          // const new_history = transformpHistoy(resp)
           const postFeeds = transformfPosts(resp['POST'])
-          // setHistoryData(new_history)
           setFeeds(postFeeds)
-      })
-      
+        })
 
       })
     });
@@ -234,8 +233,10 @@ export default function Profile({navigation}) {
               />}
           />
         </View> */}
-        {/* <UserStories stories={historyData} /> */}
-        {/* <View
+        <View style={[localStyles.storiesContainer]}>
+          <UserStories stories={historyData} />
+        </View>        
+        <View
           style={[
             localStyles.mainContainer,
             {
@@ -243,10 +244,10 @@ export default function Profile({navigation}) {
               borderBottomWidth: moderateScale(2),
             },
           ]}>
-          {categoryData.map((item, index) => (
+          {/* {categoryData.map((item, index) => (
             <HeaderCategory item={item} key={index} />
-          ))}
-        </View> */}
+          ))} */}
+        </View>
         <View style={styles.postContainer}>
           <FlatList
             data={feeds}
@@ -293,9 +294,14 @@ const localStyles = StyleSheet.create({
     borderRadius: moderateScale(22),
     borderWidth: moderateScale(1),
   },
+  storiesContainer: {
+    ...styles.mt15,
+    ...styles.flexRow,
+    height: moderateScale(100)
+  },
   mainContainer: {
     ...styles.rowSpaceBetween,
-    width: '90%',
+    width: '100%',
     ...styles.mt15,
     alignSelf: 'center',
   },
