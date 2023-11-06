@@ -49,6 +49,7 @@ const PhoneValidation = props => {
     formData.append('From', `${PHONE_TWILIO}`);
     formData.append('To', `+52${phone}`);
     formData.append('Body', strings.codeSMS +`${phoneCode}`);
+    console.log("phoneCode:", phoneCode);
 
     try{
       if(phoneCode !== null) {

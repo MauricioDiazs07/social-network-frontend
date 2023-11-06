@@ -101,26 +101,6 @@ const readINE_3 = async (ine_pic) => {
 const signUp = async (
     user
 ) => {
-    const response = await fetch(URL_API + SIGNUP, {
-        method: "POST", 
-        body: JSON.stringify({
-            ...user
-        }),
-        headers: {
-            'Content-type': 'application/json'
-        }
-    });
-
-    resp = await response.json();
-    if (response.ok){
-        
-        return resp;
-    }
-}
-
-const signUp2 = async (
-    user
-) => {
     const form = new FormData()
     form.append('phone', user['phone'])
     form.append('password', user['password'])
@@ -160,6 +140,7 @@ const signUp2 = async (
     }
     form.append('identification_photo', imageData1);
     console.log('Datos de registro: ', form);
+
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: form,
@@ -167,10 +148,9 @@ const signUp2 = async (
             'Content-Type': 'multipart/form-data',
         },
     });
+
     resp = await response.json();
-    if (response.ok){
-        return resp;
-    }
+    return resp;
 }
 
 const getInterests = async () => {

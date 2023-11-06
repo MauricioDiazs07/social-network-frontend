@@ -1,23 +1,28 @@
 // libraries import
 import React, { useEffect, useState } from 'react';
-import {StyleSheet, View, ActivityIndicator} from 'react-native';
-import {FlashList} from '@shopify/flash-list';
-import {useSelector} from 'react-redux';
-import {Snackbar, Button} from '@react-native-material/core';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { useSelector } from 'react-redux';
+import { Snackbar, Button } from '@react-native-material/core';
 
 // local import
 import ZButton from '../../components/common/ZButton';
 import ZHeader from '../../components/common/ZHeader';
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
 import strings from '../../i18n/strings';
-import {StackNav} from '../../navigation/NavigationKeys';
-import {styles} from '../../themes';
+import { StackNav } from '../../navigation/NavigationKeys';
+import { styles } from '../../themes';
 import ZText from '../../components/common/ZText';
-import {moderateScale, getHeight} from '../../common/constants';
-import ZSearch from '../../components/common/ZSearch';
+import { moderateScale, getHeight } from '../../common/constants';
 import { signUp, getAuthToken, getInterests, updateInterests } from '../../api/auth/auth';
 import { getProfileData } from '../../api/feed/interaction';
-import { USER_LEVEL, ACCESS_TOKEN } from '../../common/constants';
+import { USER_LEVEL,
+         ACCESS_TOKEN,
+         PROFILE_ID,
+         PROFILE_PHOTO,
+         USERNAME,
+         GENDER,
+         DESCRIPTION } from '../../common/constants';
 import { getAccessLevel } from '../../utils/_support_functions';
 import { setAsyncStorageData } from '../../utils/helpers';
 
@@ -26,6 +31,7 @@ const FollowSomeone = props => {
   const colors = useSelector(state => state.theme.theme);
   const usserCred = props.route.params.usser;
   const userPhone = usserCred['phone'];
+  const interests = [];
   const [interestsList, setInterestsList] = React.useState();
   const [isSnackbarVisible, setIsSnackbarVisible] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -76,18 +82,56 @@ const FollowSomeone = props => {
     );
   }
 
-  const onPressContinue = () => {
-    navigation.navigate(StackNav.PhoneValidation, {
-      phone: userPhone
-    });
+  const onPressContinue = async () => {
+    setIsLoading(true);
+
+    let signUpResp = await signUp(usserCred);
+
+    if (signUpResp['message'] !== 'OK') { 
+      setIsLoading(false);
+      setIsSnackbarVisible(true);
+      return;
+    }
+
+    let authResp = await getAuthToken(
+      usserCred['phone'],
+      usserCred['password']
+    );
+      
+    if ("token" in authResp) {
+      const user_lvl = getAccessLevel(authResp['role_id']);
+      await setAsyncStorageData(ACCESS_TOKEN, authResp);
+      await setAsyncStorageData(USER_LEVEL, user_lvl);
+      await setAsyncStorageData(PROFILE_ID, authResp['profile_id']);
+
+      let profileResp = await getProfileData(authResp['profile_id']);
+      await setAsyncStorageData(PROFILE_PHOTO, profileResp['profile_photo']);
+      await setAsyncStorageData(USERNAME, profileResp['name']);
+      await setAsyncStorageData(GENDER, profileResp['gender']);
+      await setAsyncStorageData(DESCRIPTION, profileResp['description']);
+
+      await updateInterests(authResp['profile_id'], interests);
+
+      setIsLoading(false);
+
+      navigation.navigate(StackNav.PhoneValidation, {
+        phone: userPhone
+      });
+    } else {
+      setIsLoading(false);
+      setIsSnackbarVisible(true);
+      console.log("ERROR", authResp);
+    }
   };
+
+  const onPressLogin = () => navigation.navigate(StackNav.Login);
 
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.interests} />
-      <View style={localStyles.innerHeader}>
+      <View style={[localStyles.innerHeader, styles.mb30]}>
         <ZText type={'r16'}>{strings.interestsDescription}</ZText>
-        <ZSearch />
+        {/* <ZSearch /> */}
       </View>
       <View
         style={localStyles.interestsList}
@@ -105,18 +149,9 @@ const FollowSomeone = props => {
           contentContainerStyle={localStyles.listContainer}
         />
       </View>
-      <View style={localStyles.btnContainer}>
-        <ZButton
-          title={strings.continue}
-          textType={'b18'}
-          color={colors.white}
-          containerStyle={localStyles.skipBtnContainer}
-          onPress={onPressContinue}
-        />
-      </View>
 
       <View 
-        style={[{flex: 1}, 
+        style={[ 
           !isSnackbarVisible && {display: 'none'}]}
       >
         <Snackbar
@@ -126,11 +161,21 @@ const FollowSomeone = props => {
               variant="text"
               color={colors.primary}
               title={strings.loginRedirect}
-              onPress={redirectLogin}
+              onPress={onPressLogin}
               compact
             />
           }
           style={localStyles.snackbar}
+        />
+      </View>
+
+      <View style={localStyles.btnContainer}>
+        <ZButton
+          title={strings.continue}
+          textType={'b18'}
+          color={colors.white}
+          containerStyle={localStyles.skipBtnContainer}
+          onPress={onPressContinue}
         />
       </View>
 
