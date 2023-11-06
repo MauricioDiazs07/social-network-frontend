@@ -4,7 +4,8 @@ import {
     SIGNUP,
     READ_INE,
     READ_INE_2,
-    INTERESTS_LIST
+    INTERESTS_LIST,
+    UPDATE_INTERESTS,
  } from "../../utils/api_constants";
 
 const getAuthToken = async (phoneNumber, password) => {
@@ -57,8 +58,7 @@ const readINE_2 = async (ine_pic) => {
         uri: ine_pic.path,
         name: `img_${1}.jpg`,
         type: ine_pic.mime,
-    } 
-    console.log('imageData', imageData);
+    }
     formData.append("ine", imageData);
     const response = await fetch(URL_API + READ_INE_2, {
         method: "POST", 
@@ -101,26 +101,6 @@ const readINE_3 = async (ine_pic) => {
 const signUp = async (
     user
 ) => {
-    const response = await fetch(URL_API + SIGNUP, {
-        method: "POST", 
-        body: JSON.stringify({
-            ...user
-        }),
-        headers: {
-            'Content-type': 'application/json'
-        }
-    });
-
-    resp = await response.json();
-    if (response.ok){
-        
-        return resp;
-    }
-}
-
-const signUp2 = async (
-    user
-) => {
     const form = new FormData()
     form.append('phone', user['phone'])
     form.append('password', user['password'])
@@ -160,6 +140,7 @@ const signUp2 = async (
     }
     form.append('identification_photo', imageData1);
     console.log('Datos de registro: ', form);
+
     const response = await fetch(URL_API + SIGNUP, {
         method: "POST", 
         body: form,
@@ -167,10 +148,9 @@ const signUp2 = async (
             'Content-Type': 'multipart/form-data',
         },
     });
+
     resp = await response.json();
-    if (response.ok){
-        return resp;
-    }
+    return resp;
 }
 
 const getInterests = async () => {
@@ -184,12 +164,34 @@ const getInterests = async () => {
     }
 }
 
+const updateInterests = async (
+    profile_id,
+    interests
+) => {
+    const response = await fetch(URL_API + UPDATE_INTERESTS, {
+        method: "POST", 
+        body: JSON.stringify({
+            profile_id: profile_id,
+            interest: interests
+        }),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+
+    resp = await response.json();
+    if (response.ok){
+        
+        return resp;
+    }
+}
+
 export {
     getAuthToken,
     readINE,
     readINE_2,
     readINE_3,
     signUp,
-    signUp2,
     getInterests,
+    updateInterests,
 };

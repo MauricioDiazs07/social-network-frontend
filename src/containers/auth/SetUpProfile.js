@@ -52,7 +52,6 @@ const SetUpProfile = props => {
   const stateInitState = validateNotEmptyField(userInfo['state']);
   const municipalityInitState = validateNotEmptyField(userInfo['municipality']);
   const curpInitState = validateINE(userInfo['curp']);
-  const sectionInitState = validateINE(userInfo['section']);
 
   const BlurredStyle = {
     backgroundColor: colors.inputBg,

@@ -49,8 +49,6 @@ const updateUserData = async (profile_id, email, phone_number, profile_photo) =>
         }
         form.append('profile_photo', imageData)
     }
-
-    console.log(form);
     
     const response = await fetch(URL_API + USER_UPDATE, {
         method : 'PATCH',

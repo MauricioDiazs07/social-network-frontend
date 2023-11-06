@@ -49,18 +49,19 @@ const PhoneValidation = props => {
     formData.append('From', `${PHONE_TWILIO}`);
     formData.append('To', `+52${phone}`);
     formData.append('Body', strings.codeSMS +`${phoneCode}`);
+    console.log("phoneCode:", phoneCode);
 
     try{
       if(phoneCode !== null) {
 
         const response = await fetch(API_TWILIO, {
-        method: "POST", 
-        body: formData,  
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Basic ' + base64.encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
-        },
-      });
+          method: "POST", 
+          body: formData,  
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Basic ' + encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
+          },
+        });
       }
 
     } catch(error){
