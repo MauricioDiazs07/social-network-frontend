@@ -32,6 +32,7 @@ import {
 import UserStories from '../UserStory/UserStories';
 import { getMasterData } from '../../../../api/feed/interaction';
 import {transformpHistoy,transformFeed } from '../../../../utils/_support_functions';
+import { getAsyncStorageData } from '../../../../utils/helpers';
 
 export default function ProfileDetail({navigation, route}) {
   const {userName, userImage, profileId} = route.params;
@@ -304,16 +305,10 @@ const localStyles = StyleSheet.create({
     ...styles.mt25,
   },
   buttonContainer: {
-    // ...styles.mt5,
     height: getHeight(45),
     width: '48%',
     borderRadius: moderateScale(22),
     borderWidth: moderateScale(1),
-    // ...styles.ph15,
-    // height: getHeight(40),
-    // borderRadius: moderateScale(20),
-    // borderWidth: moderateScale(1),
-    // width: '30%',
   },
   storiesContainer: {
     ...styles.mt15,

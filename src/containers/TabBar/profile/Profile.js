@@ -30,7 +30,7 @@ import ZHeader from '../../../components/common/ZHeader';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { getMasterData, getProfilePostData } from '../../../api/feed/interaction';
 import { getPosts } from '../../../api/feed/posts';
-import {transformpHistoy, transformfPosts } from '../../../utils/_support_functions';
+import {transformfHistoy, transformpHistoy, transformfPosts, transformFeed } from '../../../utils/_support_functions';
 
 const UserDetail = [
   {
@@ -62,13 +62,12 @@ export default function Profile({navigation}) {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
       getMasterData(profileId).then(idResp => {
         setMasterData(idResp);
-        const new_history = transformpHistoy(idResp)
-        setHistoryData(new_history)
-        getPosts(idResp).then(resp =>{
+        getPosts(idResp).then(resp => {
           const postFeeds = transformfPosts(resp['POST'])
           setFeeds(postFeeds)
+          const new_history = transformfHistoy(resp['HISTORY']);
+          setHistoryData(new_history);
         })
-
       })
     });
   }, []);
