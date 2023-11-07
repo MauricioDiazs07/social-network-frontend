@@ -65,3 +65,5 @@ yarn-error.log
 
 # constants file
 src/utils/api_constants.js
+
+.env
