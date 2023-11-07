@@ -50,6 +50,8 @@ const ForgotPasswordOtp = props => {
     formData.append('From', `${PHONE_TWILIO}`);
     formData.append('To', `+52${phone}`);
     formData.append('Body', strings.codeSMS +`${phoneCode}`);
+    console.log("CODE", phoneCode);
+
     try{
       if(phoneCode !== null) {
         const response = await fetch(API_TWILIO, {
