@@ -32,9 +32,9 @@ import ProfilePicture from '../../../components/models/ProfilePicture';
 import { getAsyncStorageData } from '../../../utils/helpers';
 import { StackNav } from '../../../navigation/NavigationKeys';
 import { getColor } from '../../../utils/_support_functions';
-import flex from '../../../themes/flex';
 import { colors } from 'react-native-swiper-flatlist/src/themes';
 import { getInterests } from '../../../api/auth/auth';
+import { isNotEmptyString } from '../../../utils/_support_functions';
 
 export default function PostDetail() {
   const colors = useSelector(state => state.theme.theme);
@@ -55,6 +55,19 @@ export default function PostDetail() {
   const [interestList, setInterestList] = React.useState([]);
   const [selectInterest, setSelectInterest] = React.useState([]);
   const [idInterests, setIdInterests] = React.useState("");
+  const [isPostDisabled, setIsPostDisabled] = React.useState(true);
+  const [isInterestsEmpty, setIsInterestsEmpty] = React.useState(false);
+
+  useEffect(() => {
+    if (
+      isNotEmptyString(text) ||
+      selectImage.length > 0
+    ) {
+      setIsPostDisabled(false);
+    } else {
+      setIsPostDisabled(true);
+    }
+  }, [text, selectImage]);
 
   const onChangeText = val => {
     setText(val);
@@ -66,11 +79,12 @@ export default function PostDetail() {
   const closeSnackbar = () => setIsSnackbarVisible(false);
 
   const handleButtonInterests = (interestId) => {
-    if (selectInterest.includes(interestId)) {  
+    if (selectInterest.includes(interestId)) {
       setSelectInterest(selectInterest.filter(id => id !== interestId));
     } else {
+      setIsInterestsEmpty(false);
       setSelectInterest([...selectInterest, interestId]);
-    }        
+    }
   };
 
   useEffect(() => {    
@@ -298,20 +312,19 @@ export default function PostDetail() {
                 textType={'b18'}
                 color={colors.dark ? colors.white : colors.primary}
                 containerStyle={localStyles.btnInterest}
-                style={{  
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '60%', 
-                  textAlign: 'center',
-                  fontSize: 16,
-                  fontWeight: '600',
-                }}
+                style={localStyles.interestsBtns}
                 bgColor={selectInterest.includes(index+1) ? colors.primary : colors.dark3}
                 onPress={() => handleButtonInterests(interest.id, interest.description)}            
               >
               </ZButton>
             ))}
           </View>
+          {isInterestsEmpty && (<ZText
+            color={colors.primary}
+            style={styles.mb5}
+          >
+            {strings.selectObInterests}
+          </ZText>)}
         </View>
         <View
           style={[
@@ -319,6 +332,7 @@ export default function PostDetail() {
             {
               borderBottomColor: colors.bColor,
             },
+            !isInterestsEmpty && {...styles.pv20}
           ]}>
         </View>
 
@@ -423,9 +437,15 @@ export default function PostDetail() {
           color={colors.white}
           containerStyle={[
               localStyles.skipBtnContainer,
-              (chars >= textLimit) && {opacity: 0.5}]}
-          onPress={onPressPost}
-          disabled={chars >= textLimit}
+              isPostDisabled && {opacity: 0.5}]}
+          onPress={() => {
+            if (selectInterest.length > 0) {
+              onPressPost()
+            } else {
+              setIsInterestsEmpty(true);
+            }
+          }}
+          disabled={isPostDisabled}
         />
       </View>
 
@@ -472,9 +492,7 @@ const localStyles = StyleSheet.create({
   },
   categoryContainer: {
     ...styles.flexRow,
-
     ...styles.mb20,
-    ...styles.pv20,
     borderBottomWidth: moderateScale(1),
   },
   hashtagContainer: {
@@ -548,5 +566,13 @@ const localStyles = StyleSheet.create({
     start: 16,
     end: 6,
     bottom: 16,
+  },
+  interestsBtns: {  
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '60%', 
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

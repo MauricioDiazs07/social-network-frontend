@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {useNavigation} from '@react-navigation/native';

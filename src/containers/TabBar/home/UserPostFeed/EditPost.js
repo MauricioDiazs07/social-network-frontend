@@ -17,8 +17,6 @@ import ZSafeAreaView from '../../../../components/common/ZSafeAreaView';
 import ZText from '../../../../components/common/ZText';
 import ZCircle from '../../../../components/common/ZCircle';
 import ZKeyBoardAvoidWrapper from '../../../../components/common/ZKeyBoardAvoidWrapper';
-import { getAsyncStorageData } from '../../../../utils/helpers';
-import { addLike, disLike } from '../../../../api/feed/interaction';
 import { moderateScale, screenWidth, getHeight } from '../../../../common/constants';
 import { StackNav } from '../../../../navigation/NavigationKeys';
 import { styles } from '../../../../themes';
@@ -29,8 +27,7 @@ import typography from '../../../../themes/typography';
 const EditPost = props => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  
-  const [item, setItem] = useState(props.route.params.idPost);
+  const item = props.route.params.idPost;
 
   const renderPostImages = ({item}) => {
     return <FastImage source={{uri: item}} style={localStyles.postImage} />;
@@ -50,21 +47,20 @@ const EditPost = props => {
   const textLimit = 255;
 
   const onRefresh = () => navigation.reset({
-    // TODO: pass id of post
     index: 0,
     routes: [{name: StackNav.TabBar}]
   });
 
   const onPressEditPost = async () => {
-    const formData = new FormData();
-    formData.append("share_id",  item.profileId);
-    formData.append("description", text);
-    await editPost(formData)
+    await editPost(
+      item.id,
+      text
+    )
     .then(
       navigation.reset({
-      index: 0,
-      routes: [{name: StackNav.TabBar}],
-    })
+        index: 0,
+        routes: [{name: StackNav.TabBar}],
+      })
     )
     .catch(error => console.log('Edit error:', error));
   };
@@ -156,7 +152,7 @@ const EditPost = props => {
                  onPress={onPressEditPost}
                 />
               </View>
-              </View>         
+              </View>
           </View>
         </ScrollView>
       </ZKeyBoardAvoidWrapper>

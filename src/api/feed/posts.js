@@ -56,12 +56,15 @@ const getShare = async (postId) => {
     }
 }
 
-const editPost = async (form) => {
+const editPost = async (id, text) => {
     const response = await fetch(URL_API + EDIT_POST, {
         method: 'POST',
-        body: form,
+        body: JSON.stringify({
+            share_id: id,
+            description: text
+        }),
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
     });
     const resp = await response.json();
@@ -78,11 +81,12 @@ const deletePost = async (post_id) => {
             "shareType": "POST"
         }),
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
     });
 
     const resp = await response.json();
+    console.log("DEELETE RESP", resp);
     if (response.ok) {
         return resp;
     }

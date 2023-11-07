@@ -15,7 +15,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ZHeader from '../../../../components/common/ZHeader';
 import ZSafeAreaView from '../../../../components/common/ZSafeAreaView';
 import ZText from '../../../../components/common/ZText';
-import ZInput from '../../../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../../../components/common/ZKeyBoardAvoidWrapper';
 import { getAsyncStorageData } from '../../../../utils/helpers';
 import { addLike, disLike } from '../../../../api/feed/interaction';
