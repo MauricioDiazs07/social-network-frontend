@@ -35,7 +35,7 @@ import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
-import { transformfPosts, transformfHistoy } from '../../../utils/_support_functions';
+import { transformfHistoy, transformFeed } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
 
 const LogOutSheetRef = createRef();
@@ -208,7 +208,7 @@ const Home = () => {
     getAsyncStorageData("PROFILE_ID").then(profile => {
       getPosts(profile)
       .then(resp => {
-        const new_posts = transformfPosts(resp['POST']);
+        const new_posts = transformFeed(resp['POST']);
         const new_history = transformfHistoy(resp['HISTORY'])
         setPostData(new_posts);
         setHistoryData(new_history)

@@ -22,7 +22,6 @@ import ZButton from '../../../../components/common/ZButton';
 import {InstagramBg, LikeBg, LikeIconModal} from '../../../../assets/svgs';
 import {StackNav} from '../../../../navigation/NavigationKeys';
 import SuccessModal from '../../../../components/models/SuccessModal';
-import ReelComponent from '../../../../components/ReelComponent';
 import FeedComponent from '../../../../components/FeedComponent';
 import {
   userDetail,
@@ -30,16 +29,15 @@ import {
   videoData,
 } from '../../../../api/constant';
 import UserStories from '../UserStory/UserStories';
-import { getMasterData } from '../../../../api/feed/interaction';
-import {transformpHistoy,transformFeed } from '../../../../utils/_support_functions';
-import { getAsyncStorageData } from '../../../../utils/helpers';
+import { getProfilePostData } from '../../../../api/feed/interaction';
+import {transformpHistoy, transformfPosts } from '../../../../utils/_support_functions';
 
 export default function ProfileDetail({navigation, route}) {
   const {userName, userImage, profileId} = route.params;
   const colors = useSelector(state => state.theme.theme);
   const [isSelect, setIsSelect] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [historyData, setHistoryData] = useState([]);
+  // const [historyData, setHistoryData] = useState([]);
 
   const [masterData, setMasterData] = useState({
     description: '',
@@ -53,14 +51,15 @@ export default function ProfileDetail({navigation, route}) {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    getMasterData(profileId).then(resp =>{
+    getProfilePostData(profileId).then(resp =>{
       setMasterData(resp);
-      const new_history = transformpHistoy(resp)
-      const feeds = transformFeed(resp)
-      setHistoryData(new_history)
-      setFeeds(feeds)
+      // const new_history = transformpHistoy(resp)
+      const postFeeds = transformfPosts(resp)
+      // setHistoryData(new_history)
+      setFeeds(postFeeds)
     })
   }, []);
+  console.log('FEEED: ', feeds)
 
   const categoryData = [
     {
@@ -151,6 +150,9 @@ export default function ProfileDetail({navigation, route}) {
       userImage: userImage,
     });
 
+    const renderReelItem = ({item}) => (
+      <FeedComponent data={item} from={'user'}/>
+    );
   return (
     <ZSafeAreaView>
       <ZHeader title={userName} />
@@ -240,9 +242,9 @@ export default function ProfileDetail({navigation, route}) {
             <LikeBg />
           </TouchableOpacity> */}
         </View>
-        <View style={[localStyles.storiesContainer]}>
+        {/* <View style={[localStyles.storiesContainer]}>
           <UserStories stories={historyData} />
-        </View>
+        </View> */}
         <View
           style={[
             localStyles.mainContainer,
@@ -257,13 +259,7 @@ export default function ProfileDetail({navigation, route}) {
         </View>
         <FlatList
           data={feeds}
-          renderItem={({item, index}) => (
-            <ReelComponent
-              data={item?.views}
-              reelUrl={item?.poster}
-              isPlay={false}
-            />
-          )}
+          renderItem={renderReelItem}
           numColumns={3}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.mt20}

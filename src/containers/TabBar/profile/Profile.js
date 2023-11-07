@@ -30,7 +30,7 @@ import ZHeader from '../../../components/common/ZHeader';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { getMasterData, getProfilePostData } from '../../../api/feed/interaction';
 import { getPosts } from '../../../api/feed/posts';
-import {transformfHistoy, transformpHistoy, transformfPosts, transformFeed } from '../../../utils/_support_functions';
+import {transformfHistoy, transformpHistoy, transformfPosts, transformFeed, transformProfileHistory } from '../../../utils/_support_functions';
 
 const UserDetail = [
   {
@@ -55,19 +55,22 @@ export default function Profile({navigation}) {
   const [feeds, setFeeds] = useState([]);
   const [shorts, setShorts] = useState([]);
   const [tags, setTags] = useState([]);
-  const [masterData, setMasterData] = useState([]);
-  const [historyData, setHistoryData] = useState([]);
+  const [masterData, setMasterData] = useState({
+    description: '',
+    name: '',
+    profile_photo: '',
+    shares: '',
+  });
+  // const [historyData, setHistoryData] = useState([]);
 
   useEffect(() => {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
-      getMasterData(profileId).then(idResp => {
-        setMasterData(idResp);
-        getPosts(idResp).then(resp => {
-          const postFeeds = transformfPosts(resp['POST'])
-          setFeeds(postFeeds)
-          const new_history = transformfHistoy(resp['HISTORY']);
-          setHistoryData(new_history);
-        })
+      getProfilePostData(profileId).then(resp => {
+        const postFeeds = transformfPosts(resp)
+        setFeeds(postFeeds)
+        setMasterData(resp)
+        // const new_history = transformProfileHistory(resp['HISTORY']);
+        // setHistoryData(new_history);
       })
     });
   }, []);
@@ -144,7 +147,7 @@ export default function Profile({navigation}) {
   };
 
   const renderReelItem = ({item}) => (
-    <FeedComponent data={item}/>
+    <FeedComponent data={item} from={'admin'}/>
   );
 
   return (
@@ -232,9 +235,9 @@ export default function Profile({navigation}) {
               />}
           />
         </View> */}
-        <View style={[localStyles.storiesContainer]}>
+        {/* <View style={[localStyles.storiesContainer]}>
           <UserStories stories={historyData} />
-        </View>        
+        </View>         */}
         <View
           style={[
             localStyles.mainContainer,
