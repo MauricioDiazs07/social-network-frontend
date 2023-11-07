@@ -185,6 +185,10 @@ export default function StackNavigation() {
         component={StackRoute.ReelsComponent}
       />
       <Stack.Screen
+        name={StackNav.FeedsComponent}
+        component={StackRoute.FeedsComponent}
+      />
+      <Stack.Screen
         name={StackNav.FindFriends}
         component={StackRoute.FindFriends}
       />
@@ -214,6 +218,14 @@ export default function StackNavigation() {
           name={StackNav.PhoneValidation}
           component={StackRoute.PhoneValidation}
         />
+      <Stack.Screen
+        name={StackNav.EditPost}
+        component={StackRoute.EditPost}
+      />
+      <Stack.Screen
+        name={StackNav.SinglePost}
+        component={StackRoute.SinglePost}
+      />
     </Stack.Navigator>
   );
 }

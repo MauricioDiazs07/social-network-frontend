@@ -52,6 +52,7 @@ import PostDetail from '../containers/TabBar/add/PostDetail';
 import HistoryDetail from '../containers/TabBar/add/HistoryDetail';
 import PostSound from '../containers/TabBar/add/PostSound';
 import ReelsComponent from '../containers/TabBar/home/ReelsComponent';
+import FeedsComponent from '../containers/TabBar/home/FeedsComponent';
 import Shorts from '../containers/TabBar/home/ReelsComponent';
 import FindFriends from '../containers/TabBar/profile/FindFriends';
 import Live from '../containers/TabBar/home/Live';
@@ -63,6 +64,8 @@ import FinishProfile from '../containers/auth/FinishProfile';
 import PostComments from '../containers/TabBar/home/UserPostFeed/PostComments';
 import PhoneValidation from '../containers/auth/PhoneValidation';
 import MasterHome from '../containers/TabBar/home/MasterHome';
+import EditPost from '../containers/TabBar/home/UserPostFeed/EditPost';
+import SinglePost from '../containers/TabBar/home/UserPostFeed/SinglePost';
 
 export const TabRoute = {
   Home,
@@ -120,6 +123,7 @@ export const StackRoute = {
   PostDetail,
   PostSound,
   ReelsComponent,
+  FeedsComponent,
   FindFriends,
   Live,
   FollowSomeone,
@@ -131,4 +135,6 @@ export const StackRoute = {
   PostComments,
   HistoryDetail,
   PhoneValidation,
+  EditPost,
+  SinglePost,
 };

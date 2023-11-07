@@ -162,8 +162,9 @@ const SetUpProfile = props => {
     setAddressError(msg);
   };
   const onChangedCurp = text => {
-    const {msg} = validateINE(text.trim());
-    setCurp(text);
+    const capitalizedCURP = text.trim().toUpperCase();
+    const {msg} = validateINE(capitalizedCURP);
+    setCurp(capitalizedCURP);
     setCurpError(msg);
   };
   const onChangedSection = text => {
@@ -304,7 +305,7 @@ const SetUpProfile = props => {
             _onFocus={onFocusBirthday}
             onBlur={onBlurBirthday}
             _editable={false}
-            oPressIn={toggleDatePicker}
+            onPressIn={toggleDatePicker}
           />
         </Pressable>
 

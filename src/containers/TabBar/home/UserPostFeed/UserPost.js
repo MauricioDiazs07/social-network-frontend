@@ -141,13 +141,7 @@ const UserPost = ({item}) => {
             </ZText>
           </View>
         </TouchableOpacity>
-        <Ionicons
-          name="ellipsis-horizontal"
-          size={moderateScale(24)}
-          color={colors.reverse}
-        />
-      </View>
-      
+      </View>      
       <View>
         <ZText>{item.text}</ZText>
         {item.image.length > 0 && (
@@ -202,6 +196,30 @@ const localStyels = StyleSheet.create({
   commentItemContainer: {
     ...styles.rowSpaceAround,
     width: moderateScale(90),
+  },
+  menuContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    color: 'black',
+    fontSize: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 3,
+    flexDirection: "column",
+    zIndex: 100
+  
+  },
+  btnContainer: {    
+    ...styles.p2,
+    // ...styles.mv20,
+    ...styles.flexColumn,
+    backgroundColor: 'white',
+    width: '75%',
+    height: '40%',
+    zIndex: 1
+  },
+  skipBtnContainer: {
+    width: '45%',
   },
 });
 
