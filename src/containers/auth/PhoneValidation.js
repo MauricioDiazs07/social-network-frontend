@@ -1,10 +1,9 @@
 // Library import
-import {StyleSheet, View, TouchableOpacity, Button} from 'react-native';
+import {StyleSheet, View, TouchableOpacity} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
-import base64 from 'react-native-base64';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';

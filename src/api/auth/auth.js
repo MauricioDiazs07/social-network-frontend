@@ -6,6 +6,7 @@ import {
     READ_INE_2,
     INTERESTS_LIST,
     UPDATE_INTERESTS,
+    RESET_PASSWORD,
  } from "../../utils/api_constants";
 
 const getAuthToken = async (phoneNumber, password) => {
@@ -30,7 +31,6 @@ const getAuthToken = async (phoneNumber, password) => {
         }
     }
 }
-
 
 /* method to send INE pic and get the information */
 const readINE = async (ine_pic) => {
@@ -186,6 +186,24 @@ const updateInterests = async (
     }
 }
 
+const resetPassword = async (id, newPassword) => {
+    const userData = {
+      profileId: id,
+      password: newPassword,
+    };
+
+    const response = await fetch(URL_API + RESET_PASSWORD, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json', 
+        },
+        body: JSON.stringify(userData)
+    });
+
+    resp = await response.json();
+    return resp;
+}
+
 export {
     getAuthToken,
     readINE,
@@ -194,4 +212,5 @@ export {
     signUp,
     getInterests,
     updateInterests,
+    resetPassword,
 };

@@ -17,21 +17,12 @@ const getUserData = async (profile_id) => {
 }
 
 const getUserDataByPhone = async (phone_no) => {
-
     const response = await fetch(URL_API + USER_BY_PHONE + phone_no, {
         method: 'GET'
     });
     
-    try{
-        const resp = await response.json();
-
-        if (response.ok) {
-            return resp;
-        }
-    } catch(error) {
-        console.log('Error get User Data By Phone', error)
-    }
-    
+    const resp = await response.json();
+    return resp;
 }
 
 const updateUserData = async (profile_id, email, phone_number, profile_photo) => {
