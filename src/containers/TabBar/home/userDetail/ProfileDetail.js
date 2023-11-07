@@ -59,7 +59,6 @@ export default function ProfileDetail({navigation, route}) {
       setFeeds(postFeeds)
     })
   }, []);
-  console.log('FEEED: ', feeds)
 
   const categoryData = [
     {

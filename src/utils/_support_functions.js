@@ -75,7 +75,6 @@ const getAccessLevel = lvl => {
 
 const transformfPosts = (post) => {
   const new_posts = [];
-  console.log('POST ', post)
   const namePost = post['name'];
   const profileImagePost = post['profile_photo'];
 
@@ -88,25 +87,19 @@ const transformfPosts = (post) => {
     });
 
     const obj = {
-      // id: element['id'],
-      // name: element['name'],
-      // profileId: element['multimedia']['data'][0]['profileId'],
       id: element['id'],
       name: namePost,
       profileImage: profileImagePost,
       profileId: profileIdPost,
       subtitle: element['creationDate'],
-      // profileImage: post['profileImage'],
       text: element['text'],
       image: images,
-      // role: 'CEO de empresa', // TODO: delete field
       postType: 'POST',
       likes: element['likes'],
       comments: element['comments'],
       views: element['likes'],
       poster: images[0]
     };
-    console.log('OBJECT ELEMEEENT ', obj)
 
     new_posts.push(obj);
     

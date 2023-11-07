@@ -23,7 +23,6 @@ export default function FeedComponent({
   style,
 }) {
   const colors = useSelector(state => state.theme.theme);
-  // console.log('DATAAAA:', data)
   const navigation = useNavigation();
   const imagePost = data?.image[0]
   const onPressFeed = () => {
