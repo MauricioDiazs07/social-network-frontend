@@ -22,6 +22,7 @@ import {
   AUTH_TOKEN_TWILIO,
   PHONE_TWILIO,
   API_TWILIO } from '../../utils/api_constants';
+import sendSMS from '../../../sendSMS';
 
 const ForgotPasswordOtp = props => {
   const { navigation } = props;
@@ -35,6 +36,7 @@ const ForgotPasswordOtp = props => {
   const [counter, setCounter] = useState(15);
   const [phoneCode, setPhoneCode] = useState(null);
   const [isFailed, setIsFailed] = useState(false);
+  
 
   const generateRandomNumber = () => {
     const min = 1000; 
@@ -45,27 +47,28 @@ const ForgotPasswordOtp = props => {
   } 
 
   const getTwilio = async () => { 
-    const formData = new FormData();
+    sendSMS();
+    // const formData = new FormData();
 
-    formData.append('From', `${PHONE_TWILIO}`);
-    // formData.append('To', `+525653282110`);
-    formData.append('To', `+527225572870`);
-    formData.append('Body', strings.codeSMS +`${phoneCode}`);
-    try{
-      if(phoneCode !== null) {
-        console.log('MESSAGE CONTENT:', formData)
-        const response = await fetch(API_TWILIO, {
-        method: "POST", 
-        body: formData,  
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Basic ' + base64.encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
-        },
-      });
-      }
-    } catch(error){
-      console.error('Error in API Twilio:', error);
-    }
+    // formData.append('From', `${PHONE_TWILIO}`);
+    // // formData.append('To', `+525653282110`);
+    // formData.append('To', `+527225572870`);
+    // formData.append('Body', strings.codeSMS +`${phoneCode}`);
+    // try{
+    //   if(phoneCode !== null) {
+    //     console.log('MESSAGE CONTENT:', formData)
+    //     const response = await fetch(API_TWILIO, {
+    //     method: "POST", 
+    //     body: formData,  
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //       'Authorization': 'Basic ' + base64.encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
+    //     },
+    //   });
+    //   }
+    // } catch(error){
+    //   console.error('Error in API Twilio:', error);
+    // }
   }
 
   useEffect(() => {    
