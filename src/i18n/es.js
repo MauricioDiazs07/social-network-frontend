@@ -111,6 +111,7 @@ export default {
     mentionsTags: 'Menciones y tags',
     message: 'Mensaje',
     messages: 'Mensajes',
+    minutes: 'minutos',
     modalDesc: 'Tu cuenta está lista para ser usada. Serás redireccionado a la página de inicio en unos segundos...',
     moreOption: 'Más opciones',
     municipality: 'Municipio',
