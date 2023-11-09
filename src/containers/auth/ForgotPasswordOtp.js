@@ -35,13 +35,13 @@ const ForgotPasswordOtp = props => {
       if(attempts.status === 429){
         setCounter(600); 
       } else {
-        setCounter(counter);
+        setCounter(counter + 10);
       }
     });
   }
 
   useEffect(() => {  
-    getSMS(phone)
+    getSMS(phone);
   },[]);
 
   const onOtpChange = code => setOtp(code);
@@ -66,7 +66,7 @@ const ForgotPasswordOtp = props => {
   const refTimer = useRef();
 
   const onPressResend = () => {
-    getSMS(phone)
+    getSMS(phone);
     setCounterId(counterId + '1');
     setIsTimeOver(false);
     setOtp('');
