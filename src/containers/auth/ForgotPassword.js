@@ -52,8 +52,7 @@ const ForgotPassword = ({navigation}) => {
       phone.length > 0 &&
       !phoneError
     ) {
-      getUserByPhone(phone);        
-      setIsSubmitDisabled(false);
+      getUserByPhone(phone);     
     } else {
       setIsSubmitDisabled(true);
     }
@@ -65,12 +64,14 @@ const ForgotPassword = ({navigation}) => {
 
         if(resp) {
           const user_id =  resp['profileId']
-          setUserId(user_id)
+          setUserId(user_id);
+          setIsSubmitDisabled(false); 
+          setIsUserInvalid(false);    
           return user_id;
         } else {
           setIsUserInvalid(true);      
           setSnackVisible(true); 
-          setIsSubmitDisabled(true);   
+          setIsSubmitDisabled(true);  
         }
       })
     } catch(error) {

@@ -1,9 +1,10 @@
 // Library import
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, TouchableOpacity, Button} from 'react-native';
 import React, {useRef, useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
+import {Snackbar} from '@react-native-material/core';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -29,11 +30,12 @@ const ForgotPasswordOtp = props => {
   const [isTimeOver, setIsTimeOver] = useState(false);
   const [counter, setCounter] = useState(15);
   const [isFailed, setIsFailed] = useState(false);
+  const [snackVisible, setSnackVisible] = useState(false);
   
   const getSMS = (phoneNum) => {
     sendSMS(phoneNum).then(attempts => {
       if(attempts.status === 429){
-        setCounter(600); 
+        setSnackVisible(true);
       } else {
         setCounter(counter + 10);
       }
@@ -47,7 +49,7 @@ const ForgotPasswordOtp = props => {
   const onOtpChange = code => setOtp(code);
   
   const onPressVerify = () => {
-    checkSMS(phone, otp).then(status =>
+      checkSMS(phone, otp).then(status =>
       {
         if(status === 'approved'){
           setIsFailed(false);
@@ -70,6 +72,10 @@ const ForgotPasswordOtp = props => {
     setCounterId(counterId + '1');
     setIsTimeOver(false);
     setOtp('');
+  };
+
+  const closeSnackBar = () => {
+    navigation.navigate(StackNav.ForgotPassword)
   };
 
   return (
@@ -106,9 +112,25 @@ const ForgotPasswordOtp = props => {
             }}
             style={localStyles.inputStyle}
             secureTextEntry={false}
-          />
-          <View style={styles.rowCenter}>
-            {isTimeOver ? (
+          />    
+          <View style={styles.rowCenter}>      
+          {snackVisible ? (
+                <View style={{flex: 1}}>
+                  <Snackbar
+                    message={strings.maxAttempts}   
+                    action={
+                      <Button
+                        variant="text"
+                        title={strings.close}
+                        color={colors.primary}
+                        compact
+                        onPress={closeSnackBar}
+                      />
+                    }
+                  />
+                </View>
+              ) : 
+            (isTimeOver ? (
               <ZText type={'m18'} align={'center'}>
                 {strings.timeExceeded}
               </ZText>
@@ -119,8 +141,9 @@ const ForgotPasswordOtp = props => {
                   {strings.invalidCode}
                 </ZText>
             )
-            )}
+            ))}
           </View>
+          {!snackVisible && 
           <View style={styles.rowCenter}>
              {isTimeOver ? (
                 <TouchableOpacity
@@ -133,26 +156,27 @@ const ForgotPasswordOtp = props => {
                     {strings.resendCode}
                   </ZText>
                 </TouchableOpacity>
-              ) : (
+              ) : (               
                 <View style={styles.rowCenter}>
                   <ZText type={'m18'} align={'center'}>
                     {strings.resendCodeIn}
                   </ZText>
-                  <CountDownTimer
-                    ref={refTimer}
-                    timestamp={counter}
-                    timerCallback={onFinishTimer}
-                    containerStyle={{backgroundColor: colors.backgroundColor}}
-                    textStyle={[
-                      localStyles.digitStyle,
-                      {color: colors.primary},
-                    ]}
-                  />
+                     <CountDownTimer
+                     ref={refTimer}
+                     timestamp={counter}
+                     timerCallback={onFinishTimer}
+                     containerStyle={{backgroundColor: colors.backgroundColor}}
+                     textStyle={[
+                       localStyles.digitStyle,
+                       {color: colors.primary},
+                     ]}
+                   />           
                   <ZText type={'m18'} align={'center'}>
                     {strings.minutes}
-                  </ZText>
-                </View>)}
-          </View>
+                  </ZText>                     
+                </View>
+                )}
+          </View>}
         </View>
         <ZButton
           textType={'b18'}

@@ -107,6 +107,7 @@ export default {
     male: 'Masculino',
     manageDevice: 'Controlar dispositivo',
     managePermissions: 'Editar permisos',
+    maxAttempts: 'Has alcanzado el límite de intentos de autenticación. Por favor, espera 10 minutos antes de volver a intentarlo.',    
     mention: 'Mención',
     mentionsTags: 'Menciones y tags',
     message: 'Mensaje',

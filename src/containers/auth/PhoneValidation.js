@@ -1,10 +1,10 @@
 // Library import
 import {StyleSheet, View, TouchableOpacity, Button} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useRef, useState} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
-import base64 from 'react-native-base64';
+import {Snackbar} from '@react-native-material/core';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -30,12 +30,13 @@ const PhoneValidation = props => {
   const [counter, setCounter] = useState(15);
   const [isSendCode, setIsSendCode] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const [snackVisible, setSnackVisible] = useState(false);
 
   const getSMS = (phoneNum) => {
     sendSMS(phoneNum).then(attempts => {
       setIsSendCode(true);
       if(attempts.status === 429){
-        setCounter(600); 
+        setSnackVisible(true);
       } else {
         setCounter(counter + 10);
       }
@@ -76,6 +77,10 @@ const PhoneValidation = props => {
     setIsTimeOver(false);
     setIsFailed(false);
     setOtp('');
+  };
+
+  const closeSnackBar = () => {
+    navigation.navigate(StackNav.FollowSomeone)
   };
 
   return (
@@ -125,7 +130,22 @@ const PhoneValidation = props => {
             secureTextEntry={false}
           />          
           <View style={styles.rowCenter}>
-            {isTimeOver ? (
+            {snackVisible ? (
+                <View style={{flex: 1}}>
+                  <Snackbar
+                    message={strings.maxAttempts}   
+                    action={
+                      <Button
+                        variant="text"
+                        title={strings.close}
+                        color={colors.primary}
+                        compact
+                        onPress={closeSnackBar}
+                      />
+                    }
+                  />
+                </View>
+                ): (isTimeOver ? (
               <ZText type={'m18'} align={'center'}>
                 {strings.timeExceeded}
               </ZText>
@@ -134,9 +154,10 @@ const PhoneValidation = props => {
               isFailed === true && (
                 <ZText type={'m18'} align={'center'}>
                   {strings.invalidCode}
-                </ZText>
+                </ZText>)
             ))}
           </View>
+          {!snackVisible && 
           <View style={styles.rowCenter}>
            {(isSendCode) && (
               isTimeOver ? (
@@ -171,7 +192,7 @@ const PhoneValidation = props => {
                   </ZText>
                 </View>
               ))}
-          </View>
+          </View>}
         </View>
         <ZButton
           textType={'b18'}
