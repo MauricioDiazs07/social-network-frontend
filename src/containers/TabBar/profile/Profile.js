@@ -62,7 +62,9 @@ export default function Profile({navigation}) {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
       getMasterData(profileId).then(idResp => {
         setMasterData(idResp);
+        console.log("Master", idResp['shares']['shares']);
         getPosts(idResp).then(resp =>{
+          console.log("Post", resp['POST']);
           // const new_history = transformpHistoy(resp)
           const postFeeds = transformfPosts(resp['POST'])
           // setHistoryData(new_history)
@@ -95,7 +97,12 @@ export default function Profile({navigation}) {
     },
   ];
 
-  const onPressEditProfile = () => navigation.navigate(StackNav.EditProfile);
+  const onPressEditProfile = () => navigation.navigate(StackNav.AdminProfile);
+  /* 
+  const ProfilePictureSheetRef = createRef();
+  const onPressEditProfile = () => ProfilePictureSheetRef?.current.show();
+  const onPressProfilePic = () => ProfilePictureSheetRef?.current.show(); 
+  */
 
   const onPressSwitchAccount = () => switchAccountRef?.current?.show();
 

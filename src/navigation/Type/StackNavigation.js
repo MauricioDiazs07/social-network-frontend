@@ -203,6 +203,10 @@ export default function StackNavigation() {
         component={StackRoute.UserProfile}
       />
       <Stack.Screen
+        name={StackNav.AdminProfile}
+        component={StackRoute.AdminProfile}
+      />
+      <Stack.Screen
           name={StackNav.Profile}
           component={StackRoute.Profile}
       />
