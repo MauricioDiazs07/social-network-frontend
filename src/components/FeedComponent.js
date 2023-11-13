@@ -26,8 +26,9 @@ export default function FeedComponent({
   const navigation = useNavigation();
   const imagePost = data?.image[0]
   const onPressFeed = () => {
-    navigation.navigate(StackNav.SinglePost,
-      {dataPost: data,
+    navigation.navigate(StackNav.PostComments,
+      {
+        idPost: data,
         fromUser: from});
   }
 

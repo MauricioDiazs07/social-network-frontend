@@ -29,7 +29,7 @@ import {
   videoData,
 } from '../../../../api/constant';
 import UserStories from '../UserStory/UserStories';
-import { getProfilePostData } from '../../../../api/feed/interaction';
+import { getMasterData } from '../../../../api/feed/interaction';
 import {transformpHistoy, transformfPosts } from '../../../../utils/_support_functions';
 
 export default function ProfileDetail({navigation, route}) {
@@ -51,12 +51,12 @@ export default function ProfileDetail({navigation, route}) {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    getProfilePostData(profileId).then(resp =>{
+    getMasterData(profileId).then(resp =>{
       setMasterData(resp);
       // const new_history = transformpHistoy(resp)
-      const postFeeds = transformfPosts(resp)
+      const postFeeds = transformfPosts(resp);
       // setHistoryData(new_history)
-      setFeeds(postFeeds)
+      setFeeds(postFeeds);
     })
   }, []);
 

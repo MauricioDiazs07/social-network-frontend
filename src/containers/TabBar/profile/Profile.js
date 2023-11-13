@@ -28,9 +28,8 @@ import {savedStorys, videoData} from '../../../api/constant';
 import UserStories from '../home/UserStory/UserStories';
 import ZHeader from '../../../components/common/ZHeader';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
-import { getMasterData, getProfilePostData } from '../../../api/feed/interaction';
-import { getPosts } from '../../../api/feed/posts';
-import {transformfHistoy, transformpHistoy, transformfPosts, transformFeed, transformProfileHistory } from '../../../utils/_support_functions';
+import { getMasterData } from '../../../api/feed/interaction';
+import {transformfHistoy, transformpHistoy, transformfPosts } from '../../../utils/_support_functions';
 
 const UserDetail = [
   {
@@ -65,10 +64,10 @@ export default function Profile({navigation}) {
 
   useEffect(() => {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
-      getProfilePostData(profileId).then(resp => {
-        const postFeeds = transformfPosts(resp)
-        setFeeds(postFeeds)
-        setMasterData(resp)
+      getMasterData(profileId).then(resp => {
+        const postFeeds = transformfPosts(resp);
+        setFeeds(postFeeds);
+        setMasterData(resp);
         // const new_history = transformProfileHistory(resp['HISTORY']);
         // setHistoryData(new_history);
       })
@@ -149,7 +148,7 @@ export default function Profile({navigation}) {
   const renderReelItem = ({item}) => (
     <FeedComponent data={item} from={'admin'}/>
   );
-
+  
   return (
     <ZSafeAreaView>
       <ZHeader />

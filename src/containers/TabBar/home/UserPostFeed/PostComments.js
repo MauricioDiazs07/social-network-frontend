@@ -1,5 +1,5 @@
 // libraries import
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import { StyleSheet,
          View,
          TouchableOpacity,
@@ -28,6 +28,8 @@ import {
     HeartIcon_Dark,
     HeartIcon_Light,
     LikedHeart } from '../../../../assets/svgs';
+import EditPostMenu from '../../../../components/models/EditPostMenu';
+import { deletePost } from '../../../../api/feed/posts';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -42,7 +44,6 @@ const BottomIconContainer = ({item}) => {
       setLikes(likes + 1);
       getAsyncStorageData('PROFILE_ID').then(profile => {
         addLike(profile, item['id'], item['postType']);
-        console.log(item);
       });
     } else {
       setLikes(likes - 1);
@@ -102,7 +103,14 @@ const BottomIconContainer = ({item}) => {
 const PostComments = props => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  
+  const item = props.route.params.idPost;
+
+  const [isPostUpdate, setIsPostUpdate] = useState(false);  
+  const [addChat, setAddChat] = useState('');
+  const [chatStyle, setChatStyle] = useState(BlurredStyle);
+  const EditPostMenuSheetRef = createRef();
+  const fromUser = props.route.params.fromUser;
+
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
     borderColor: colors.btnColor1,
@@ -112,15 +120,6 @@ const PostComments = props => {
     borderColor: colors.primary,
   };
   
-  const [addChat, setAddChat] = useState('');
-  const [chatStyle, setChatStyle] = useState(BlurredStyle);
-  const [item, setItem] = useState(props.route.params.idPost);
-  console.log("ITEM", item);
-
-  useEffect(() => {
-    
-  });
-
   const onFocusInput = () => setChatStyle(FocusedStyle);
 
   const onBlurInput = () => setChatStyle(BlurredStyle);
@@ -172,6 +171,31 @@ const PostComments = props => {
     });
   };
   
+  useEffect(() => {
+    EditPostMenuSheetRef?.current?.hide();
+  }, [isPostUpdate]);
+
+  const onPressEditPostMenu = () => {
+    EditPostMenuSheetRef?.current.show()};
+
+  const onPressEdit = () => {
+    setIsPostUpdate(true);
+    navigation.navigate(StackNav.EditPost,
+      {idPost: item});
+  };
+
+  const onPressDelete = async (post) => {
+    await deletePost(post)
+    .then(
+      setIsPostUpdate(true),
+      navigation.reset({
+        index: 0,
+        routes: [{name: StackNav.TabBar}],
+      })
+    )
+    .catch(error => console.log('Delete error:', error));
+  };
+
   const onRefresh = () => navigation.reset({
     // TODO: pass id of post
     index: 0,
@@ -212,6 +236,22 @@ const PostComments = props => {
                   </ZText>
                   </View>
               </TouchableOpacity>
+              <EditPostMenu
+                onPressEdit={onPressEdit}
+                onPressDelete={() => onPressDelete(item.id)}
+                SheetRef={EditPostMenuSheetRef}
+              />
+              {fromUser === 'admin' && (
+                <TouchableOpacity
+                onPress={onPressEditPostMenu}
+                >
+                  <Ionicons
+                      name="ellipsis-horizontal"
+                      size={moderateScale(24)}
+                      color={colors.reverse}
+                  />
+                </TouchableOpacity>
+              )}
               </View>
 
               <View style={[styles.mr20, styles.ml20]}>
@@ -289,7 +329,6 @@ const localStyles = StyleSheet.create({
     postImage: {
       width: screenWidth - moderateScale(40),
       aspectRatio: 1,
-      // height: getHeight(380),
       borderRadius: moderateScale(25),
     },
     iconsContainer: {
@@ -303,7 +342,6 @@ const localStyles = StyleSheet.create({
       width: moderateScale(90),
     },
     inputContainerStyle: {
-      // height: moderateScale(60),
       borderRadius: moderateScale(20),
       borderWidth: moderateScale(1),
       ...styles.ph15,
