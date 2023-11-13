@@ -10,23 +10,22 @@ const authToken =  AUTH_TOKEN_TWILIO;
 const credentials = `${accountSid}:${authToken}`;
 
 const sendSMS = async (phone) => {
-    const formData = new FormData();
-    formData.append('To', phone);
-    formData.append('Channel', 'sms');
-  try {
-    const response = await fetch(SEND_SMS_TWILIO, {
-        method: "POST", 
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Basic ' + base64.encode(credentials)
-        }
-    })
-    const resp = await response.json();
-    return resp;
-  } catch(error) {
-    console.log('Error Twilio send message: ', error)
-  }
+  const formData = new FormData();
+  formData.append('To', `+52${phone}`);
+  formData.append('Channel', 'sms');
+
+  const response = await fetch(SEND_SMS_TWILIO, {
+      method: "POST", 
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'Basic ' + base64.encode(credentials)
+      }
+  });
+
+  const resp = await response.json();
+  console.log("RESPTW", resp);
+  return resp;
 }
 
 
