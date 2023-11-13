@@ -228,8 +228,8 @@ const Home = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [isChartLoading, setIsChartLoading] = useState(false);
   const [pieChartLabel, setPieChartLabel] = useState('');
-  const [genderData, setGenderData] = useState([]);
-  const [genderDataLength, setGenderDataLength] = useState(null);
+  const [pieData, setPieData] = useState([]);
+  const [pieDataLength, setPieDataLength] = useState(null);
   const [barChartData, setBarChartData] = useState([]);
   const [barChartLabels, setBarChartLabels] = useState([]);
   const [dropdownData, setDropdownData] = useState([]);
@@ -265,10 +265,12 @@ const Home = () => {
     setIsChartLoading(true);
 
     let generalData = await getGeneralData();
-    let genderList = formatGenderData(generalData['gender']);
-
-    setGenderData(genderList);
+    
     let ddItems = [];
+    if (index === 1) {
+      let genderList = formatGenderData(generalData['gender']);
+      setPieData(genderList);
+    }
     if (index === 2) {
       setBarChartParameters(generalData['age']);
     }
@@ -279,6 +281,11 @@ const Home = () => {
     if (index === 4) {
       ddItems = getDropdownItems(generalData['interests']['array']);
       setBarChartParameters(generalData['interests']['data']);
+    }
+    if (index === 5) {
+      ddItems = getDropdownItems(generalData['section']['array']);
+      countAcceptanceData(generalData['acceptance']);
+      setPieData(generalData['acceptance']);
     }
 
     setDropdownData(ddItems);
@@ -316,9 +323,19 @@ const Home = () => {
       sum_ += x['value'];
     });
 
-    setGenderDataLength(sum_);
+    setPieDataLength(sum_);
 
     return genderData;
+  }
+
+  const countAcceptanceData = (acceptanceData) => {
+    let sum_ = 0;
+
+    acceptanceData.forEach((x) => {
+      sum_ += x['value'];
+    });
+
+    setPieDataLength(sum_);
   }
 
   const getDropdownItems = (valuesList) => {
@@ -357,7 +374,7 @@ const pieState = {
   },
   data: {
       dataSets: [{
-          values: genderData,
+          values: pieData,
           label: '',
           config: {
             colors: [processColor('#FF38E4'), processColor('#478BFF'), processColor('#38FF6D')],
@@ -466,7 +483,7 @@ const barState = {
       return;
     }
 
-    const percentage = (value / genderDataLength) * 100;
+    const percentage = (value / pieDataLength) * 100;
     const text = `${percentage}%\n${label}`;
     setPieChartLabel(text);
   }
@@ -523,105 +540,135 @@ const barState = {
               
               {/* Buttons layer */}
               <View style={localStyles.imgContainer}>
-                <TouchableOpacity 
-                  style={localStyles.image}
-                  onPress={() => changePage(1)}
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
                 >
-                  <View
-                    style={[localStyles.imageContainer,
-                            pageNumber === 1 && {backgroundColor: colors.primary},
-                            pageNumber !== 1 && {backgroundColor: '#555555'}]}
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(1)}
                   >
-                    <Ionicons
-                      name={'male-female-outline'}
-                      size={moderateScale(45)}
-                      color={clr.textColor}
-                      style={[styles.selfCenter, styles.mt10]}
-                    />
-                  </View>
-                  <ZText
-                    type={'b16'}
-                    color={clr.white}
-                    align={'center'}
-                    style={localStyles.coverPhotoStyle}>
-                    Género
-                  </ZText>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={localStyles.image}
-                  onPress={() => changePage(2)}
-                >
-                  <View
-                    style={[localStyles.imageContainer,
-                            pageNumber === 2 && {backgroundColor: colors.primary},
-                            pageNumber !== 2 && {backgroundColor: '#555555'}]}
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 1 && {backgroundColor: colors.primary},
+                              pageNumber !== 1 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'male-female-outline'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b16'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Género
+                    </ZText>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(2)}
                   >
-                    <Ionicons
-                      name={'people'}
-                      size={moderateScale(45)}
-                      color={clr.textColor}
-                      style={[styles.selfCenter, styles.mt10]}
-                    />
-                  </View>
-                  <ZText
-                    type={'b16'}
-                    color={clr.white}
-                    align={'center'}
-                    style={localStyles.coverPhotoStyle}>
-                    Edad
-                  </ZText>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={localStyles.image}
-                  onPress={() => changePage(3)}
-                >
-                  <View
-                    style={[localStyles.imageContainer,
-                            pageNumber === 3 && {backgroundColor: colors.primary},
-                            pageNumber !== 3 && {backgroundColor: '#555555'}]}
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 2 && {backgroundColor: colors.primary},
+                              pageNumber !== 2 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'people'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b16'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Edad
+                    </ZText>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(3)}
                   >
-                    <Ionicons
-                      name={'navigate'}
-                      size={moderateScale(45)}
-                      color={clr.textColor}
-                      style={[styles.selfCenter, styles.mt10]}
-                    />
-                  </View>
-                  <ZText
-                    type={'b16'}
-                    color={clr.white}
-                    align={'center'}
-                    style={localStyles.coverPhotoStyle}>
-                    Sección
-                  </ZText>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={localStyles.image}
-                  onPress={() => changePage(4)}
-                >
-                  <View
-                    style={[localStyles.imageContainer,
-                            pageNumber === 4 && {backgroundColor: colors.primary},
-                            pageNumber !== 4 && {backgroundColor: '#555555'}]}
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 3 && {backgroundColor: colors.primary},
+                              pageNumber !== 3 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'navigate'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b16'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Sección
+                    </ZText>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(4)}
                   >
-                    <Ionicons
-                      name={'game-controller'}
-                      size={moderateScale(45)}
-                      color={clr.textColor}
-                      style={[styles.selfCenter, styles.mt10]}
-                    />
-                  </View>
-                  <ZText
-                    type={'b16'}
-                    color={clr.white}
-                    align={'center'}
-                    style={localStyles.coverPhotoStyle}>
-                    Intereses
-                  </ZText>
-                </TouchableOpacity>
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 4 && {backgroundColor: colors.primary},
+                              pageNumber !== 4 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'game-controller'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b16'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Intereses
+                    </ZText>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(5)}
+                  >
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 5 && {backgroundColor: colors.primary},
+                              pageNumber !== 5 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'heart'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b14'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Interacción
+                    </ZText>
+                  </TouchableOpacity>
+                </ScrollView>
               </View>
               {/* Buttons layer */}
     
@@ -636,7 +683,8 @@ const barState = {
                       {pageNumber === 1 ? 'Género'
                       : pageNumber === 2 ? 'Edad'
                       : pageNumber === 3 ? 'Sección'
-                      : 'Intereses'}
+                      : pageNumber === 4 ? 'Intereses'
+                      : 'Interacción'}
                     </ZText>
                   </View>
     
@@ -644,42 +692,8 @@ const barState = {
                                 {alignSelf: 'center'},
                                 colors.dark && {borderColor: 'white'},
                                 colors.light && {borderColor: 'black'}]}>
-                    {/* Gender chart */}
-                    {pageNumber === 1 && (
-                      <PieChart
-                        style={localStyles.chart}
-                        logEnabled={true}
-                        chartBackgroundColor={processColor(colors.backgroundColor)}
-                        chartDescription={pieState.description}
-                        data={pieState.data}
-                        legend={pieState.legend}
-                        highlights={pieState.highlights}
-                        centerText={pieChartLabel}
-                        extraOffsets={{left: 5, top: 5, right: 5, bottom: 5}}
-                        entryLabelTextSize={0}
-                        entryLabelFontFamily={'HelveticaNeue-Medium'}
-                        drawEntryLabels={true}
-                        usePercentValues={true}
-                        styledCenterText={{text:pieChartLabel, color: processColor(colors.textColor), fontFamily: 'HelveticaNeue-Medium', size: 20}}
-                        centerTextRadiusPercent={100}
-                        holeRadius={60}
-                        holeColor={processColor(colors.backgroundColor)}
-                        transparentCircleRadius={45}
-                        transparentCircleColor={processColor('#f0f0f088')}
-                        maxAngle={350}
-                        onSelect={(x) => {
-                          if (Object.keys(x).length === 0) {
-                            setCenterPieChartLabel('');
-                          } else {
-                            setCenterPieChartLabel(x['nativeEvent']['label'], x['nativeEvent']['value']);
-                          }
-                        }}
-                      />
-                    )}
-                    {/* Gender chart */}
-
                     {/* Dropdown menu */}
-                    {(pageNumber === 3 || pageNumber === 4) ? (
+                    {(pageNumber === 3 || pageNumber === 4 || pageNumber === 5) ? (
                       <Dropdown
                         style={[
                           localStyles.dropdown,
@@ -713,9 +727,42 @@ const barState = {
                       />
                     ) : (<View></View>)}
                     {/* Dropdown menu */}
+                    {/* Pie chart */}
+                    {(pageNumber === 1 || pageNumber === 5) && (
+                      <PieChart
+                        style={localStyles.chart}
+                        logEnabled={true}
+                        chartBackgroundColor={processColor(colors.backgroundColor)}
+                        chartDescription={pieState.description}
+                        data={pieState.data}
+                        legend={pieState.legend}
+                        highlights={pieState.highlights}
+                        centerText={pieChartLabel}
+                        extraOffsets={{left: 5, top: 5, right: 5, bottom: 5}}
+                        entryLabelTextSize={0}
+                        entryLabelFontFamily={'HelveticaNeue-Medium'}
+                        drawEntryLabels={true}
+                        usePercentValues={true}
+                        styledCenterText={{text:pieChartLabel, color: processColor(colors.textColor), fontFamily: 'HelveticaNeue-Medium', size: 20}}
+                        centerTextRadiusPercent={100}
+                        holeRadius={60}
+                        holeColor={processColor(colors.backgroundColor)}
+                        transparentCircleRadius={45}
+                        transparentCircleColor={processColor('#f0f0f088')}
+                        maxAngle={350}
+                        onSelect={(x) => {
+                          if (Object.keys(x).length === 0) {
+                            setCenterPieChartLabel('');
+                          } else {
+                            setCenterPieChartLabel(x['nativeEvent']['label'], x['nativeEvent']['value']);
+                          }
+                        }}
+                      />
+                    )}
+                    {/* Gender chart */}
     
                     {/* Age, section and interests chart */}
-                    {pageNumber !== 1 && (
+                    {(pageNumber !== 1 && pageNumber !== 5) && (
                       <BarChart
                         style={localStyles.chart}
                         data={barState.data}
@@ -820,8 +867,10 @@ const localStyles = StyleSheet.create({
     ...styles.m5,
   },
   imgContainer: {
-    ...styles.rowSpaceBetween,
-    ...styles.wrap,
+    // flex: 1,
+    // ...styles.rowSpaceBetween,
+    // ...styles.wrap,
+    ...styles.flexRow,
     ...styles.mb10,
   },
   imageContainer: {
