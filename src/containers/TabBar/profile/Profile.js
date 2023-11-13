@@ -30,7 +30,7 @@ import ZHeader from '../../../components/common/ZHeader';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { getMasterData, getProfilePostData } from '../../../api/feed/interaction';
 import { getPosts } from '../../../api/feed/posts';
-import {transformpHistoy, transformfPosts } from '../../../utils/_support_functions';
+import {transformfHistoy, transformpHistoy, transformfPosts, transformFeed, transformProfileHistory } from '../../../utils/_support_functions';
 
 const UserDetail = [
   {
@@ -55,21 +55,22 @@ export default function Profile({navigation}) {
   const [feeds, setFeeds] = useState([]);
   const [shorts, setShorts] = useState([]);
   const [tags, setTags] = useState([]);
-  const [masterData, setMasterData] = useState([]);
-  const [historyData, setHistoryData] = useState([]);
+  const [masterData, setMasterData] = useState({
+    description: '',
+    name: '',
+    profile_photo: '',
+    shares: '',
+  });
+  // const [historyData, setHistoryData] = useState([]);
 
   useEffect(() => {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
-      getMasterData(profileId).then(idResp => {
-        setMasterData(idResp);
-        getPosts(idResp).then(resp =>{
-          // const new_history = transformpHistoy(resp)
-          const postFeeds = transformfPosts(resp['POST'])
-          // setHistoryData(new_history)
-          setFeeds(postFeeds)
-      })
-      
-
+      getProfilePostData(profileId).then(resp => {
+        const postFeeds = transformfPosts(resp)
+        setFeeds(postFeeds)
+        setMasterData(resp)
+        // const new_history = transformProfileHistory(resp['HISTORY']);
+        // setHistoryData(new_history);
       })
     });
   }, []);
@@ -146,7 +147,7 @@ export default function Profile({navigation}) {
   };
 
   const renderReelItem = ({item}) => (
-    <FeedComponent data={item}/>
+    <FeedComponent data={item} from={'admin'}/>
   );
 
   return (
@@ -234,8 +235,10 @@ export default function Profile({navigation}) {
               />}
           />
         </View> */}
-        {/* <UserStories stories={historyData} /> */}
-        {/* <View
+        {/* <View style={[localStyles.storiesContainer]}>
+          <UserStories stories={historyData} />
+        </View>         */}
+        <View
           style={[
             localStyles.mainContainer,
             {
@@ -243,10 +246,10 @@ export default function Profile({navigation}) {
               borderBottomWidth: moderateScale(2),
             },
           ]}>
-          {categoryData.map((item, index) => (
+          {/* {categoryData.map((item, index) => (
             <HeaderCategory item={item} key={index} />
-          ))}
-        </View> */}
+          ))} */}
+        </View>
         <View style={styles.postContainer}>
           <FlatList
             data={feeds}
@@ -293,9 +296,14 @@ const localStyles = StyleSheet.create({
     borderRadius: moderateScale(22),
     borderWidth: moderateScale(1),
   },
+  storiesContainer: {
+    ...styles.mt15,
+    ...styles.flexRow,
+    height: moderateScale(100)
+  },
   mainContainer: {
     ...styles.rowSpaceBetween,
-    width: '90%',
+    width: '100%',
     ...styles.mt15,
     alignSelf: 'center',
   },

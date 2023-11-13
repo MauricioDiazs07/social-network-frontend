@@ -41,7 +41,7 @@ import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
-import { transformfPosts, transformfHistoy } from '../../../utils/_support_functions';
+import { transformfHistoy, transformFeed } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
 import { getGeneralData, getSectionData, getInterestsData } from '../../../api/master/masterData';
 
@@ -238,6 +238,16 @@ const Home = () => {
   
   useEffect(() => {
     initApp();
+    getAsyncStorageData("PROFILE_ID").then(profile => {
+      getPosts(profile)
+      .then(resp => {
+        const new_posts = transformFeed(resp['POST']);
+        const new_history = transformfHistoy(resp['HISTORY'])
+        setPostData(new_posts);
+        setHistoryData(new_history)
+        setIsLoaded(true);
+      });
+    });
   }, []);
 
   const initApp = async () => {

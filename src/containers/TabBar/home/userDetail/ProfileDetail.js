@@ -22,22 +22,22 @@ import ZButton from '../../../../components/common/ZButton';
 import {InstagramBg, LikeBg, LikeIconModal} from '../../../../assets/svgs';
 import {StackNav} from '../../../../navigation/NavigationKeys';
 import SuccessModal from '../../../../components/models/SuccessModal';
-import ReelComponent from '../../../../components/ReelComponent';
+import FeedComponent from '../../../../components/FeedComponent';
 import {
   userDetail,
   UserDetailCategory,
   videoData,
 } from '../../../../api/constant';
 import UserStories from '../UserStory/UserStories';
-import { getMasterData } from '../../../../api/feed/interaction';
-import {transformpHistoy,transformFeed } from '../../../../utils/_support_functions';
+import { getProfilePostData } from '../../../../api/feed/interaction';
+import {transformpHistoy, transformfPosts } from '../../../../utils/_support_functions';
 
 export default function ProfileDetail({navigation, route}) {
   const {userName, userImage, profileId} = route.params;
   const colors = useSelector(state => state.theme.theme);
   const [isSelect, setIsSelect] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [historyData, setHistoryData] = useState([]);
+  // const [historyData, setHistoryData] = useState([]);
 
   const [masterData, setMasterData] = useState({
     description: '',
@@ -51,13 +51,17 @@ export default function ProfileDetail({navigation, route}) {
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    getMasterData(profileId).then(resp =>{
+    getProfilePostData(profileId).then(resp =>{
       setMasterData(resp);
       const new_history = transformpHistoy(resp);
       const feeds = transformFeed(resp);
       setHistoryData(new_history);
       setFeeds(feeds);
       console.log("MASTER DATA",masterData);
+      // const new_history = transformpHistoy(resp)
+      const postFeeds = transformfPosts(resp)
+      // setHistoryData(new_history)
+      setFeeds(postFeeds)
     })
   }, []);
 
@@ -150,15 +154,18 @@ export default function ProfileDetail({navigation, route}) {
       userImage: userImage,
     });
 
+    const renderReelItem = ({item}) => (
+      <FeedComponent data={item} from={'user'}/>
+    );
   return (
     <ZSafeAreaView>
-      <ZHeader title={userName} rightIcon={<RightIcon />} />
+      <ZHeader title={userName} />
       <ScrollView
         bounces={false}
         showsVerticalScrollIndicator={false}
         style={localStyles.root}>
         <View style={styles.itemsCenter}>
-            <Image style={localStyles.bgImg} source={{uri: 'https://marketplace.canva.com/EAFFI2trtnE/1/0/1600w/canva-black-minimalist-motivation-quote-linkedin-banner-cqVV-6-1kOk.jpg'}}></Image>
+            {/* <Image style={localStyles.bgImg} source={{uri: 'https://marketplace.canva.com/EAFFI2trtnE/1/0/1600w/canva-black-minimalist-motivation-quote-linkedin-banner-cqVV-6-1kOk.jpg'}}></Image> */}
           <TouchableOpacity onPress={onPressEditProfile} style={styles.mt25}>
             {!!userImage?.length ? (
               <Image
@@ -190,13 +197,13 @@ export default function ProfileDetail({navigation, route}) {
             </ZText> */}
           </View>
         </View>
-        <View style={[styles.flexRow, styles.justifyEvenly]}>
+        {/* <View style={[styles.flexRow, styles.justifyEvenly]}>
           {UserDetailCategory.map((item, index) => (
             <RenderUserDetail item={item} key={index} />
           ))}
-        </View>
-        <View style={localStyles.editProfileContainer}>
-          {/* <ZButton
+        </View> */}
+        <View style={styles.rowSpaceBetween}>
+          <ZButton
             title={strings.follow}
             onPress={onPressEditProfile}
             color={colors.white}
@@ -214,8 +221,8 @@ export default function ProfileDetail({navigation, route}) {
                 color={colors.white}
               />
             }
-          /> */}
-          {/* <ZButton
+          />
+          <ZButton
             title={strings.message}
             color={colors.primary}
             onPress={onPressMessage}
@@ -233,13 +240,15 @@ export default function ProfileDetail({navigation, route}) {
                 color={colors.primary}
               />
             }
-          /> */}
-          {/* <InstagramBg /> */}
-          {/* <TouchableOpacity onPress={onPressLike}>
+          />
+          {/* <InstagramBg />
+          <TouchableOpacity onPress={onPressLike}>
             <LikeBg />
           </TouchableOpacity> */}
         </View>
-        <UserStories stories={historyData} />
+        {/* <View style={[localStyles.storiesContainer]}>
+          <UserStories stories={historyData} />
+        </View> */}
         <View
           style={[
             localStyles.mainContainer,
@@ -248,19 +257,13 @@ export default function ProfileDetail({navigation, route}) {
               borderBottomWidth: moderateScale(2),
             },
           ]}>
-          {categoryData.map((item, index) => (
+          {/* {categoryData.map((item, index) => (
             <HeaderCategory item={item} key={index} />
-          ))}
+          ))} */}
         </View>
         <FlatList
           data={feeds}
-          renderItem={({item, index}) => (
-            <ReelComponent
-              data={item?.views}
-              reelUrl={item?.poster}
-              isPlay={false}
-            />
-          )}
+          renderItem={renderReelItem}
           numColumns={3}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.mt20}
@@ -302,15 +305,19 @@ const localStyles = StyleSheet.create({
     ...styles.mt25,
   },
   buttonContainer: {
-    ...styles.ph15,
-    height: getHeight(40),
-    borderRadius: moderateScale(20),
+    height: getHeight(45),
+    width: '48%',
+    borderRadius: moderateScale(22),
     borderWidth: moderateScale(1),
-    width: '30%',
+  },
+  storiesContainer: {
+    ...styles.mt15,
+    ...styles.flexRow,
+    height: moderateScale(100)
   },
   mainContainer: {
     ...styles.rowSpaceBetween,
-    width: '90%',
+    width: '100%',
     ...styles.mt15,
   },
   tabItemStyle: {

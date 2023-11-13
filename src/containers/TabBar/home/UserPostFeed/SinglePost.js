@@ -41,7 +41,6 @@ const BottomIconContainer = ({item}) => {
       setLikes(likes + 1);
       getAsyncStorageData('PROFILE_ID').then(profile => {
         addLike(profile, item['id'], item['postType']);
-        console.log(item);
       });
     } else {
       setLikes(likes - 1);
@@ -103,12 +102,11 @@ const SinglePost = props => {
   const navigation = useNavigation();
   const [isPostUpdate, setIsPostUpdate] = useState(false);
   const EditPostMenuSheetRef = createRef();
+  const fromUser = props.route.params.fromUser;
 
   const [item, setItem] = useState(props.route.params.dataPost);
 
   const dataImage = item?.image[0];
-  console.log("ITEM IMAGE", typeof dataImage);
-  console.log("ITEM TEXT",  item.text);
   
   const renderPostImages = ({item}) => {
     return <FastImage source={{uri: dataImage}} style={localStyles.postImage} />;
@@ -172,16 +170,9 @@ const SinglePost = props => {
   };
 
   const onRefresh = () => navigation.reset({
-    // TODO: pass id of post
     index: 0,
     routes: [{name: StackNav.TabBar}]
   });
-  
-  const onchangeComment = text => setAddChat(text);
-
-  const onPressSend = () => {
-    console.log("Comentario enviado");
-  };
 
   return (
     <ZSafeAreaView>
@@ -216,15 +207,17 @@ const SinglePost = props => {
                 onPressDelete={() => onPressDelete(item.id)}
                 SheetRef={EditPostMenuSheetRef}
               />
-              <TouchableOpacity
-              onPress={onPressEditPostMenu}
-              >
-                <Ionicons
-                    name="ellipsis-horizontal"
-                    size={moderateScale(24)}
-                    color={colors.reverse}
-                />
-              </TouchableOpacity>
+              {fromUser === 'admin' && (
+                <TouchableOpacity
+                onPress={onPressEditPostMenu}
+                >
+                  <Ionicons
+                      name="ellipsis-horizontal"
+                      size={moderateScale(24)}
+                      color={colors.reverse}
+                  />
+                </TouchableOpacity>
+              )}
               </View>
 
               <View style={[styles.mr20, styles.ml20]}>
@@ -296,7 +289,6 @@ const localStyles = StyleSheet.create({
       width: moderateScale(90),
     },
     inputContainerStyle: {
-      // height: moderateScale(60),
       borderRadius: moderateScale(20),
       borderWidth: moderateScale(1),
       ...styles.ph15,
