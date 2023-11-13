@@ -39,7 +39,8 @@ const ForgotPassword = ({navigation}) => {
   const [phoneIcon, setPhoneIcon] = React.useState(BlurredIconStyle);
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState(true);
   const [snackVisible, setSnackVisible] = React.useState(false);
-  const [isFetching, setIsFetching] = React.useState(false);
+  const [isUserInvalid, setIsUserInvalid] = React.useState(false);
+  const [userId, setUserId] = React.useState('');
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -49,14 +50,35 @@ const ForgotPassword = ({navigation}) => {
   useEffect(() => {
     if (
       phone.length > 0 &&
-      !phoneError &&
-      !isFetching
+      !phoneError
     ) {
-      setIsSubmitDisabled(false);
+      getUserByPhone(phone);     
     } else {
       setIsSubmitDisabled(true);
     }
-  }, [phone, phoneError, isFetching]);
+  }, [phone, phoneError]);
+  
+  const getUserByPhone = (phoneNo) => {
+    try {
+      getUserDataByPhone(phoneNo).then(resp => { 
+
+        if(resp) {
+          const user_id =  resp['profileId']
+          setUserId(user_id);
+          setIsSubmitDisabled(false); 
+          setIsUserInvalid(false);    
+          return user_id;
+        } else {
+          setIsUserInvalid(true);      
+          setSnackVisible(true); 
+          setIsSubmitDisabled(true);  
+        }
+      })
+    } catch(error) {
+      console.error('Error user:', error);
+    }
+   
+  };
   
   const onChangedPhone = val => {
     const {msg} = validatePhoneNumber(val.trim());
@@ -77,31 +99,13 @@ const ForgotPassword = ({navigation}) => {
     onBlurIcon(setPhoneIcon);
   };
 
-  const getUserByPhone = async (phoneNo) => {
-    let userByPhoneResp = await getUserDataByPhone(phoneNo);
-
-    if ("profileId" in userByPhoneResp) {
-      const user_id = userByPhoneResp['profileId'];
-      return user_id;
-    } else {
-      return '';
-    }
-  };
-
-  const onPressPinContinue = async () => {
-    setIsFetching(true);
-    const get_user_id = await getUserByPhone(phone);
-    
-    if (get_user_id !== '') {
+  const onPressPinContinue = () => {
+    if(!isUserInvalid) {      
       navigation.navigate(StackNav.ForgotPasswordOtp, {
         phone2Send: phone,
-        userId: get_user_id
+        userId: userId
       });
-    } else {
-      setSnackVisible(true); 
-      setIsSubmitDisabled(true); 
     }
-    setIsFetching(false);
   }
 
   const closeSnackBar = () => setSnackVisible(false);
@@ -128,23 +132,6 @@ const ForgotPassword = ({navigation}) => {
             <View style={localStyles.inputContainer}>
               <ZText type={'r18'}>{strings.forgotPasswordDesc}</ZText>
 
-              {snackVisible && (
-                <View style={[{flex: 1}, styles.mt20]}>
-                  <Snackbar
-                    message={strings.WrongPhone}
-                    action={
-                      <Button
-                        variant="text"
-                        title={strings.close}
-                        color={colors.primary}
-                        compact
-                        onPress={closeSnackBar}
-                      />
-                    }
-                  />
-                </View>
-              )}
-
               <ZInput
                 placeHolder={strings.phoneNumber}
                 keyBoardType={'numeric'}
@@ -163,7 +150,22 @@ const ForgotPassword = ({navigation}) => {
                 onBlur={onBlurPhone}
               />
             </View>
-                       
+            {snackVisible && (
+              <View style={{flex: 1}}>
+                <Snackbar
+                  message={strings.WrongPhone}
+                  action={
+                    <Button
+                      variant="text"
+                      title={strings.close}
+                      color={colors.primary}
+                      compact
+                      onPress={closeSnackBar}
+                    />
+                  }
+                />
+              </View>
+            )}            
             <ZButton
               textType={'b18'}
               color={colors.white}

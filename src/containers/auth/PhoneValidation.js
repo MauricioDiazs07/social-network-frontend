@@ -1,10 +1,10 @@
 // Library import
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import {StyleSheet, View, TouchableOpacity, Button} from 'react-native';
+import React, { useRef, useState} from 'react';
 import {useSelector} from 'react-redux';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import CountDownTimer from 'react-native-countdown-timer-hooks';
-import base64 from 'react-native-base64';
+import {Snackbar} from '@react-native-material/core';
 
 // Local import
 import ZSafeAreaView from '../../components/common/ZSafeAreaView';
@@ -17,11 +17,7 @@ import {getHeight, moderateScale} from '../../common/constants';
 import {StackNav} from '../../navigation/NavigationKeys';
 import typography from '../../themes/typography';
 import ZButton from '../../components/common/ZButton';
-import {
-  ACCOUNT_SID_TWILIO,
-  AUTH_TOKEN_TWILIO,
-  PHONE_TWILIO,
-  API_TWILIO } from '../../utils/api_constants';
+import { sendSMS, checkSMS } from '../../api/auth/sendSMS';
 
 const PhoneValidation = props => {
   const { navigation } = props;
@@ -32,67 +28,41 @@ const PhoneValidation = props => {
   const [counterId, setCounterId] = useState('1');
   const [isTimeOver, setIsTimeOver] = useState(false);
   const [counter, setCounter] = useState(15);
-  const [phoneCode, setPhoneCode] = useState(null);
+  const [isSendCode, setIsSendCode] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
+  const [snackVisible, setSnackVisible] = useState(false);
 
-  const generateRandomNumber = () => {
-    const min = 1000; 
-    const max = 9999; 
-    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-    setPhoneCode(randomNumber);
-    return randomNumber;
-  }  
-
-  const getTwilio = async () => { 
-    const formData = new FormData();
-
-    formData.append('From', `${PHONE_TWILIO}`);
-    formData.append('To', `+52${phone}`);
-    formData.append('Body', strings.codeSMS +`${phoneCode}`);
-    console.log("phoneCode:", phoneCode);
-
-    try{
-      if(phoneCode !== null) {
-
-        const response = await fetch(API_TWILIO, {
-          method: "POST", 
-          body: formData,  
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': 'Basic ' + base64.encode(`${ACCOUNT_SID_TWILIO}:${AUTH_TOKEN_TWILIO}`),
-          },
-        });
+  const getSMS = (phoneNum) => {
+    sendSMS(phoneNum).then(attempts => {
+      setIsSendCode(true);
+      if(attempts.status === 429){
+        setSnackVisible(true);
+      } else {
+        setCounter(counter + 10);
       }
-
-    } catch(error){
-      console.error('Error in API Twilio:', error);
-    }
+    });
   }
 
-  useEffect(() => {    
-    getTwilio()
-  },[phoneCode]);
-
-  const onPressSend = () => {
-    generateRandomNumber();
-    getTwilio()
+  const onPressSend = () => {    
+    getSMS(phone);
   }
 
   const onOtpChange = code => setOtp(code);
 
   const onPressVerify = () => {
-    const numberOtp = parseInt(otp, 10);
-    if(!isTimeOver) {
-      if(numberOtp === phoneCode){
-        setIsFailed(false);
-        navigation.reset({
-              index: 0,
-              routes: [{name: StackNav.TabBar}],
-            });
-      } else {
-        setIsFailed(true);
+      checkSMS(phone, otp).then(status =>
+      {
+        if(status === 'approved'){
+          setIsFailed(false);
+          navigation.reset({
+            index: 0,
+            routes: [{name: StackNav.TabBar}],
+          });
+        } else {
+          setIsFailed(true);
+        }
       }
-    } 
+    )
   }
 
   const onFinishTimer = () => {
@@ -102,24 +72,25 @@ const PhoneValidation = props => {
   const refTimer = useRef();
 
   const onPressResend = () => {
-    generateRandomNumber();
-    getTwilio();
-    setCounter(counter + 10);
+    getSMS(phone);
     setCounterId(counterId + '1');
     setIsTimeOver(false);
     setIsFailed(false);
     setOtp('');
   };
-  
+
+  const closeSnackBar = () => {
+    navigation.navigate(StackNav.FollowSomeone)
+  };
+
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.validateOtp} />
       <ZKeyBoardAvoidWrapper contentContainerStyle={styles.flexGrow1}>
         <View style={localStyles.root}>
-          {(phoneCode === null) ? (
+          {(!isSendCode) ? (
             <TouchableOpacity
                   onPress={onPressSend}
-                  disabled={phoneCode === null ? false : true}
                   style={[
                     localStyles.btnSendCodeContainer,
                     {backgroundColor: colors.primary}]}>
@@ -139,7 +110,7 @@ const PhoneValidation = props => {
                 )) 
           }
           <OTPInputView
-            pinCount={4}
+            pinCount={6}
             code={otp}
             onCodeChanged={onOtpChange}
             autoFocusOnLoad={false}
@@ -159,7 +130,22 @@ const PhoneValidation = props => {
             secureTextEntry={false}
           />          
           <View style={styles.rowCenter}>
-            {isTimeOver ? (
+            {snackVisible ? (
+                <View style={{flex: 1}}>
+                  <Snackbar
+                    message={strings.maxAttempts}   
+                    action={
+                      <Button
+                        variant="text"
+                        title={strings.close}
+                        color={colors.primary}
+                        compact
+                        onPress={closeSnackBar}
+                      />
+                    }
+                  />
+                </View>
+                ): (isTimeOver ? (
               <ZText type={'m18'} align={'center'}>
                 {strings.timeExceeded}
               </ZText>
@@ -168,11 +154,12 @@ const PhoneValidation = props => {
               isFailed === true && (
                 <ZText type={'m18'} align={'center'}>
                   {strings.invalidCode}
-                </ZText>
+                </ZText>)
             ))}
           </View>
+          {!snackVisible && 
           <View style={styles.rowCenter}>
-           {(phoneCode !== null) && (
+           {(isSendCode) && (
               isTimeOver ? (
                 <TouchableOpacity
                   onPress={onPressResend}
@@ -205,7 +192,7 @@ const PhoneValidation = props => {
                   </ZText>
                 </View>
               ))}
-          </View>
+          </View>}
         </View>
         <ZButton
           textType={'b18'}
@@ -214,9 +201,9 @@ const PhoneValidation = props => {
           onPress={onPressVerify}
           containerStyle={[
             localStyles.btnContainerStyle,
-            otp.length < 4 && {opacity: 0.5}
+            otp.length < 6 && {opacity: 0.5}
           ]}
-          disabled={otp.length === 4 ? false : true}
+          disabled={otp.length === 6 ? false : true}
         />
       </ZKeyBoardAvoidWrapper>
     </ZSafeAreaView>
@@ -233,7 +220,7 @@ const localStyles = StyleSheet.create({
   },
   pinInputStyle: {
     height: moderateScale(60),
-    width: moderateScale(75),
+    width: moderateScale(55),
     fontSize: moderateScale(26),
     borderRadius: moderateScale(15),
   },
