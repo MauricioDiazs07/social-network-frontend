@@ -11,7 +11,7 @@ const credentials = `${accountSid}:${authToken}`;
 
 const sendSMS = async (phone) => {
   const formData = new FormData();
-  formData.append('To', `+52${phone}`);
+  formData.append('To', phone);
   formData.append('Channel', 'sms');
 
   const response = await fetch(SEND_SMS_TWILIO, {

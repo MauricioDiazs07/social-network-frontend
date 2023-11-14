@@ -102,17 +102,18 @@ const signUp = async (
     user
 ) => {
     const form = new FormData()
-    form.append('phone', user['phone'])
-    form.append('password', user['password'])
-    form.append('name', user['name'])
-    form.append('gender', user['gender'])
-    form.append('state', user['state'])
-    form.append('municipality', user['municipality'])
-    form.append('section', user['section'])
-    form.append('address', user['address'])
-    form.append('birthday', user['birthday'])
-    form.append('curp', user['curp'])
-    form.append('email', user['email'])
+    form.append('phone', user['phone']);
+    form.append('area_code', user['area_code']);
+    form.append('password', user['password']);
+    form.append('name', user['name']);
+    form.append('gender', user['gender']);
+    form.append('state', user['state']);
+    form.append('municipality', user['municipality']);
+    form.append('section', user['section']);
+    form.append('address', user['address']);
+    form.append('birthday', user['birthday']);
+    form.append('curp', user['curp']);
+    form.append('email', user['email']);
     
     const value = user['identification_photo'];
     let imageData1;

@@ -56,7 +56,7 @@ const FinishProfile = props => {
   const [contactError, setContactError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [selectImage, setSelectImage] = useState('');
-  const [callingCodeLib, setCallingCodeLib] = useState('');
+  const [callingCodeLib, setCallingCodeLib] = useState('52');
   const [countryCodeLib, setCountryCodeLib] = useState('MX');
   const [visiblePiker, setVisiblePiker] = useState(false);
 
@@ -112,7 +112,7 @@ const FinishProfile = props => {
 
   const onSelectCountry = country => {
     setCountryCodeLib(country.cca2);
-    setCallingCodeLib('+' + country.callingCode[0]);
+    setCallingCodeLib(country.callingCode[0]);
     closeCountryPicker();
   };
 
@@ -169,15 +169,13 @@ const FinishProfile = props => {
     const userCred_ = {
       email: email,
       password: userCred['password'],
+      area_code: callingCodeLib.toString()
     };
-    
-    const phoneNo_ = phoneNo.toString() != '' ?
-                callingCodeLib.toString() + phoneNo.toString() : '';
 
     const usser_ = {
       ...userCred_,
       profile_photo: selectImage, 
-      phone: phoneNo_,
+      phone: phoneNo,
       ...userInfo
     };
 

@@ -21,7 +21,9 @@ import { sendSMS, checkSMS } from '../../api/auth/sendSMS';
 
 const PhoneValidation = props => {
   const { navigation } = props;
-  const phone = props.route.params.phone
+  const phoneNo = props.route.params.phone;
+  const area_code = props.route.params.areaCode;
+  const phone = `+${area_code}${phoneNo}`;
   const colors = useSelector(state => state.theme.theme);
 
   const [otp, setOtp] = useState('');
