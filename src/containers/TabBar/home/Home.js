@@ -309,6 +309,7 @@ const Home = () => {
     }
     getData(index);
     setPageNumber(index);
+    setPieChartLabel('');
   }
 
   const formatGenderData = (genderData) => {
@@ -483,7 +484,7 @@ const barState = {
       return;
     }
 
-    const percentage = (value / pieDataLength) * 100;
+    const percentage = Math.round((value / pieDataLength) * 1000) / 10;
     const text = `${percentage}%\n${label}`;
     setPieChartLabel(text);
   }
@@ -718,9 +719,9 @@ const barState = {
                         onBlur={() => setIsFocus(false)}
                         onChange={item => {
                           if (pageNumber === 3) {
-                            getSectionChartData(item.value);
+                            getSectionChartData(item.label);
                           } else {
-                            getInterestChartData(item.value);
+                            getInterestChartData(item.value + 1);
                           }
                           setIsFocus(false);
                         }}
