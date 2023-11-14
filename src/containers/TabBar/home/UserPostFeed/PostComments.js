@@ -30,6 +30,7 @@ import {
     LikedHeart } from '../../../../assets/svgs';
 import EditPostMenu from '../../../../components/models/EditPostMenu';
 import { deletePost } from '../../../../api/feed/posts';
+import images from '../../../../assets/images';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -207,7 +208,7 @@ const PostComments = props => {
   const onPressSend = () => {
     console.log("Comentario enviado");
   };
-
+  
   return (
     <ZSafeAreaView>
       <ZKeyBoardAvoidWrapper>
@@ -255,19 +256,17 @@ const PostComments = props => {
               </View>
 
               <View style={[styles.mr20, styles.ml20]}>
-              <ZText>{item.text}</ZText>
-              {item.image.length > 0 && (
-                  <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
+                <ZText>{item.text}</ZText>              
+                <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
                   <FlashList
-                      data={item.image}
-                      showsHorizontalScrollIndicator={false}
-                      keyExtractor={image => image}
-                      horizontal
-                      pagingEnabled
-                      renderItem={renderPostImages}
+                    data={item.image.length > 0 ? images.post : item.image}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={id => id}
+                    horizontal
+                    pagingEnabled
+                    renderItem={renderPostImages}
                   />
-                  </View>
-              )}
+                </View>
               </View>
           <BottomIconContainer item={item} />
 

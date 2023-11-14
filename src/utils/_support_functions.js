@@ -102,7 +102,6 @@ const transformfPosts = (post) => {
       views: element['likes'],
       poster: images[0]
     };
-    console.log('OBJ:::', obj)
 
     new_posts.push(obj);
     
