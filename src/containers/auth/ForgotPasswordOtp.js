@@ -21,8 +21,10 @@ import { sendSMS, checkSMS } from '../../api/auth/sendSMS';
 
 const ForgotPasswordOtp = props => {
   const { navigation } = props;
-  const phone = props.route.params.phone2Send;
   const user_id = props.route.params.userId;
+  const phoneNo = props.route.params.phone2Send;
+  const areaCode = props.route.params.areaCode;
+  const phone = `+${areaCode}${phoneNo}`;
   const colors = useSelector(state => state.theme.theme);
 
   const [otp, setOtp] = useState('');

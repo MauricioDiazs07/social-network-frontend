@@ -77,26 +77,17 @@ const ForgotPassword = ({navigation}) => {
     onBlurIcon(setPhoneIcon);
   };
 
-  const getUserByPhone = async (phoneNo) => {
-    let userByPhoneResp = await getUserDataByPhone(phoneNo);
-
-    if ("profileId" in userByPhoneResp) {
-      const user_id = userByPhoneResp['profileId'];
-      return user_id;
-    } else {
-      return '';
-    }
-  };
-
   const onPressPinContinue = async () => {
     setIsFetching(true);
-    const get_user_id = await getUserByPhone(phone);
+    let userByPhoneResp = await getUserDataByPhone(phone);
     
-    if (get_user_id !== '') {
+    if ("profileId" in userByPhoneResp) {
       navigation.navigate(StackNav.ForgotPasswordOtp, {
         phone2Send: phone,
-        userId: get_user_id
+        userId: userByPhoneResp['profileId'],
+        areaCode: userByPhoneResp['areaCode']
       });
+      setSnackVisible(false); 
     } else {
       setSnackVisible(true); 
       setIsSubmitDisabled(true); 

@@ -24,7 +24,6 @@ const sendSMS = async (phone) => {
   });
 
   const resp = await response.json();
-  console.log("RESPTW", resp);
   return resp;
 }
 
