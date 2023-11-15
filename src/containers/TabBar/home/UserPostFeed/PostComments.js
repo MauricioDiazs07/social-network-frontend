@@ -30,6 +30,7 @@ import {
     HeartIcon_Light,
     LikedHeart } from '../../../../assets/svgs';
 import { getShare } from '../../../../api/feed/posts';
+import { PROFILE_ID } from '../../../../common/constants';
 import EditPostMenu from '../../../../components/models/EditPostMenu';
 import { deletePost } from '../../../../api/feed/posts';
 
@@ -44,12 +45,12 @@ const BottomIconContainer = ({item}) => {
     // TODO: add the same code in UserPost.js
     if (!isLiked) {
       setLikes(likes + 1);
-      getAsyncStorageData('PROFILE_ID').then(profile => {
+      getAsyncStorageData(PROFILE_ID).then(profile => {
         addLike(profile, item['id'], item['shareType']);
       });
     } else {
       setLikes(likes - 1);
-      getAsyncStorageData('PROFILE_ID').then(profile => {
+      getAsyncStorageData(PROFILE_ID).then(profile => {
         disLike(profile, item['id'], item['shareType']);
       });
     }
