@@ -12,6 +12,11 @@ import ZText from '../../components/common/ZText';
 import {
   ACCESS_TOKEN,
   USER_LEVEL,
+  PROFILE_ID,
+  PROFILE_PHOTO,
+  USERNAME,
+  GENDER,
+  DESCRIPTION,
   getHeight,
   moderateScale,
 } from '../../common/constants';
@@ -131,13 +136,13 @@ const Login = ({navigation}) => {
         const user_lvl = getAccessLevel(token['role_id']);
         await setAsyncStorageData(ACCESS_TOKEN, token);
         await setAsyncStorageData(USER_LEVEL, user_lvl);
-        await setAsyncStorageData('PROFILE_ID', token['profile_id']);
+        await setAsyncStorageData(PROFILE_ID, token['profile_id']);
 
         getProfileData(token['profile_id']).then(resp => {
-          setAsyncStorageData('PROFILE_PHOTO', resp['profile_photo']);
-          setAsyncStorageData('USERNAME', resp['name']);
-          setAsyncStorageData('GENDER', resp['gender']);
-          setAsyncStorageData('DESCRIPTION', resp['description']);
+          setAsyncStorageData(PROFILE_PHOTO, resp['profile_photo']);
+          setAsyncStorageData(USERNAME, resp['name']);
+          setAsyncStorageData(GENDER, resp['gender']);
+          setAsyncStorageData(DESCRIPTION, resp['description']);
         });
 
         // TODO: add new reset

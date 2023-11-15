@@ -36,7 +36,7 @@ import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
-import { USER_LEVEL, THEME } from '../../../common/constants';
+import { USER_LEVEL, THEME, PROFILE_ID } from '../../../common/constants';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
@@ -246,7 +246,7 @@ const Home = () => {
   
   useEffect(() => {
     initApp();
-    getAsyncStorageData("PROFILE_ID").then(profile => {
+    getAsyncStorageData(PROFILE_ID).then(profile => {
       getPosts(profile)
       .then(resp => {
         const new_posts = transformFeed(resp['POST']);
@@ -269,7 +269,7 @@ const Home = () => {
   }
 
   const getPostsList = async () => {
-    let userID = await getAsyncStorageData("PROFILE_ID");
+    let userID = await getAsyncStorageData(PROFILE_ID);
     let userInfo = await getMasterData(userID);
     let new_posts = transformfPosts(userInfo, userID);
     let new_history = transformfHistoy(userInfo['HISTORY']);

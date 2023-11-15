@@ -14,7 +14,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import {useSelector} from 'react-redux';
 import {styles} from '../../../themes';
-import {getHeight, moderateScale} from '../../../common/constants';
+import {getHeight, moderateScale, PROFILE_ID} from '../../../common/constants';
 import ZText from '../../../components/common/ZText';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import images from '../../../assets/images';
@@ -38,7 +38,7 @@ export default function Profile({navigation}) {
   });
 
   useEffect(() => {
-    getAsyncStorageData("PROFILE_ID").then(profileId => {
+    getAsyncStorageData(PROFILE_ID).then(profileId => {
       getMasterData(profileId).then(idResp => {
         setMasterData(idResp);
         const postFeeds = transformfPosts(idResp);

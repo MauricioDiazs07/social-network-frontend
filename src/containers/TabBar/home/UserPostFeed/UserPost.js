@@ -10,6 +10,7 @@ import {useNavigation} from '@react-navigation/native';
 import {
   moderateScale,
   screenWidth,
+  PROFILE_ID
 } from '../../../../common/constants';
 import ZText from '../../../../components/common/ZText';
 import {styles} from '../../../../themes';
@@ -34,13 +35,13 @@ const BottomIconContainer = ({item}) => {
   const onPressLike = () => {
     if (!isLiked) {
       setLikes(likes + 1);
-      getAsyncStorageData("PROFILE_ID").then(profile => {
+      getAsyncStorageData(PROFILE_ID).then(profile => {
         addLike(profile, item['id'], item['postType'])
       })
       
     } else {
       setLikes(likes - 1);
-      getAsyncStorageData("PROFILE_ID").then(profile => {
+      getAsyncStorageData(PROFILE_ID).then(profile => {
         disLike(profile, item['id'], item['postType'])
       }) 
     }

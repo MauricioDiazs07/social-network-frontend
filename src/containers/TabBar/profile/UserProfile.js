@@ -23,19 +23,16 @@ import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import images from '../../../assets/images';
 import {styles} from '../../../themes';
-import { getHeight, moderateScale} from '../../../common/constants';
+import { getHeight, moderateScale, PROFILE_ID, PROFILE_PHOTO } from '../../../common/constants';
 import ZInput from '../../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../../components/common/ZKeyBoardAvoidWrapper';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import ProfilePicture from '../../../components/models/ProfilePicture';
 import ZButton from '../../../components/common/ZButton';
-import {validateNotEmptyContact} from '../../../utils/validators';
+import { validateNotEmptyContact, validateNotNecessaryEmail } from '../../../utils/validators';
 import ZText from '../../../components/common/ZText';
-import {userProfile} from '../../../api/constant';
-import { validateNotNecessaryEmail } from '../../../utils/validators';
-import { getAsyncStorageData } from '../../../utils/helpers';
+import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { updateUserData } from '../../../api/user/user';
-import { setAsyncStorageData } from '../../../utils/helpers';
 
 const UserProfile = props => {
   const {navigation} = props;
@@ -54,7 +51,7 @@ const UserProfile = props => {
   });
 
   useEffect(() => {
-    getAsyncStorageData("PROFILE_ID").then(profile => {
+    getAsyncStorageData(PROFILE_ID).then(profile => {
       getUserData(profile)
       .then(resp => {
         const user = {
@@ -222,10 +219,10 @@ const UserProfile = props => {
   const onPressUpdate = () => {};
 
   const onPressContinue = () => {
-    getAsyncStorageData("PROFILE_ID").then(profile_id => {
+    getAsyncStorageData(PROFILE_ID).then(profile_id => {
       updateUserData(profile_id,email,phoneNo,selectImage).then(resp => {
         if (selectImage != ''){
-          setAsyncStorageData("PROFILE_PHOTO", resp['profile_photo']);
+          setAsyncStorageData(PROFILE_PHOTO, resp['profile_photo']);
         }
 
         navigation.navigate(StackNav.TabBar)
