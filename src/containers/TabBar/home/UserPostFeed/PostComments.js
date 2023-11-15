@@ -30,9 +30,10 @@ import {
     HeartIcon_Light,
     LikedHeart } from '../../../../assets/svgs';
 import { getShare } from '../../../../api/feed/posts';
-import { PROFILE_ID } from '../../../../common/constants';
+import { PROFILE_ID, PROFILE_PHOTO, USERNAME } from '../../../../common/constants';
 import EditPostMenu from '../../../../components/models/EditPostMenu';
 import { deletePost } from '../../../../api/feed/posts';
+import images from '../../../../assets/images';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -165,10 +166,29 @@ const PostComments = props => {
             style={localStyles.profileContainer}
             onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}
           >
-            <FastImage
-              source={{uri: item.profile_photo}}
-              style={localStyles.profileImage}
-            />
+            {item.profile_photo == null ? 
+                (
+                  <FastImage
+                    source={colors.dark ? images.userDark : images.userLight}
+                    style={[
+                      localStyles.profileImage,
+                      {
+                        borderWidth: 0,
+                      },
+                    ]}
+                  />
+                ) : (
+                  <FastImage
+                    source={{uri: item.profile_photo}}
+                    style={[
+                      localStyles.profileImage,
+                      {
+                        borderWidth: 0,
+                      },
+                    ]}
+                  />
+                )
+              }
             <View>
               <ZText type={'b16'}>{item.name}</ZText>
               <ZText
@@ -222,16 +242,20 @@ const PostComments = props => {
   
   const onchangeComment = text => setAddChat(text);
 
-  const onPressSend = () => {
+  const onPressSend = async () => {
     if (addChat.length > 0) {
-      addComment(item['profileId'], item['id'], addChat);
+      let profileID = await getAsyncStorageData(PROFILE_ID);
+      let profile_photo = await getAsyncStorageData(PROFILE_PHOTO);
+      let username = await getAsyncStorageData(USERNAME);
+
+      addComment(profileID, item['id'], addChat);
       let commentsData = {
         comment: addChat,
         creation_date: item['creationDate'],
         id: item['id'],
-        name: item['name'],
-        profile_id: item['profileId'],
-        profile_photo: item['profileImage']
+        name: username,
+        profile_id: profileID,
+        profile_photo: profile_photo
       }
 
       setComments(prevComments => [...prevComments, commentsData]);

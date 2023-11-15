@@ -14,7 +14,6 @@ import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import images from '../../../assets/images';
 import { PieChart } from 'react-native-charts-wrapper';
 import { Dropdown } from 'react-native-element-dropdown';
 import { BarChart } from 'react-native-charts-wrapper';
@@ -36,7 +35,7 @@ import UserStories from './UserStory/UserStories';
 import UserPost from './UserPostFeed/UserPost';
 import ZText from '../../../components/common/ZText';
 import LogOut from '../../../components/models/LogOut';
-import { USER_LEVEL, THEME, PROFILE_ID } from '../../../common/constants';
+import { USER_LEVEL, THEME, PROFILE_ID, PROFILE_PHOTO } from '../../../common/constants';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
@@ -44,11 +43,12 @@ import { getPosts } from '../../../api/feed/posts';
 import { transformfHistoy, transformFeed } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
 import { getGeneralData,
-         getSectionData,
-         getInterestsData,
-         getInteractionData } from '../../../api/master/masterData';
-import { transformfPosts } from '../../../utils/_support_functions';
-import { getMasterData } from '../../../api/feed/interaction';
+  getSectionData,
+  getInterestsData,
+  getInteractionData } from '../../../api/master/masterData';
+  import { transformfPosts } from '../../../utils/_support_functions';
+  import { getMasterData } from '../../../api/feed/interaction';
+  import images from '../../../assets/images';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -70,8 +70,8 @@ const UserProfile = React.memo(() => {
   const [profilePhoto, setProfilePhoto] = useState();
   
   useEffect(() => {
-    getAsyncStorageData("PROFILE_PHOTO").then(photo => {
-        setProfilePhoto(photo)
+    getAsyncStorageData(PROFILE_PHOTO).then(photo => {
+        setProfilePhoto(photo);
     });
   }, []);
 
