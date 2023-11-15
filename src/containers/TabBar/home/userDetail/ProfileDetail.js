@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useMemo, createRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 
@@ -19,25 +19,17 @@ import {styles} from '../../../../themes';
 import ZText from '../../../../components/common/ZText';
 import images from '../../../../assets/images';
 import ZButton from '../../../../components/common/ZButton';
-import {InstagramBg, LikeBg, LikeIconModal} from '../../../../assets/svgs';
+import { LikeIconModal } from '../../../../assets/svgs';
 import {StackNav} from '../../../../navigation/NavigationKeys';
 import SuccessModal from '../../../../components/models/SuccessModal';
 import FeedComponent from '../../../../components/FeedComponent';
-import {
-  userDetail,
-  UserDetailCategory,
-  videoData,
-} from '../../../../api/constant';
-import UserStories from '../UserStory/UserStories';
 import { getMasterData } from '../../../../api/feed/interaction';
-import {transformpHistoy, transformfPosts } from '../../../../utils/_support_functions';
+import {transformpHistoy, transformfPosts, transformFeed } from '../../../../utils/_support_functions';
 
 export default function ProfileDetail({navigation, route}) {
   const {userName, userImage, profileId} = route.params;
   const colors = useSelector(state => state.theme.theme);
-  const [isSelect, setIsSelect] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  // const [historyData, setHistoryData] = useState([]);
 
   const [masterData, setMasterData] = useState({
     description: '',
@@ -47,106 +39,21 @@ export default function ProfileDetail({navigation, route}) {
   });
 
   const [feeds, setFeeds] = useState([]);
-  const [shorts, setShorts] = useState([]);
-  const [tags, setTags] = useState([]);
 
   useEffect(() => {
     getMasterData(profileId).then(resp =>{
       setMasterData(resp);
       const new_history = transformpHistoy(resp);
-      const feeds = transformFeed(resp);
-      setHistoryData(new_history);
-      setFeeds(feeds);
-      console.log("MASTER DATA",masterData);
-      // const new_history = transformpHistoy(resp)
+      // const feeds = transformFeed(resp);
+      // setHistoryData(new_history);
+      // setFeeds(feeds);
       const postFeeds = transformfPosts(resp);
-      // setHistoryData(new_history)
       setFeeds(postFeeds);
     })
   }, []);
 
-  const categoryData = [
-    {
-      id: 0,
-      icon: 'apps',
-      onPress: () => setIsSelect(0),
-      name: 'Feeds',
-    },
-    {
-      id: 1,
-      icon: 'bookmark',
-      onPress: () => setIsSelect(1),
-      name: 'Shorts',
-    },
-    {
-      id: 2,
-      icon: 'heart',
-      onPress: () => setIsSelect(2),
-      name: 'Tags',
-    },
-  ];
-
   const onPressEditProfile = () => navigation.navigate(StackNav.UserNetwork);
   const onPressModalClose = () => setModalVisible(false);
-
-  const onPressLike = () => setModalVisible(true);
-
-  const RenderUserDetail = ({item}) => {
-    return (
-      <View style={styles.itemsCenter}>
-        <ZText type="b24" align={'center'}>
-          {item.value}
-        </ZText>
-        <ZText type="m16" align={'center'} style={styles.mt10}>
-          {item.title}
-        </ZText>
-      </View>
-    );
-  };
-
-  const HeaderCategory = ({item}) => {
-    return (
-      <TouchableOpacity
-        onPress={item.onPress}
-        style={[
-          localStyles.tabItemStyle,
-          {
-            borderBottomWidth: isSelect === item.id ? moderateScale(2) : 0,
-            borderBottomColor:
-              isSelect === item.id ? colors.primary : colors.bColor,
-          },
-        ]}>
-        <Ionicons
-          name={item.icon}
-          size={moderateScale(30)}
-          color={isSelect === item.id ? colors.primary : colors.iconColor}
-        />
-        <ZText type={'s16'}>{item.name}</ZText>
-      </TouchableOpacity>
-    );
-  };
-
-  const RightIcon = () => {
-    return (
-      <View style={styles.rowCenter}>
-        <TouchableOpacity>
-          <Ionicons
-            name="notifications-outline"
-            size={moderateScale(26)}
-            color={colors.textColor}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons
-            name="ellipsis-horizontal-circle-outline"
-            size={moderateScale(26)}
-            color={colors.textColor}
-            style={styles.ml10}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  };
 
   const onPressMessage = () =>
     navigation.navigate(StackNav.Chat, {
@@ -165,7 +72,6 @@ export default function ProfileDetail({navigation, route}) {
         showsVerticalScrollIndicator={false}
         style={localStyles.root}>
         <View style={styles.itemsCenter}>
-            {/* <Image style={localStyles.bgImg} source={{uri: 'https://marketplace.canva.com/EAFFI2trtnE/1/0/1600w/canva-black-minimalist-motivation-quote-linkedin-banner-cqVV-6-1kOk.jpg'}}></Image> */}
           <TouchableOpacity onPress={onPressEditProfile} style={styles.mt25}>
             {!!userImage?.length ? (
               <Image
@@ -188,20 +94,8 @@ export default function ProfileDetail({navigation, route}) {
             <ZText type="s14" align={'center'} style={styles.mt10}>
               {'CEO de empresa'}
             </ZText>
-            {/* <ZText
-              type="m14"
-              align={'center'}
-              color={colors.userDesc}
-              style={styles.mt10}>
-              {masterData['description']}
-            </ZText> */}
           </View>
         </View>
-        {/* <View style={[styles.flexRow, styles.justifyEvenly]}>
-          {UserDetailCategory.map((item, index) => (
-            <RenderUserDetail item={item} key={index} />
-          ))}
-        </View> */}
         <View style={styles.rowSpaceBetween}>
           <ZButton
             title={strings.follow}
@@ -241,14 +135,7 @@ export default function ProfileDetail({navigation, route}) {
               />
             }
           />
-          {/* <InstagramBg />
-          <TouchableOpacity onPress={onPressLike}>
-            <LikeBg />
-          </TouchableOpacity> */}
         </View>
-        {/* <View style={[localStyles.storiesContainer]}>
-          <UserStories stories={historyData} />
-        </View> */}
         <View
           style={[
             localStyles.mainContainer,
@@ -257,9 +144,6 @@ export default function ProfileDetail({navigation, route}) {
               borderBottomWidth: moderateScale(2),
             },
           ]}>
-          {/* {categoryData.map((item, index) => (
-            <HeaderCategory item={item} key={index} />
-          ))} */}
         </View>
         <FlatList
           data={feeds}

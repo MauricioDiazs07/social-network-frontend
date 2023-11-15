@@ -47,6 +47,8 @@ import { getGeneralData,
          getSectionData,
          getInterestsData,
          getInteractionData } from '../../../api/master/masterData';
+import { transformfPosts } from '../../../utils/_support_functions';
+import { getMasterData } from '../../../api/feed/interaction';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -268,9 +270,9 @@ const Home = () => {
 
   const getPostsList = async () => {
     let userID = await getAsyncStorageData("PROFILE_ID");
-    let postsList = await getPosts(userID);
-    let new_posts = transformfPosts(postsList['POST']);
-    let new_history = transformfHistoy(postsList['HISTORY']);
+    let userInfo = await getMasterData(userID);
+    let new_posts = transformfPosts(userInfo, userID);
+    let new_history = transformfHistoy(userInfo['HISTORY']);
 
     setPostData(new_posts);
     setHistoryData(new_history);

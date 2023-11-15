@@ -8,7 +8,6 @@ import {
   FlatList,
 } from 'react-native';
 import React, {createRef, useState, useEffect} from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // Local import
@@ -18,142 +17,37 @@ import {styles} from '../../../themes';
 import {getHeight, moderateScale} from '../../../common/constants';
 import ZText from '../../../components/common/ZText';
 import {StackNav} from '../../../navigation/NavigationKeys';
-import strings from '../../../i18n/strings';
 import images from '../../../assets/images';
-import ZButton from '../../../components/common/ZButton';
 import SwitchAccont from '../../../components/models/SwitchAccont';
-import ReelComponent from '../../../components/ReelComponent';
 import FeedComponent from '../../../components/FeedComponent';
-import {savedStorys, videoData} from '../../../api/constant';
-import UserStories from '../home/UserStory/UserStories';
 import ZHeader from '../../../components/common/ZHeader';
-import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
+import { getAsyncStorageData } from '../../../utils/helpers';
 import { getMasterData } from '../../../api/feed/interaction';
-import {transformfHistoy, transformpHistoy, transformfPosts } from '../../../utils/_support_functions';
-import { getPosts } from '../../../api/feed/posts';
-
-const UserDetail = [
-  {
-    title: strings.post,
-    value: '247',
-  },
-  {
-    title: strings.followers,
-    value: '368K',
-  },
-  {
-    title: strings.following,
-    value: '374',
-  },
-];
+import {transformfPosts } from '../../../utils/_support_functions';
 
 export default function Profile({navigation}) {
   const colors = useSelector(state => state.theme.theme);
-  const [isSelect, setIsSelect] = useState(0);
   const switchAccountRef = createRef(null);
 
   const [feeds, setFeeds] = useState([]);
-  const [shorts, setShorts] = useState([]);
-  const [tags, setTags] = useState([]);
   const [masterData, setMasterData] = useState({
     description: '',
     name: '',
     profile_photo: '',
     shares: '',
   });
-  // const [historyData, setHistoryData] = useState([]);
 
   useEffect(() => {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
       getMasterData(profileId).then(idResp => {
         setMasterData(idResp);
-        getPosts(idResp).then(resp =>{
-          // const new_history = transformpHistoy(resp)
-          const postFeeds = transformfPosts(resp['POST']);
-          // setHistoryData(new_history)
-          setFeeds(postFeeds);
-      })
-      
-
-      })
+        const postFeeds = transformfPosts(idResp);
+        setFeeds(postFeeds);
+      });
     });
   }, []);
 
-  const categoryData = [
-    {
-      id: 0,
-      icon: 'apps',
-      onPress: () => setIsSelect(0),
-      name: 'Feeds',
-    },
-    {
-      id: 1,
-      icon: 'lock-closed',
-      onPress: () => setIsSelect(1),
-      name: 'Shorts',
-    },
-    {
-      id: 2,
-      icon: 'bookmark',
-      onPress: () => setIsSelect(2),
-      name: 'Tags',
-    },
-  ];
-
   const onPressEditProfile = () => navigation.navigate(StackNav.AdminProfile);
-  /* 
-  const ProfilePictureSheetRef = createRef();
-  const onPressEditProfile = () => ProfilePictureSheetRef?.current.show();
-  const onPressProfilePic = () => ProfilePictureSheetRef?.current.show(); 
-  */
-
-  const onPressSwitchAccount = () => switchAccountRef?.current?.show();
-
-  const onPressSetting = () => navigation.navigate(StackNav.Setting);
-
-  const onPressFindFriend = () => navigation.navigate(StackNav.FindFriends);
-
-  const onPressMessage = item => {
-    navigation.navigate(StackNav.Chat, {
-      userName: 'Andrew Ainsley',
-      userImage: 'https://i.ibb.co/9psxy8J/user4.png',
-    });
-  };
-
-  const RenderUserDetail = ({item}) => {
-    return (
-      <View style={styles.itemsCenter}>
-        <ZText type="b24" align={'center'}>
-          {item.value}
-        </ZText>
-        <ZText type="m16" align={'center'} style={styles.mt10}>
-          {item.title}
-        </ZText>
-      </View>
-    );
-  };
-
-  const HeaderCategory = ({item}) => {
-    return (
-      <TouchableOpacity
-        onPress={item.onPress}
-        style={[
-          localStyles.tabItemStyle,
-          {
-            borderBottomWidth: isSelect === item.id ? moderateScale(2) : 0,
-            borderBottomColor:
-              isSelect === item.id ? colors.primary : colors.bColor,
-          },
-        ]}>
-        <Ionicons
-          name={item.icon}
-          size={moderateScale(30)}
-          color={isSelect === item.id ? colors.primary : colors.iconColor}
-        />
-        <ZText type={'s16'}>{item.name}</ZText>
-      </TouchableOpacity>
-    );
-  };
 
   const renderReelItem = ({item}) => (
     <FeedComponent data={item} from={'admin'}/>
@@ -200,53 +94,6 @@ export default function Profile({navigation}) {
             </ZText>
           </View>
         </View>
-        {/* <View style={[styles.flexRow, styles.justifyEvenly]}>
-          {UserDetail.map((item, index) => (
-            <RenderUserDetail item={item} key={index} />
-          ))}
-        </View> */}
-        {/* <View style={styles.rowSpaceBetween}>
-          <ZButton
-            title={strings.follow}
-            // onPress={onPressEditProfile}
-            color={colors.primary}
-            textType="b18"
-            style={styles.ml10}
-            containerStyle={[
-              localStyles.buttonContainer,
-              {borderColor: colors.primary},
-            ]}
-            bgColor={colors.tranparent}
-            frontIcon={
-              <Ionicons
-                name="person-add-sharp"
-                size={moderateScale(20)}
-                color={colors.primary}
-              />
-            }
-          />
-          <ZButton
-            title={strings.message}
-            onPress={onPressMessage}
-            color={colors.primary}
-            textType="b18"
-            style={styles.ml10}
-            containerStyle={[
-              localStyles.buttonContainer,
-              {borderColor: colors.primary},
-            ]}
-            bgColor={colors.tranparent}
-            frontIcon={
-              <Ionicons
-                name="paper-plane-outline"
-                size={moderateScale(20)}
-                color={colors.primary}
-              />}
-          />
-        </View> */}
-        {/* <View style={[localStyles.storiesContainer]}>
-          <UserStories stories={historyData} />
-        </View>         */}
         <View
           style={[
             localStyles.mainContainer,
@@ -255,9 +102,6 @@ export default function Profile({navigation}) {
               borderBottomWidth: moderateScale(2),
             },
           ]}>
-          {/* {categoryData.map((item, index) => (
-            <HeaderCategory item={item} key={index} />
-          ))} */}
         </View>
         <View style={styles.postContainer}>
           <FlatList

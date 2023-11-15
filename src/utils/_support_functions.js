@@ -72,15 +72,14 @@ const getAccessLevel = lvl => {
   return 'master';
 }
 
-const transformfPosts = (post) => {
+const transformfPosts = (post, userID) => {
   const new_posts = [];
   const namePost = post['name'];
   const profileImagePost = post['profile_photo'];
   const descriptionPost = post['description'];
 
-  post.forEach(element => {
+  post['post'].forEach(element => {
     const images = [];
-    // const profileIdPost = element['multimedia']['data'][0]['profile_id'];
 
     element['multimedia']['data'].forEach(mult => {
       images.push(mult['archive_url']);
@@ -91,7 +90,7 @@ const transformfPosts = (post) => {
       description: descriptionPost,
       name: namePost,
       profileImage: profileImagePost,
-      // profileId: profileIdPost,
+      profileId: userID,
       subtitle: element['creationDate'],
       text: element['text'],
       image: images,
@@ -129,25 +128,23 @@ const transformfHistoy = (post) => {
 }
 
 const transformpHistoy = (post) => {
-  const new_historys = [];
-  historys = post['shares']['shares']
-  historys.forEach(element => {
-    if (element['shareType'] == 'HISTORY'){
-      // console.log(element);
+  const new_stories = [];
+  let stories = post['history'];
+  
+  stories.forEach(element => {
+    if (element['shareType'] === 'HISTORY') {
       const obj = {
         id: element['id'],
         name: '',
         description: '',
-        imgUrl: element['multimedia']['data'][0]['archive_url'],
+        imgUrl: element['archive_url'],
         isFollow: false
       };
-      // console.log("Historia 2");
-      // console.log(obj);
-      new_historys.push(obj);
+      new_stories.push(obj);
     }
   });
 
-  return new_historys.reverse();
+  return new_stories.reverse();
 }
 
 const transformProfileHistory = (post) => {
@@ -200,7 +197,6 @@ const transformShorts = (post) => {
   historys = post['shares']['shares']
   historys.forEach(element => {
     if (element['shareType'] == 'HISTORY'){
-      console.log(element);
       const obj = {
         id: element['id'],
         name: '',
@@ -208,8 +204,6 @@ const transformShorts = (post) => {
         imgUrl: element['multimedia']['data'][0]['archive_url'],
         isFollow: false
       };
-      console.log("Historia 2");
-      console.log(obj);
       new_historys.push(obj);
     }
   });
