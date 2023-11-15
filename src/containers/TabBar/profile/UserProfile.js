@@ -329,6 +329,23 @@ const UserProfile = props => {
                 <ZText style={localStyles.iconColor}>{userData.municipality}</ZText>
             </View>
         </View>
+        
+        <ZInput
+          placeHolder={strings.phoneNumber}
+          keyBoardType={'number-pad'}
+          _value={phoneNo}
+          _errorText={contactError}
+          _maxLength={10}
+          toGetTextFieldValue={onChangedPhoneNo}
+          insideLeftIcon={countryIcon}
+          inputContainerStyle={[
+            {backgroundColor: colors.inputBg},
+            localStyles.inputContainerStyle,
+            phoneNoInputStyle,
+          ]}
+          _onFocus={onFocusPhoneNo}
+          onBlur={onBlurPhoneNo}
+        />
 
         <ZInput
           placeHolder={strings.email}
@@ -345,23 +362,6 @@ const UserProfile = props => {
           ]}
           _onFocus={onFocusEmail}
           onBlur={onBlurEmail}
-        />
-
-        <ZInput
-          placeHolder={strings.phoneNumber}
-          keyBoardType={'number-pad'}
-          _value={phoneNo}
-          _errorText={contactError}
-          _maxLength={10}
-          toGetTextFieldValue={onChangedPhoneNo}
-          insideLeftIcon={countryIcon}
-          inputContainerStyle={[
-            {backgroundColor: colors.inputBg},
-            localStyles.inputContainerStyle,
-            phoneNoInputStyle,
-          ]}
-          _onFocus={onFocusPhoneNo}
-          onBlur={onBlurPhoneNo}
         />
 
         {/* form inputs */}
