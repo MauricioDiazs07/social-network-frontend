@@ -35,80 +35,11 @@ import EditPostMenu from '../../../../components/models/EditPostMenu';
 import { deletePost } from '../../../../api/feed/posts';
 import images from '../../../../assets/images';
 
-const BottomIconContainer = ({item}) => {
-  const colors = useSelector(state => state.theme.theme);
-
-  const [likes, setLikes] = useState(item['likes']['count']);
-  const [isLiked, setIsLiked] = useState(item['likes']['like']);
-
-  const onPressLike = () => {
-    // TODO: add catch in order to remove like if petition is not resolved
-    // TODO: add the same code in UserPost.js
-    if (!isLiked) {
-      setLikes(likes + 1);
-      getAsyncStorageData(PROFILE_ID).then(profile => {
-        addLike(profile, item['id'], item['shareType']);
-      });
-    } else {
-      setLikes(likes - 1);
-      getAsyncStorageData(PROFILE_ID).then(profile => {
-        disLike(profile, item['id'], item['shareType']);
-      });
-    }
-
-    setIsLiked(!isLiked);
-  };
-
-  return (
-    <View style={localStyles.iconsContainer}>
-      <View style={localStyles.leftIconsContainer}>
-        <View style={localStyles.commentItemContainer}>
-          <TouchableOpacity onPress={onPressLike}>
-            {isLiked ? (
-              <LikedHeart
-                width={moderateScale(28)}
-                height={moderateScale(28)}
-              />
-            ) : colors.dark ? (
-              <HeartIcon_Dark
-                width={moderateScale(28)}
-                height={moderateScale(28)}
-              />
-            ) : (
-              <HeartIcon_Light
-                width={moderateScale(28)}
-                height={moderateScale(28)}
-              />
-            )}
-          </TouchableOpacity>
-          <ZText type={'s14'}>{likes}</ZText>
-        </View>
-        <View style={localStyles.commentItemContainer}>
-          <TouchableOpacity>
-            {colors.dark ? (
-              <ChatIcon_Dark
-                width={moderateScale(28)}
-                height={moderateScale(28)}
-              />
-            ) : (
-              <ChatIcon_Light
-                width={moderateScale(28)}
-                height={moderateScale(28)}
-              />
-            )}
-          </TouchableOpacity>
-          <ZText type={'s14'}>{item['comments']['count']}</ZText>
-        </View>
-      </View>
-    </View>
-  );
-};
-
 const PostComments = props => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
   const fromUser = props.route.params.fromUser;
-  
+
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
     borderColor: colors.btnColor1,
@@ -125,6 +56,7 @@ const PostComments = props => {
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefresing] = useState(false);
+  const [countComments, setCountComments] = useState(0);
   const EditPostMenuSheetRef = createRef();
 
   useEffect(() => {
@@ -137,6 +69,7 @@ const PostComments = props => {
     const resp = await getShare(item['id']);
     setItem(resp);
     setComments(resp['comments']['data']);
+    setCountComments(item['comments']['count']);
     
     setIsLoading(false);
   }
@@ -262,7 +195,77 @@ const PostComments = props => {
 
       setComments(prevComments => [...prevComments, commentsData]);
       setAddChat('');
+      setCountComments(comments.length + 1);
     }
+  };
+
+  const BottomIconContainer = ({item}) => {
+    const colors = useSelector(state => state.theme.theme);
+  
+    const [likes, setLikes] = useState(item['likes']['count']);
+    const [isLiked, setIsLiked] = useState(item['likes']['like']);
+  
+    const onPressLike = () => {
+      // TODO: add catch in order to remove like if petition is not resolved
+      // TODO: add the same code in UserPost.js
+      if (!isLiked) {
+        setLikes(likes + 1);
+        getAsyncStorageData(PROFILE_ID).then(profile => {
+          addLike(profile, item['id'], item['shareType']);
+        });
+      } else {
+        setLikes(likes - 1);
+        getAsyncStorageData(PROFILE_ID).then(profile => {
+          disLike(profile, item['id'], item['shareType']);
+        });
+      }
+  
+      setIsLiked(!isLiked);
+    };
+  
+    return (
+      <View style={localStyles.iconsContainer}>
+        <View style={localStyles.leftIconsContainer}>
+          <View style={localStyles.commentItemContainer}>
+            <TouchableOpacity onPress={onPressLike}>
+              {isLiked ? (
+                <LikedHeart
+                  width={moderateScale(28)}
+                  height={moderateScale(28)}
+                />
+              ) : colors.dark ? (
+                <HeartIcon_Dark
+                  width={moderateScale(28)}
+                  height={moderateScale(28)}
+                />
+              ) : (
+                <HeartIcon_Light
+                  width={moderateScale(28)}
+                  height={moderateScale(28)}
+                />
+              )}
+            </TouchableOpacity>
+            <ZText type={'s14'}>{likes}</ZText>
+          </View>
+          <View style={localStyles.commentItemContainer}>
+            <TouchableOpacity>
+              {colors.dark ? (
+                <ChatIcon_Dark
+                  width={moderateScale(28)}
+                  height={moderateScale(28)}
+                />
+              ) : (
+                <ChatIcon_Light
+                  width={moderateScale(28)}
+                  height={moderateScale(28)}
+                />
+              )}
+            </TouchableOpacity>
+            <ZText type={'s14'}>{countComments}</ZText>
+          </View>
+        </View>
+      </View>
+    );
   };
 
   return (
