@@ -32,7 +32,6 @@ import {
 import { getShare } from '../../../../api/feed/posts';
 import EditPostMenu from '../../../../components/models/EditPostMenu';
 import { deletePost } from '../../../../api/feed/posts';
-import images from '../../../../assets/images';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -106,10 +105,8 @@ const BottomIconContainer = ({item}) => {
 const PostComments = props => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  const item = props.route.params.idPost;
   const fromUser = props.route.params.fromUser;
-  const EditPostMenuSheetRef = createRef();
-
+  
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
     borderColor: colors.btnColor1,
@@ -119,11 +116,13 @@ const PostComments = props => {
     borderColor: colors.primary,
   };
   
+  const [isPostUpdate, setIsPostUpdate] = useState(false);
   const [addChat, setAddChat] = useState('');
   const [chatStyle, setChatStyle] = useState(BlurredStyle);
+  const [item, setItem] = useState(props.route.params.idPost);
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isPostUpdate, setIsPostUpdate] = useState(false);  
+  const EditPostMenuSheetRef = createRef();
 
   useEffect(() => {
     if (isLoading) {
@@ -189,11 +188,7 @@ const PostComments = props => {
       profileId: profileId
     });
   };
-  
-  const onRefresh = () => {
-    navigation.navigate(StackNav.PostComments,
-      {item: item});
-  }
+
   useEffect(() => {
     EditPostMenuSheetRef?.current?.hide();
   }, [isPostUpdate]);
@@ -219,6 +214,11 @@ const PostComments = props => {
     .catch(error => console.log('Delete error:', error));
   };
   
+  const onRefresh = () => {
+    navigation.navigate(StackNav.PostComments,
+      {item: item});
+  }
+  
   const onchangeComment = text => setAddChat(text);
 
   const onPressSend = () => {
@@ -237,7 +237,7 @@ const PostComments = props => {
       setAddChat('');
     }
   };
-  
+
   return (
     <ZSafeAreaView>
       <ZKeyBoardAvoidWrapper>
@@ -250,53 +250,57 @@ const PostComments = props => {
             <View>
               <ZHeader />
               <View style={localStyles.headerContainer}>
-              <TouchableOpacity
-                  style={localStyles.profileContainer}
-                  onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}
-              >
-                  <FastImage
-                  source={{uri: item.profileImage}}
-                  style={localStyles.profileImage}
-                  />
-                  <View>
-                  <ZText type={'b16'}>{item.name}</ZText>
-                  <ZText
-                      type={'m14'}
-                      color={colors.dark ? colors.grayScale4 : colors.grayScale7}>
-                      {item['creationDate']}
-                  </ZText>
-                  </View>
-              </TouchableOpacity>
-              <EditPostMenu
-                onPressEdit={onPressEdit}
-                onPressDelete={() => onPressDelete(item.id)}
-                SheetRef={EditPostMenuSheetRef}
-              />
-              {fromUser === 'admin' && (
                 <TouchableOpacity
-                onPress={onPressEditPostMenu}
+                    style={localStyles.profileContainer}
+                    onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}
                 >
-                  <Ionicons
-                      name="ellipsis-horizontal"
-                      size={moderateScale(24)}
-                      color={colors.reverse}
-                  />
+                    <FastImage
+                    source={{uri: item.profileImage}}
+                    style={localStyles.profileImage}
+                    />
+                    <View>
+                    <ZText type={'b16'}>{item.name}</ZText>
+                    <ZText
+                        type={'m14'}
+                        color={colors.dark ? colors.grayScale4 : colors.grayScale7}>
+                        {item['creationDate']}
+                    </ZText>
+                    </View>
                 </TouchableOpacity>
-              )}
+
+                <EditPostMenu
+                  onPressEdit={onPressEdit}
+                  onPressDelete={() => onPressDelete(item.id)}
+                  SheetRef={EditPostMenuSheetRef}
+                />
+
+                {fromUser === 'admin' && (
+                <TouchableOpacity
+                  onPress={onPressEditPostMenu}
+                  >
+                    <Ionicons
+                        name="ellipsis-horizontal"
+                        size={moderateScale(24)}
+                        color={colors.reverse}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
 
               <View style={[styles.mr20, styles.ml20]}>
-                <ZText>{item.text}</ZText>              
-                <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
+              <ZText>{item.text}</ZText>
+              {item['multimedia']['data'].length > 0 && (
+                  <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
                   <FlashList
-                    data={item.image.length > 0 ? images.post : item.image}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={id => id}
-                    horizontal
-                    pagingEnabled
-                    renderItem={renderPostImages}
+                      data={item['multimedia']['data']}
+                      showsHorizontalScrollIndicator={false}
+                      keyExtractor={(item, index) => index.toString()}
+                      horizontal
+                      pagingEnabled
+                      renderItem={renderPostImages}
                   />
-                </View>
+                  </View>
+              )}
               </View>
           <BottomIconContainer item={item} />
 
@@ -363,6 +367,7 @@ const localStyles = StyleSheet.create({
     postImage: {
       width: screenWidth - moderateScale(40),
       aspectRatio: 1,
+      // height: getHeight(380),
       borderRadius: moderateScale(25),
     },
     iconsContainer: {
@@ -376,6 +381,7 @@ const localStyles = StyleSheet.create({
       width: moderateScale(90),
     },
     inputContainerStyle: {
+      // height: moderateScale(60),
       borderRadius: moderateScale(20),
       borderWidth: moderateScale(1),
       ...styles.ph15,

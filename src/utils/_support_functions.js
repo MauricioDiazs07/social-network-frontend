@@ -80,7 +80,7 @@ const transformfPosts = (post) => {
 
   post['post'].forEach(element => {
     const images = [];
-    const profileIdPost = element['multimedia']['data'][0]['profile_id'];
+    // const profileIdPost = element['multimedia']['data'][0]['profile_id'];
 
     element['multimedia']['data'].forEach(mult => {
       images.push(mult['archive_url']);
@@ -91,7 +91,7 @@ const transformfPosts = (post) => {
       description: descriptionPost,
       name: namePost,
       profileImage: profileImagePost,
-      profileId: profileIdPost,
+      // profileId: profileIdPost,
       subtitle: element['creationDate'],
       text: element['text'],
       image: images,

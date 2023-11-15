@@ -29,7 +29,8 @@ export default function FeedComponent({
     navigation.navigate(StackNav.PostComments,
       {
         idPost: data,
-        fromUser: from});
+        fromUser: from
+      });
   }
 
   return (
