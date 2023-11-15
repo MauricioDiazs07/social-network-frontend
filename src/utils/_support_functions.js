@@ -76,6 +76,7 @@ const transformfPosts = (post) => {
   const new_posts = [];
   const namePost = post['name'];
   const profileImagePost = post['profile_photo'];
+  const descriptionPost = post['description'];
 
   post['post'].forEach(element => {
     const images = [];
@@ -87,6 +88,7 @@ const transformfPosts = (post) => {
 
     const obj = {
       id: element['id'],
+      description: descriptionPost,
       name: namePost,
       profileImage: profileImagePost,
       profileId: profileIdPost,
@@ -168,6 +170,7 @@ const transformProfileHistory = (post) => {
 
 const transformFeed = (post) => {
   const new_posts = [];
+
   post.forEach(element => {
     const images = [];
     element['multimedia']['data'].forEach(mult => {
@@ -182,7 +185,7 @@ const transformFeed = (post) => {
       profileImage: element['profileImage'],
       text: element['text'],
       image: images,
-      postType: 'POST',
+      postType: element['shareType'],
       // role: 'CEO de empresa', // TODO: delete field
       likes: element['likes'],
       comments: element['comments']

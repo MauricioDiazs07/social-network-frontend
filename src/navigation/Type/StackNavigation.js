@@ -222,10 +222,6 @@ export default function StackNavigation() {
         name={StackNav.EditPost}
         component={StackRoute.EditPost}
       />
-      <Stack.Screen
-        name={StackNav.SinglePost}
-        component={StackRoute.SinglePost}
-      />
     </Stack.Navigator>
   );
 }

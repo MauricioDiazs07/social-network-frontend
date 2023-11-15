@@ -70,4 +70,5 @@ export const StackNav = {
   MasterHome: 'MasterHome',
   EditPost: 'EditPost',
   SinglePost: 'SinglePost',
+  EditPost: 'EditPost'
 };

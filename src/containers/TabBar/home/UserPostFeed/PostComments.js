@@ -1,5 +1,5 @@
 // libraries import
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import { StyleSheet,
          View,
          TouchableOpacity,
@@ -30,6 +30,9 @@ import {
     HeartIcon_Light,
     LikedHeart } from '../../../../assets/svgs';
 import { getShare } from '../../../../api/feed/posts';
+import EditPostMenu from '../../../../components/models/EditPostMenu';
+import { deletePost } from '../../../../api/feed/posts';
+import images from '../../../../assets/images';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -103,7 +106,10 @@ const BottomIconContainer = ({item}) => {
 const PostComments = props => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  
+  const item = props.route.params.idPost;
+  const fromUser = props.route.params.fromUser;
+  const EditPostMenuSheetRef = createRef();
+
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
     borderColor: colors.btnColor1,
@@ -115,9 +121,9 @@ const PostComments = props => {
   
   const [addChat, setAddChat] = useState('');
   const [chatStyle, setChatStyle] = useState(BlurredStyle);
-  const [item, setItem] = useState(props.route.params.item);
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPostUpdate, setIsPostUpdate] = useState(false);  
 
   useEffect(() => {
     if (isLoading) {
@@ -188,6 +194,30 @@ const PostComments = props => {
     navigation.navigate(StackNav.PostComments,
       {item: item});
   }
+  useEffect(() => {
+    EditPostMenuSheetRef?.current?.hide();
+  }, [isPostUpdate]);
+
+  const onPressEditPostMenu = () => {
+    EditPostMenuSheetRef?.current.show()};
+
+  const onPressEdit = () => {
+    setIsPostUpdate(true);
+    navigation.navigate(StackNav.EditPost,
+      {idPost: item});
+  };
+
+  const onPressDelete = async (post) => {
+    await deletePost(post)
+    .then(
+      setIsPostUpdate(true),
+      navigation.reset({
+        index: 0,
+        routes: [{name: StackNav.TabBar}],
+      })
+    )
+    .catch(error => console.log('Delete error:', error));
+  };
   
   const onchangeComment = text => setAddChat(text);
 
@@ -207,7 +237,7 @@ const PostComments = props => {
       setAddChat('');
     }
   };
-
+  
   return (
     <ZSafeAreaView>
       <ZKeyBoardAvoidWrapper>
@@ -237,22 +267,36 @@ const PostComments = props => {
                   </ZText>
                   </View>
               </TouchableOpacity>
+              <EditPostMenu
+                onPressEdit={onPressEdit}
+                onPressDelete={() => onPressDelete(item.id)}
+                SheetRef={EditPostMenuSheetRef}
+              />
+              {fromUser === 'admin' && (
+                <TouchableOpacity
+                onPress={onPressEditPostMenu}
+                >
+                  <Ionicons
+                      name="ellipsis-horizontal"
+                      size={moderateScale(24)}
+                      color={colors.reverse}
+                  />
+                </TouchableOpacity>
+              )}
               </View>
 
               <View style={[styles.mr20, styles.ml20]}>
-              <ZText>{item.text}</ZText>
-              {item['multimedia']['data'].length > 0 && (
-                  <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
+                <ZText>{item.text}</ZText>              
+                <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
                   <FlashList
-                      data={item['multimedia']['data']}
-                      showsHorizontalScrollIndicator={false}
-                      keyExtractor={(item, index) => index.toString()}
-                      horizontal
-                      pagingEnabled
-                      renderItem={renderPostImages}
+                    data={item.image.length > 0 ? images.post : item.image}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={id => id}
+                    horizontal
+                    pagingEnabled
+                    renderItem={renderPostImages}
                   />
-                  </View>
-              )}
+                </View>
               </View>
           <BottomIconContainer item={item} />
 
@@ -319,7 +363,6 @@ const localStyles = StyleSheet.create({
     postImage: {
       width: screenWidth - moderateScale(40),
       aspectRatio: 1,
-      // height: getHeight(380),
       borderRadius: moderateScale(25),
     },
     iconsContainer: {
@@ -333,7 +376,6 @@ const localStyles = StyleSheet.create({
       width: moderateScale(90),
     },
     inputContainerStyle: {
-      // height: moderateScale(60),
       borderRadius: moderateScale(20),
       borderWidth: moderateScale(1),
       ...styles.ph15,

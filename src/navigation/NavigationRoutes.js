@@ -65,7 +65,6 @@ import PostComments from '../containers/TabBar/home/UserPostFeed/PostComments';
 import PhoneValidation from '../containers/auth/PhoneValidation';
 import MasterHome from '../containers/TabBar/home/MasterHome';
 import EditPost from '../containers/TabBar/home/UserPostFeed/EditPost';
-import SinglePost from '../containers/TabBar/home/UserPostFeed/SinglePost';
 
 export const TabRoute = {
   Home,
@@ -137,4 +136,5 @@ export const StackRoute = {
   PhoneValidation,
   EditPost,
   SinglePost,
+  EditPost,
 };
