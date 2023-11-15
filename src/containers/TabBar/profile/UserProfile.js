@@ -36,9 +36,7 @@ import { updateUserData } from '../../../api/user/user';
 
 const UserProfile = props => {
   const {navigation} = props;
-  const headerTitle = '';
 
-  // TODO: fetch from API
   const [userData, setUserData] = useState({
     img: '',
     username: '',
@@ -100,6 +98,7 @@ const UserProfile = props => {
   const [visiblePiker, setVisiblePiker] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [contactError, setContactError] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -216,19 +215,21 @@ const UserProfile = props => {
     );
   };
 
-  const onPressUpdate = () => {};
-
   const onPressContinue = () => {
+    setIsUpdating(true);
     getAsyncStorageData(PROFILE_ID).then(profile_id => {
       updateUserData(profile_id,email,phoneNo,selectImage).then(resp => {
         if (selectImage != ''){
           setAsyncStorageData(PROFILE_PHOTO, resp['profile_photo']);
         }
-
-        navigation.navigate(StackNav.TabBar)
+        
+        navigation.reset({
+          index: 0,
+          routes: [{name: StackNav.TabBar}],
+        });
+        setIsUpdating(false);
       })
     });
-    
   };
 
   const onPressProfilePic = () => ProfilePictureSheetRef?.current.show();
@@ -373,10 +374,10 @@ const UserProfile = props => {
             color={colors.white}
             containerStyle={[
               localStyles.skipBtnContainer,
-              isSubmitDisabled && {opacity: 0.5},
+              isUpdating && {opacity: 0.5},
             ]}
             onPress={onPressContinue}
-            disabled={isSubmitDisabled}
+            disabled={isUpdating}
           />
       </View>)}
       <ProfilePicture
