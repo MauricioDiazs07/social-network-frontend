@@ -43,7 +43,10 @@ import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
 import { transformfHistoy, transformFeed } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
-import { getGeneralData, getSectionData, getInterestsData } from '../../../api/master/masterData';
+import { getGeneralData,
+         getSectionData,
+         getInterestsData,
+         getInteractionData } from '../../../api/master/masterData';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -228,8 +231,11 @@ const Home = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [isChartLoading, setIsChartLoading] = useState(false);
   const [pieChartLabel, setPieChartLabel] = useState('');
-  const [genderData, setGenderData] = useState([]);
-  const [genderDataLength, setGenderDataLength] = useState(null);
+  const [pieData, setPieData] = useState([]);
+  const [pieDataLength, setPieDataLength] = useState(null);
+  const [isGeneralInteraction, setIsGeneralInteraction] = useState(true);
+  const [barChartLegend, setBarChartLegend] = useState({});
+  const [barChartConfig, setBarChartConfig] = useState({});
   const [barChartData, setBarChartData] = useState([]);
   const [barChartLabels, setBarChartLabels] = useState([]);
   const [dropdownData, setDropdownData] = useState([]);
@@ -275,10 +281,12 @@ const Home = () => {
     setIsChartLoading(true);
 
     let generalData = await getGeneralData();
-    let genderList = formatGenderData(generalData['gender']);
-
-    setGenderData(genderList);
+    
     let ddItems = [];
+    if (index === 1) {
+      let genderList = formatGenderData(generalData['gender']);
+      setPieData(genderList);
+    }
     if (index === 2) {
       setBarChartParameters(generalData['age']);
     }
@@ -290,10 +298,50 @@ const Home = () => {
       ddItems = getDropdownItems(generalData['interests']['array']);
       setBarChartParameters(generalData['interests']['data']);
     }
+    if (index === 5) {
+      ddItems = getDropdownItems(generalData['section']['array']);
+      countAcceptanceData(generalData['acceptance']);
+      setPieData(generalData['acceptance']);
+    }
 
     setDropdownData(ddItems);
     setValue(null);
     setIsChartLoading(false);
+  }
+
+  const formatInteractionData = (sectionData) => {
+    let newData = [];
+    let colors = [processColor('green'), processColor('red'), processColor('blue')];
+
+    sectionData.forEach((data, index) => {
+        let values = [];
+        let color = colors[index];
+
+        data['data'].forEach((sentimentData) => {
+          values.push(sentimentData['y']);
+        });
+
+        let obj_ = {
+          values: values,
+          label: data['feeling'],
+          config: {
+            drawValues: false,
+            colors: [color],
+          }
+        }
+        newData.push(obj_);
+    });
+
+    return newData;
+  }
+
+  const getInterestsLabels = (interactionData) => {
+    let interests_ = [];
+    interactionData[0]['data'].forEach((el) => {
+      interests_.push(el['marker']);
+    });
+
+    return interests_;
   }
 
   const getSectionChartData = async (section) => {
@@ -306,12 +354,25 @@ const Home = () => {
     setBarChartParameters(interestsData['section']);
   }
 
+  const getInteractionChartData = async (section) => {
+    let sectionData = await getInteractionData(section);
+    let interSectionData = formatInteractionData(sectionData['acceptance']);
+    let interestsLabels = getInterestsLabels(sectionData['acceptance']);
+
+    setInteractionBarChartParameters(interSectionData, interestsLabels);
+    setIsGeneralInteraction(false);
+  }
+
   const changePage = (index) => {
     if (index == pageNumber) {
       return;
     }
+    if (index == 5) {
+      setIsGeneralInteraction(true);
+    }
     getData(index);
     setPageNumber(index);
+    setPieChartLabel('');
   }
 
   const formatGenderData = (genderData) => {
@@ -326,9 +387,19 @@ const Home = () => {
       sum_ += x['value'];
     });
 
-    setGenderDataLength(sum_);
+    setPieDataLength(sum_);
 
     return genderData;
+  }
+
+  const countAcceptanceData = (acceptanceData) => {
+    let sum_ = 0;
+
+    acceptanceData.forEach((x) => {
+      sum_ += x['value'];
+    });
+
+    setPieDataLength(sum_);
   }
 
   const getDropdownItems = (valuesList) => {
@@ -348,8 +419,42 @@ const Home = () => {
       labelsList.push(x['marker']);
     });
 
-    setBarChartData(ageData);
+    let newData = [{
+      values: ageData,
+      label: '',
+      config: {
+        color: processColor(colors.primary),
+        barShadowColor: processColor(colors.grayScale1),
+        highlightAlpha: 90,
+        highlightColor: processColor('red'),
+        valueTextColor: processColor(colors.textColor),
+      }
+    }];
+
+    let config = {
+      barWidth: 0.7,
+    };
+
+    setBarChartData(newData);
     setBarChartLabels(labelsList);
+    setBarChartConfig(config);
+    setBarChartLegend(false);
+  }
+
+  const setInteractionBarChartParameters = (interactionData, interestsLabels) => {
+    let config = {
+      barWidth: 0.2,
+      group: {
+        fromX: -0.5,
+        groupSpace: 0.1,
+        barSpace: 0.1,
+      },
+    };
+
+    setBarChartData(interactionData);
+    setBarChartLabels(interestsLabels);
+    setBarChartConfig(config);
+    setBarChartLegend(true);
   }
 
 /* Charts states */
@@ -367,7 +472,7 @@ const pieState = {
   },
   data: {
       dataSets: [{
-          values: genderData,
+          values: pieData,
           label: '',
           config: {
             colors: [processColor('#FF38E4'), processColor('#478BFF'), processColor('#38FF6D')],
@@ -391,23 +496,18 @@ const pieState = {
 
 const barState = {
   legend: {
-    enabled: false
+    enabled: barChartLegend,
+    textSize: 14,
+    form: "SQUARE",
+    formSize: 14,
+    xEntrySpace: 10,
+    yEntrySpace: 5,
+    wordWrapEnabled: true,
+    textColor: processColor(colors.textColor)
   },
   data: {
-    dataSets: [{
-      values: barChartData,
-      label: '',
-      config: {
-        color: processColor(colors.primary),
-        barShadowColor: processColor(colors.grayScale1),
-        highlightAlpha: 90,
-        highlightColor: processColor('red'),
-        valueTextColor: processColor(colors.textColor),
-      }
-    }],
-    config: {
-      barWidth: 0.7,
-    }
+    dataSets: barChartData,
+    config: barChartConfig
   },
   highlights: [{x: 3}, {x: 6}],
   xAxis: {
@@ -476,7 +576,7 @@ const barState = {
       return;
     }
 
-    const percentage = (value / genderDataLength) * 100;
+    const percentage = Math.round((value / pieDataLength) * 1000) / 10;
     const text = `${percentage}%\n${label}`;
     setPieChartLabel(text);
   }
@@ -533,105 +633,135 @@ const barState = {
               
               {/* Buttons layer */}
               <View style={localStyles.imgContainer}>
-                <TouchableOpacity 
-                  style={localStyles.image}
-                  onPress={() => changePage(1)}
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
                 >
-                  <View
-                    style={[localStyles.imageContainer,
-                            pageNumber === 1 && {backgroundColor: colors.primary},
-                            pageNumber !== 1 && {backgroundColor: '#555555'}]}
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(1)}
                   >
-                    <Ionicons
-                      name={'male-female-outline'}
-                      size={moderateScale(45)}
-                      color={clr.textColor}
-                      style={[styles.selfCenter, styles.mt10]}
-                    />
-                  </View>
-                  <ZText
-                    type={'b16'}
-                    color={clr.white}
-                    align={'center'}
-                    style={localStyles.coverPhotoStyle}>
-                    Género
-                  </ZText>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={localStyles.image}
-                  onPress={() => changePage(2)}
-                >
-                  <View
-                    style={[localStyles.imageContainer,
-                            pageNumber === 2 && {backgroundColor: colors.primary},
-                            pageNumber !== 2 && {backgroundColor: '#555555'}]}
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 1 && {backgroundColor: colors.primary},
+                              pageNumber !== 1 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'male-female-outline'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b16'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Género
+                    </ZText>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(2)}
                   >
-                    <Ionicons
-                      name={'people'}
-                      size={moderateScale(45)}
-                      color={clr.textColor}
-                      style={[styles.selfCenter, styles.mt10]}
-                    />
-                  </View>
-                  <ZText
-                    type={'b16'}
-                    color={clr.white}
-                    align={'center'}
-                    style={localStyles.coverPhotoStyle}>
-                    Edad
-                  </ZText>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={localStyles.image}
-                  onPress={() => changePage(3)}
-                >
-                  <View
-                    style={[localStyles.imageContainer,
-                            pageNumber === 3 && {backgroundColor: colors.primary},
-                            pageNumber !== 3 && {backgroundColor: '#555555'}]}
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 2 && {backgroundColor: colors.primary},
+                              pageNumber !== 2 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'people'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b16'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Edad
+                    </ZText>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(3)}
                   >
-                    <Ionicons
-                      name={'navigate'}
-                      size={moderateScale(45)}
-                      color={clr.textColor}
-                      style={[styles.selfCenter, styles.mt10]}
-                    />
-                  </View>
-                  <ZText
-                    type={'b16'}
-                    color={clr.white}
-                    align={'center'}
-                    style={localStyles.coverPhotoStyle}>
-                    Sección
-                  </ZText>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={localStyles.image}
-                  onPress={() => changePage(4)}
-                >
-                  <View
-                    style={[localStyles.imageContainer,
-                            pageNumber === 4 && {backgroundColor: colors.primary},
-                            pageNumber !== 4 && {backgroundColor: '#555555'}]}
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 3 && {backgroundColor: colors.primary},
+                              pageNumber !== 3 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'navigate'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b16'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Sección
+                    </ZText>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(4)}
                   >
-                    <Ionicons
-                      name={'game-controller'}
-                      size={moderateScale(45)}
-                      color={clr.textColor}
-                      style={[styles.selfCenter, styles.mt10]}
-                    />
-                  </View>
-                  <ZText
-                    type={'b16'}
-                    color={clr.white}
-                    align={'center'}
-                    style={localStyles.coverPhotoStyle}>
-                    Intereses
-                  </ZText>
-                </TouchableOpacity>
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 4 && {backgroundColor: colors.primary},
+                              pageNumber !== 4 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'game-controller'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b16'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Intereses
+                    </ZText>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                    style={localStyles.image}
+                    onPress={() => changePage(5)}
+                  >
+                    <View
+                      style={[localStyles.imageContainer,
+                              pageNumber === 5 && {backgroundColor: colors.primary},
+                              pageNumber !== 5 && {backgroundColor: '#555555'}]}
+                    >
+                      <Ionicons
+                        name={'heart'}
+                        size={moderateScale(45)}
+                        color={clr.textColor}
+                        style={[styles.selfCenter, styles.mt10]}
+                      />
+                    </View>
+                    <ZText
+                      type={'b14'}
+                      color={clr.white}
+                      align={'center'}
+                      style={localStyles.coverPhotoStyle}>
+                      Interacción
+                    </ZText>
+                  </TouchableOpacity>
+                </ScrollView>
               </View>
               {/* Buttons layer */}
     
@@ -646,7 +776,8 @@ const barState = {
                       {pageNumber === 1 ? 'Género'
                       : pageNumber === 2 ? 'Edad'
                       : pageNumber === 3 ? 'Sección'
-                      : 'Intereses'}
+                      : pageNumber === 4 ? 'Intereses'
+                      : 'Interacción'}
                     </ZText>
                   </View>
     
@@ -654,8 +785,46 @@ const barState = {
                                 {alignSelf: 'center'},
                                 colors.dark && {borderColor: 'white'},
                                 colors.light && {borderColor: 'black'}]}>
-                    {/* Gender chart */}
-                    {pageNumber === 1 && (
+                    {/* Dropdown menu */}
+                    {(pageNumber === 3 || pageNumber === 4 || pageNumber === 5) ? (
+                      <Dropdown
+                        style={[
+                          localStyles.dropdown,
+                          isFocus && { borderColor: colors.primary },
+                          {backgroundColor: colors.backgroundColor}
+                        ]}
+                        containerStyle={{backgroundColor: colors.backgroundColor}}
+                        itemTextStyle={{color: colors.textColor}}
+                        activeColor={colors.primary}
+                        placeholder={'Escoge una sección'}
+                        placeholderStyle={[localStyles.placeholderStyle, {backgroundColor: colors.backgroundColor, color: colors.textColor}]}
+                        selectedTextStyle={[localStyles.selectedTextStyle, {color: colors.textColor}]}
+                        inputSearchStyle={[localStyles.inputSearchStyle, {backgroundColor: colors.backgroundColor}]}
+                        data={dropdownData}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        searchPlaceholder="Buscar..."
+                        value={value}
+                        onFocus={() => setIsFocus(true)}
+                        onBlur={() => setIsFocus(false)}
+                        onChange={item => {
+                          if (pageNumber === 3) {
+                            getSectionChartData(item.label);
+                          } else if (pageNumber === 5) {
+                            getInteractionChartData(item.label);
+                          } else {
+                            getInterestChartData(item.value + 1);
+                          }
+                          setIsFocus(false);
+                        }}
+                      />
+                    ) : (<View></View>)}
+                    {/* Dropdown menu */}
+
+                    {/* Pie chart */}
+                    {(pageNumber === 1 || (pageNumber === 5 && isGeneralInteraction)) && (
                       <PieChart
                         style={localStyles.chart}
                         logEnabled={true}
@@ -687,45 +856,9 @@ const barState = {
                       />
                     )}
                     {/* Gender chart */}
-
-                    {/* Dropdown menu */}
-                    {(pageNumber === 3 || pageNumber === 4) ? (
-                      <Dropdown
-                        style={[
-                          localStyles.dropdown,
-                          isFocus && { borderColor: colors.primary },
-                          {backgroundColor: colors.backgroundColor}
-                        ]}
-                        containerStyle={{backgroundColor: colors.backgroundColor}}
-                        itemTextStyle={{color: colors.textColor}}
-                        activeColor={colors.primary}
-                        placeholder={'Escoge una sección'}
-                        placeholderStyle={[localStyles.placeholderStyle, {backgroundColor: colors.backgroundColor, color: colors.textColor}]}
-                        selectedTextStyle={[localStyles.selectedTextStyle, {color: colors.textColor}]}
-                        inputSearchStyle={[localStyles.inputSearchStyle, {backgroundColor: colors.backgroundColor}]}
-                        data={dropdownData}
-                        search
-                        maxHeight={300}
-                        labelField="label"
-                        valueField="value"
-                        searchPlaceholder="Buscar..."
-                        value={value}
-                        onFocus={() => setIsFocus(true)}
-                        onBlur={() => setIsFocus(false)}
-                        onChange={item => {
-                          if (pageNumber === 3) {
-                            getSectionChartData(item.value);
-                          } else {
-                            getInterestChartData(item.value);
-                          }
-                          setIsFocus(false);
-                        }}
-                      />
-                    ) : (<View></View>)}
-                    {/* Dropdown menu */}
     
                     {/* Age, section and interests chart */}
-                    {pageNumber !== 1 && (
+                    {(pageNumber !== 1 && pageNumber !== 5) && (
                       <BarChart
                         style={localStyles.chart}
                         data={barState.data}
@@ -743,6 +876,26 @@ const barState = {
                       />
                     )}
                     {/* Age, section and interests chart */}
+
+                    {/* interaction bar chart */}
+                    {(pageNumber === 5 && !isGeneralInteraction) && (
+                      <BarChart
+                        style={localStyles.chart}
+                        data={barState.data}
+                        xAxis={barState.xAxis}
+                        yAxis={barState.yAxis}
+                        chartDescription={barState.description}
+                        legend={barState.legend}
+                        animation={{durationX: 2000}}
+                        borderColor={processColor(colors.textColor)}
+                        gridBackgroundColor={processColor(colors.textColor)}
+                        visibleRange={{x: { min: 5, max: 5 }}}
+                        drawBarShadow={false}
+                        drawValueAboveBar={true}
+                        drawHighlightArrow={true}
+                      />
+                    )}
+                    {/* interaction bar chart */}
                 </View>
               </View>)
                 : (
@@ -830,8 +983,10 @@ const localStyles = StyleSheet.create({
     ...styles.m5,
   },
   imgContainer: {
-    ...styles.rowSpaceBetween,
-    ...styles.wrap,
+    // flex: 1,
+    // ...styles.rowSpaceBetween,
+    // ...styles.wrap,
+    ...styles.flexRow,
     ...styles.mb10,
   },
   imageContainer: {

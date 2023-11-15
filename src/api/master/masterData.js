@@ -2,6 +2,7 @@ import { URL_API,
          GENERAL_DATA,
          SECTION_DATA,
          INTERESTS_DATA,
+         INTERACTION_DATA,
 } from "../../utils/api_constants";
 
 const getGeneralData = async () => {
@@ -37,8 +38,20 @@ const getInterestsData = async (interests) => {
     }
 }
 
+const getInteractionData = async (section) => {
+    const response = await fetch(URL_API + INTERACTION_DATA + section, {
+        method: 'GET'
+    });
+
+    const resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
+}
+
 export {
     getGeneralData,
     getSectionData,
     getInterestsData,
+    getInteractionData,
 }
