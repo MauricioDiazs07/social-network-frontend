@@ -69,6 +69,4 @@ export const StackNav = {
   PhoneValidation: 'PhoneValidation',
   MasterHome: 'MasterHome',
   EditPost: 'EditPost',
-  SinglePost: 'SinglePost',
-  EditPost: 'EditPost'
 };

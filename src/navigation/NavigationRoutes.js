@@ -135,6 +135,4 @@ export const StackRoute = {
   HistoryDetail,
   PhoneValidation,
   EditPost,
-  SinglePost,
-  EditPost,
 };
