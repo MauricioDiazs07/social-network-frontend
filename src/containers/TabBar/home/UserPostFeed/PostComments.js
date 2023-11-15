@@ -270,7 +270,11 @@ const PostComments = props => {
       <ZKeyBoardAvoidWrapper>
         <ScrollView
           refreshControl={
-              <RefreshControl onRefresh={onRefresh} refreshing={refreshing}/>
+              <RefreshControl
+                enabled={true}
+                onRefresh={onRefresh}
+                refreshing={refreshing}
+              />
           }
         >
           {!isLoading ? (
@@ -334,10 +338,7 @@ const PostComments = props => {
           <FlashList
             contentContainerStyle={localStyles.listContainer}
             data={comments}
-            showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
-            // horizontal
-            pagingEnabled
             renderItem={renderComments}
           />
 

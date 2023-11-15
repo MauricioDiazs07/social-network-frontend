@@ -57,6 +57,7 @@ export default function PostDetail() {
   const [idInterests, setIdInterests] = React.useState("");
   const [isPostDisabled, setIsPostDisabled] = React.useState(true);
   const [isInterestsEmpty, setIsInterestsEmpty] = React.useState(false);
+  const [isPublished, setIsPublished] = React.useState(false);
 
   useEffect(() => {
     if (
@@ -191,6 +192,7 @@ export default function PostDetail() {
   const onPressDelete = () => setIsDeleting(!isDeleting);
 
   const onPressPost = async () => {
+    setIsPostDisabled(true);
     const profile_id = await getAsyncStorageData(ACCESS_TOKEN);
 
     const formData = new FormData();
