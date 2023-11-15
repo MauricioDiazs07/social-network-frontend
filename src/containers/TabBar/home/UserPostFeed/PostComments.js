@@ -1,5 +1,5 @@
 // libraries import
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import { StyleSheet,
          View,
          TouchableOpacity,
@@ -31,6 +31,8 @@ import {
     LikedHeart } from '../../../../assets/svgs';
 import { getShare } from '../../../../api/feed/posts';
 import { PROFILE_ID } from '../../../../common/constants';
+import EditPostMenu from '../../../../components/models/EditPostMenu';
+import { deletePost } from '../../../../api/feed/posts';
 
 const BottomIconContainer = ({item}) => {
   const colors = useSelector(state => state.theme.theme);
@@ -104,6 +106,7 @@ const BottomIconContainer = ({item}) => {
 const PostComments = props => {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
+  const fromUser = props.route.params.fromUser;
   
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
@@ -114,11 +117,13 @@ const PostComments = props => {
     borderColor: colors.primary,
   };
   
+  const [isPostUpdate, setIsPostUpdate] = useState(false);
   const [addChat, setAddChat] = useState('');
   const [chatStyle, setChatStyle] = useState(BlurredStyle);
-  const [item, setItem] = useState(props.route.params.item);
+  const [item, setItem] = useState(props.route.params.idPost);
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const EditPostMenuSheetRef = createRef();
 
   useEffect(() => {
     if (isLoading) {
@@ -184,6 +189,31 @@ const PostComments = props => {
       profileId: profileId
     });
   };
+
+  useEffect(() => {
+    EditPostMenuSheetRef?.current?.hide();
+  }, [isPostUpdate]);
+
+  const onPressEditPostMenu = () => {
+    EditPostMenuSheetRef?.current.show()};
+
+  const onPressEdit = () => {
+    setIsPostUpdate(true);
+    navigation.navigate(StackNav.EditPost,
+      {idPost: item});
+  };
+
+  const onPressDelete = async (post) => {
+    await deletePost(post)
+    .then(
+      setIsPostUpdate(true),
+      navigation.reset({
+        index: 0,
+        routes: [{name: StackNav.TabBar}],
+      })
+    )
+    .catch(error => console.log('Delete error:', error));
+  };
   
   const onRefresh = () => {
     navigation.navigate(StackNav.PostComments,
@@ -221,23 +251,41 @@ const PostComments = props => {
             <View>
               <ZHeader />
               <View style={localStyles.headerContainer}>
-              <TouchableOpacity
-                  style={localStyles.profileContainer}
-                  onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}
-              >
-                  <FastImage
-                  source={{uri: item.profileImage}}
-                  style={localStyles.profileImage}
-                  />
-                  <View>
-                  <ZText type={'b16'}>{item.name}</ZText>
-                  <ZText
-                      type={'m14'}
-                      color={colors.dark ? colors.grayScale4 : colors.grayScale7}>
-                      {item['creationDate']}
-                  </ZText>
-                  </View>
-              </TouchableOpacity>
+                <TouchableOpacity
+                    style={localStyles.profileContainer}
+                    onPress={() => onPressProfile(item.name, item.profileImage, item.profileId)}
+                >
+                    <FastImage
+                    source={{uri: item.profileImage}}
+                    style={localStyles.profileImage}
+                    />
+                    <View>
+                    <ZText type={'b16'}>{item.name}</ZText>
+                    <ZText
+                        type={'m14'}
+                        color={colors.dark ? colors.grayScale4 : colors.grayScale7}>
+                        {item['creationDate']}
+                    </ZText>
+                    </View>
+                </TouchableOpacity>
+
+                <EditPostMenu
+                  onPressEdit={onPressEdit}
+                  onPressDelete={() => onPressDelete(item.id)}
+                  SheetRef={EditPostMenuSheetRef}
+                />
+
+                {fromUser === 'admin' && (
+                <TouchableOpacity
+                  onPress={onPressEditPostMenu}
+                  >
+                    <Ionicons
+                        name="ellipsis-horizontal"
+                        size={moderateScale(24)}
+                        color={colors.reverse}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
 
               <View style={[styles.mr20, styles.ml20]}>

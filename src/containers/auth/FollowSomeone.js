@@ -84,7 +84,6 @@ const FollowSomeone = props => {
 
   const onPressContinue = async () => {
     setIsLoading(true);
-
     let signUpResp = await signUp(usserCred);
 
     if (signUpResp['message'] !== 'OK') { 
@@ -115,7 +114,8 @@ const FollowSomeone = props => {
       setIsLoading(false);
 
       navigation.navigate(StackNav.PhoneValidation, {
-        phone: userPhone
+        phone: userPhone,
+        areaCode: usserCred['area_code']
       });
     } else {
       setIsLoading(false);

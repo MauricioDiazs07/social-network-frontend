@@ -36,7 +36,6 @@ const BottomIconContainer = ({item}) => {
       setLikes(likes + 1);
       getAsyncStorageData("PROFILE_ID").then(profile => {
         addLike(profile, item['id'], item['postType'])
-        console.log(item);
       })
       
     } else {
@@ -51,7 +50,10 @@ const BottomIconContainer = ({item}) => {
 
   const OnPressComments = () => {
     navigation.navigate(StackNav.PostComments,
-      {item: item});
+      {
+        idPost: item,
+        fromUser: 'user'
+      });
   }
 
   return (

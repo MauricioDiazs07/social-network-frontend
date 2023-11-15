@@ -74,25 +74,34 @@ const getAccessLevel = lvl => {
 
 const transformfPosts = (post) => {
   const new_posts = [];
+  const namePost = post['name'];
+  const profileImagePost = post['profile_photo'];
+  const descriptionPost = post['description'];
+
   post.forEach(element => {
     const images = [];
+    // const profileIdPost = element['multimedia']['data'][0]['profile_id'];
+
     element['multimedia']['data'].forEach(mult => {
       images.push(mult['archive_url']);
     });
 
     const obj = {
       id: element['id'],
-      name: element['name'],
-      profileId: element['profileId'],
+      description: descriptionPost,
+      name: namePost,
+      profileImage: profileImagePost,
+      // profileId: profileIdPost,
       subtitle: element['creationDate'],
-      profileImage: element['profileImage'],
       text: element['text'],
       image: images,
-      role: 'CEO de empresa', // TODO: delete field
-      postType: element['shareType'],
+      postType: 'POST',
       likes: element['likes'],
-      comments: element['comments']
+      comments: element['comments'],
+      views: element['likes'],
+      poster: images[0]
     };
+
     new_posts.push(obj);
     
   });
@@ -141,32 +150,49 @@ const transformpHistoy = (post) => {
   return new_historys.reverse();
 }
 
-const transformFeed = (post) => {
+const transformProfileHistory = (post) => {
   const new_historys = [];
-  historys = post['shares']['shares']
-  historys.forEach(element => {
-    const dataImg = element['multimedia']['data'];
-    if ((element['shareType'] == "POST") && (dataImg.length !== 0)){
-      // console.log(element);
+  historys = post['historys']
+  post.forEach(element => {
       const obj = {
         id: element['id'],
-        channelName: post['name'],
-        uri: 'https://user-images.githubusercontent.com/129170600/231968235-a6a60f18-6b50-459d-8c7c-9716d9df0730.mp4',
-        caption: element['text'],
-        musicName: 'Song #1',
-        likes: '0',
-        comments: '0',
-        bookmark: '0',
-        share: '0',
-        categoty: 'Entertainment',
-        avatarUri: post['profile_photo'],
-        poster: element['multimedia']['data'][0]['archive_url'],
-        views: '0',
+        name: element['name'],
+        description: '',
+        imgUrl: element['historys'][0]['content'],
+        isFollow: false
       };
       new_historys.push(obj);
-    }    
+    // }
   });
+
   return new_historys.reverse();
+}
+
+const transformFeed = (post) => {
+  const new_posts = [];
+
+  post.forEach(element => {
+    const images = [];
+    element['multimedia']['data'].forEach(mult => {
+      images.push(mult['archive_url']);
+    });
+
+    const obj = {
+      id: element['id'],
+      name: element['name'],
+      profileId: element['profileId'],
+      subtitle: element['creationDate'],
+      profileImage: element['profileImage'],
+      text: element['text'],
+      image: images,
+      postType: element['shareType'],
+      // role: 'CEO de empresa', // TODO: delete field
+      likes: element['likes'],
+      comments: element['comments']
+    };
+    new_posts.push(obj);
+  });
+  return new_posts.reverse();
 }
 
 const transformShorts = (post) => {
@@ -216,4 +242,5 @@ export {
     transformFeed,
     transformShorts,
     getColor,
+    transformProfileHistory
 }

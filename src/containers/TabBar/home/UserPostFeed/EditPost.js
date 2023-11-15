@@ -129,7 +129,7 @@ const EditPost = props => {
                   </View>
                 </View>
 
-              {item.image.length > 0 && (
+              {item.multimedia.count > 0 && (
                   <View style={item.text !== '' ? styles.mt20 : styles.mt5}>
                   <FlashList
                       data={item.image}

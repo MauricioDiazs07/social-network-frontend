@@ -62,6 +62,7 @@ export const StackNav = {
   Inbox: 'Inbox',
   StoryView: 'StoryView',
   UserProfile: 'UserProfile',
+  AdminProfile: 'AdminProfile',
   CameraRegister: 'CameraRegister',
   FinishProfile: 'FinishProfile',
   PostComments: 'PostComments',
@@ -69,5 +70,4 @@ export const StackNav = {
   PhoneValidation: 'PhoneValidation',
   MasterHome: 'MasterHome',
   EditPost: 'EditPost',
-  SinglePost: 'SinglePost',
 };

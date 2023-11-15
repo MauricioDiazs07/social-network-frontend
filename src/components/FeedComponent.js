@@ -19,14 +19,18 @@ import {StackNav} from '../navigation/NavigationKeys';
 
 export default function FeedComponent({
   data,
+  from,
   style,
 }) {
   const colors = useSelector(state => state.theme.theme);
   const navigation = useNavigation();
-  const imagePost = data.image[0]
+  const imagePost = data?.image[0]
   const onPressFeed = () => {
-    navigation.navigate(StackNav.SinglePost,
-      {dataPost: data});
+    navigation.navigate(StackNav.PostComments,
+      {
+        idPost: data,
+        fromUser: from
+      });
   }
 
   return (

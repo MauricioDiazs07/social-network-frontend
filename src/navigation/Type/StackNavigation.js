@@ -207,6 +207,10 @@ export default function StackNavigation() {
         component={StackRoute.UserProfile}
       />
       <Stack.Screen
+        name={StackNav.AdminProfile}
+        component={StackRoute.AdminProfile}
+      />
+      <Stack.Screen
           name={StackNav.Profile}
           component={StackRoute.Profile}
       />
@@ -221,10 +225,6 @@ export default function StackNavigation() {
       <Stack.Screen
         name={StackNav.EditPost}
         component={StackRoute.EditPost}
-      />
-      <Stack.Screen
-        name={StackNav.SinglePost}
-        component={StackRoute.SinglePost}
       />
     </Stack.Navigator>
   );
