@@ -57,7 +57,6 @@ export default function PostDetail() {
   const [idInterests, setIdInterests] = React.useState("");
   const [isPostDisabled, setIsPostDisabled] = React.useState(true);
   const [isInterestsEmpty, setIsInterestsEmpty] = React.useState(false);
-  const [isPublished, setIsPublished] = React.useState(false);
 
   useEffect(() => {
     if (

@@ -21,7 +21,7 @@ import {
   import ZHeader from '../../../components/common/ZHeader';
   import strings from '../../../i18n/strings';
   import {styles} from '../../../themes';
-  import {ACCESS_TOKEN, getHeight, moderateScale} from '../../../common/constants';
+  import { ACCESS_TOKEN, getHeight, moderateScale } from '../../../common/constants';
   import typography from '../../../themes/typography';
   import ZText from '../../../components/common/ZText';
   import ZButton from '../../../components/common/ZButton';
@@ -45,6 +45,17 @@ import {
     const [selectImage, setSelectImage] = React.useState([]);
     const [isDeleting, setIsDeleting] = React.useState(false);
     const [index, setIndex] = React.useState(1);
+    const [isPostDisabled, setIsPostDisabled] = React.useState(true);
+
+    useEffect(() => {
+      if (
+        selectImage.length > 0
+      ) {
+        setIsPostDisabled(false);
+      } else {
+        setIsPostDisabled(true);
+      }
+    }, [text, selectImage]);
   
     const onChangeText = val => setText(val);
   
@@ -140,12 +151,14 @@ import {
     const onPressDelete = () => setIsDeleting(!isDeleting);
   
     const onPressPost = async () => {
+      setIsPostDisabled(true);
       const profile_id = await getAsyncStorageData(ACCESS_TOKEN);
   
       const formData = new FormData();
       formData.append("description", text);
       formData.append("profile_id", profile_id.profile_id);
       formData.append("share_type", "HISTORY");
+      formData.append("interests", '1');
       
       selectImage.forEach((value, index) => {
         const imageData = {
@@ -168,7 +181,9 @@ import {
           }
         })
         .catch(err => console.log('Post error:', err));
-    };
+
+      setIsPostDisabled(false);
+      };
   
     return (
       <ZSafeAreaView>
@@ -302,8 +317,11 @@ import {
             title={strings.post}
             textType={'b18'}
             color={colors.white}
-            containerStyle={localStyles.skipBtnContainer}
+            containerStyle={[
+                localStyles.skipBtnContainer,
+                isPostDisabled && {opacity: 0.5}]}
             onPress={onPressPost}
+            disabled={isPostDisabled}
           />
         </View>
   
