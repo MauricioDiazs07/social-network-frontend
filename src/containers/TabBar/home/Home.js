@@ -43,7 +43,10 @@ import { colors as clr } from '../../../themes';
 import { getPosts } from '../../../api/feed/posts';
 import { transformfPosts, transformfHistoy } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
-import { getGeneralData, getSectionData, getInterestsData } from '../../../api/master/masterData';
+import { getGeneralData,
+         getSectionData,
+         getInterestsData,
+         getInteractionData } from '../../../api/master/masterData';
 
 const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
@@ -230,6 +233,9 @@ const Home = () => {
   const [pieChartLabel, setPieChartLabel] = useState('');
   const [pieData, setPieData] = useState([]);
   const [pieDataLength, setPieDataLength] = useState(null);
+  const [isGeneralInteraction, setIsGeneralInteraction] = useState(true);
+  const [barChartLegend, setBarChartLegend] = useState({});
+  const [barChartConfig, setBarChartConfig] = useState({});
   const [barChartData, setBarChartData] = useState([]);
   const [barChartLabels, setBarChartLabels] = useState([]);
   const [dropdownData, setDropdownData] = useState([]);
@@ -293,6 +299,41 @@ const Home = () => {
     setIsChartLoading(false);
   }
 
+  const formatInteractionData = (sectionData) => {
+    let newData = [];
+    let colors = [processColor('green'), processColor('red'), processColor('blue')];
+
+    sectionData.forEach((data, index) => {
+        let values = [];
+        let color = colors[index];
+
+        data['data'].forEach((sentimentData) => {
+          values.push(sentimentData['y']);
+        });
+
+        let obj_ = {
+          values: values,
+          label: data['feeling'],
+          config: {
+            drawValues: false,
+            colors: [color],
+          }
+        }
+        newData.push(obj_);
+    });
+
+    return newData;
+  }
+
+  const getInterestsLabels = (interactionData) => {
+    let interests_ = [];
+    interactionData[0]['data'].forEach((el) => {
+      interests_.push(el['marker']);
+    });
+
+    return interests_;
+  }
+
   const getSectionChartData = async (section) => {
     let sectionData = await getSectionData(section);
     setBarChartParameters(sectionData['interests']);
@@ -303,9 +344,21 @@ const Home = () => {
     setBarChartParameters(interestsData['section']);
   }
 
+  const getInteractionChartData = async (section) => {
+    let sectionData = await getInteractionData(section);
+    let interSectionData = formatInteractionData(sectionData['acceptance']);
+    let interestsLabels = getInterestsLabels(sectionData['acceptance']);
+
+    setInteractionBarChartParameters(interSectionData, interestsLabels);
+    setIsGeneralInteraction(false);
+  }
+
   const changePage = (index) => {
     if (index == pageNumber) {
       return;
+    }
+    if (index == 5) {
+      setIsGeneralInteraction(true);
     }
     getData(index);
     setPageNumber(index);
@@ -356,8 +409,42 @@ const Home = () => {
       labelsList.push(x['marker']);
     });
 
-    setBarChartData(ageData);
+    let newData = [{
+      values: ageData,
+      label: '',
+      config: {
+        color: processColor(colors.primary),
+        barShadowColor: processColor(colors.grayScale1),
+        highlightAlpha: 90,
+        highlightColor: processColor('red'),
+        valueTextColor: processColor(colors.textColor),
+      }
+    }];
+
+    let config = {
+      barWidth: 0.7,
+    };
+
+    setBarChartData(newData);
     setBarChartLabels(labelsList);
+    setBarChartConfig(config);
+    setBarChartLegend(false);
+  }
+
+  const setInteractionBarChartParameters = (interactionData, interestsLabels) => {
+    let config = {
+      barWidth: 0.2,
+      group: {
+        fromX: -0.5,
+        groupSpace: 0.1,
+        barSpace: 0.1,
+      },
+    };
+
+    setBarChartData(interactionData);
+    setBarChartLabels(interestsLabels);
+    setBarChartConfig(config);
+    setBarChartLegend(true);
   }
 
 /* Charts states */
@@ -399,23 +486,18 @@ const pieState = {
 
 const barState = {
   legend: {
-    enabled: false
+    enabled: barChartLegend,
+    textSize: 14,
+    form: "SQUARE",
+    formSize: 14,
+    xEntrySpace: 10,
+    yEntrySpace: 5,
+    wordWrapEnabled: true,
+    textColor: processColor(colors.textColor)
   },
   data: {
-    dataSets: [{
-      values: barChartData,
-      label: '',
-      config: {
-        color: processColor(colors.primary),
-        barShadowColor: processColor(colors.grayScale1),
-        highlightAlpha: 90,
-        highlightColor: processColor('red'),
-        valueTextColor: processColor(colors.textColor),
-      }
-    }],
-    config: {
-      barWidth: 0.7,
-    }
+    dataSets: barChartData,
+    config: barChartConfig
   },
   highlights: [{x: 3}, {x: 6}],
   xAxis: {
@@ -720,6 +802,8 @@ const barState = {
                         onChange={item => {
                           if (pageNumber === 3) {
                             getSectionChartData(item.label);
+                          } else if (pageNumber === 5) {
+                            getInteractionChartData(item.label);
                           } else {
                             getInterestChartData(item.value + 1);
                           }
@@ -728,8 +812,9 @@ const barState = {
                       />
                     ) : (<View></View>)}
                     {/* Dropdown menu */}
+
                     {/* Pie chart */}
-                    {(pageNumber === 1 || pageNumber === 5) && (
+                    {(pageNumber === 1 || (pageNumber === 5 && isGeneralInteraction)) && (
                       <PieChart
                         style={localStyles.chart}
                         logEnabled={true}
@@ -781,6 +866,26 @@ const barState = {
                       />
                     )}
                     {/* Age, section and interests chart */}
+
+                    {/* interaction bar chart */}
+                    {(pageNumber === 5 && !isGeneralInteraction) && (
+                      <BarChart
+                        style={localStyles.chart}
+                        data={barState.data}
+                        xAxis={barState.xAxis}
+                        yAxis={barState.yAxis}
+                        chartDescription={barState.description}
+                        legend={barState.legend}
+                        animation={{durationX: 2000}}
+                        borderColor={processColor(colors.textColor)}
+                        gridBackgroundColor={processColor(colors.textColor)}
+                        visibleRange={{x: { min: 5, max: 5 }}}
+                        drawBarShadow={false}
+                        drawValueAboveBar={true}
+                        drawHighlightArrow={true}
+                      />
+                    )}
+                    {/* interaction bar chart */}
                 </View>
               </View>)
                 : (
