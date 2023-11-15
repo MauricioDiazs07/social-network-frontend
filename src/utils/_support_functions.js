@@ -78,7 +78,7 @@ const transformfPosts = (post) => {
   const profileImagePost = post['profile_photo'];
   const descriptionPost = post['description'];
 
-  post['post'].forEach(element => {
+  post.forEach(element => {
     const images = [];
     // const profileIdPost = element['multimedia']['data'][0]['profile_id'];
 

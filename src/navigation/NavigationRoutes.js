@@ -59,6 +59,7 @@ import Live from '../containers/TabBar/home/Live';
 import FollowSomeone from '../containers/auth/FollowSomeone';
 import StoryView from '../containers/TabBar/home/UserStory/StoryView';
 import UserProfile from '../containers/TabBar/profile/UserProfile';
+import AdminProfile from '../containers/TabBar/profile/AdminProfile'
 import CameraRegister from '../containers/auth/CameraRegister';
 import FinishProfile from '../containers/auth/FinishProfile';
 import PostComments from '../containers/TabBar/home/UserPostFeed/PostComments';
@@ -129,6 +130,7 @@ export const StackRoute = {
   Inbox,
   StoryView,
   UserProfile,
+  AdminProfile,
   CameraRegister,
   FinishProfile,
   PostComments,

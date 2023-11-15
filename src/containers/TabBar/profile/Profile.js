@@ -30,6 +30,7 @@ import ZHeader from '../../../components/common/ZHeader';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { getMasterData } from '../../../api/feed/interaction';
 import {transformfHistoy, transformpHistoy, transformfPosts } from '../../../utils/_support_functions';
+import { getPosts } from '../../../api/feed/posts';
 
 const UserDetail = [
   {
@@ -64,12 +65,16 @@ export default function Profile({navigation}) {
 
   useEffect(() => {
     getAsyncStorageData("PROFILE_ID").then(profileId => {
-      getMasterData(profileId).then(resp => {
-        const postFeeds = transformfPosts(resp);
-        setFeeds(postFeeds);
-        setMasterData(resp);
-        // const new_history = transformProfileHistory(resp['HISTORY']);
-        // setHistoryData(new_history);
+      getMasterData(profileId).then(idResp => {
+        setMasterData(idResp);
+        getPosts(idResp).then(resp =>{
+          // const new_history = transformpHistoy(resp)
+          const postFeeds = transformfPosts(resp['POST']);
+          // setHistoryData(new_history)
+          setFeeds(postFeeds);
+      })
+      
+
       })
     });
   }, []);
@@ -95,7 +100,12 @@ export default function Profile({navigation}) {
     },
   ];
 
-  const onPressEditProfile = () => navigation.navigate(StackNav.EditProfile);
+  const onPressEditProfile = () => navigation.navigate(StackNav.AdminProfile);
+  /* 
+  const ProfilePictureSheetRef = createRef();
+  const onPressEditProfile = () => ProfilePictureSheetRef?.current.show();
+  const onPressProfilePic = () => ProfilePictureSheetRef?.current.show(); 
+  */
 
   const onPressSwitchAccount = () => switchAccountRef?.current?.show();
 
