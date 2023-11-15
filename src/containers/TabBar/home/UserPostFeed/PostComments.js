@@ -124,6 +124,7 @@ const PostComments = props => {
   const [item, setItem] = useState(props.route.params.idPost);
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefresing] = useState(false);
   const EditPostMenuSheetRef = createRef();
 
   useEffect(() => {
@@ -235,9 +236,10 @@ const PostComments = props => {
     .catch(error => console.log('Delete error:', error));
   };
   
-  const onRefresh = () => {
-    navigation.navigate(StackNav.PostComments,
-      {item: item});
+  const onRefresh = async () => {
+    setRefresing(true);
+    await getPostInfo();
+    setRefresing(false);
   }
   
   const onchangeComment = text => setAddChat(text);
@@ -268,7 +270,7 @@ const PostComments = props => {
       <ZKeyBoardAvoidWrapper>
         <ScrollView
           refreshControl={
-              <RefreshControl onRefresh={onRefresh}/>
+              <RefreshControl onRefresh={onRefresh} refreshing={refreshing}/>
           }
         >
           {!isLoading ? (
