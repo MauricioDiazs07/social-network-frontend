@@ -35,6 +35,7 @@ export default function Profile({navigation}) {
     name: '',
     profile_photo: '',
     shares: '',
+    email: ''
   });
 
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function Profile({navigation}) {
               {masterData.name}
             </ZText>
             <ZText type="m14" align={'center'} style={styles.mt10}>
-              {'mauricio.diaz@brita.ai'}
+              {masterData.email}
             </ZText>
             <ZText type="m14" align={'center'} style={styles.mt10}>
               {masterData.description}

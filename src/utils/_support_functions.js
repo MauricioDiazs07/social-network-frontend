@@ -189,7 +189,7 @@ const transformFeed = (post) => {
     };
     new_posts.push(obj);
   });
-  return new_posts.reverse();
+  return new_posts;
 }
 
 const transformShorts = (post) => {
