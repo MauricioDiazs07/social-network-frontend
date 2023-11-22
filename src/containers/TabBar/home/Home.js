@@ -630,7 +630,7 @@ const barState = {
           {user_access === "master" && (
             <View style={{flex: 1, padding: 10}}>
               <View>
-                <ZText type={'s28'} style={styles.mb10}>Máster</ZText>
+                <ZText type={'s28'} style={styles.mb10}>{strings.master}</ZText>
               </View>
               
               {/* Buttons layer */}
@@ -660,7 +660,7 @@ const barState = {
                       color={clr.white}
                       align={'center'}
                       style={localStyles.coverPhotoStyle}>
-                      Género
+                      {strings.gender}
                     </ZText>
                   </TouchableOpacity>
                   
@@ -685,7 +685,7 @@ const barState = {
                       color={clr.white}
                       align={'center'}
                       style={localStyles.coverPhotoStyle}>
-                      Edad
+                      {strings.age}
                     </ZText>
                   </TouchableOpacity>
                   
@@ -710,7 +710,7 @@ const barState = {
                       color={clr.white}
                       align={'center'}
                       style={localStyles.coverPhotoStyle}>
-                      Sección
+                      {strings.section}
                     </ZText>
                   </TouchableOpacity>
                   
@@ -735,7 +735,7 @@ const barState = {
                       color={clr.white}
                       align={'center'}
                       style={localStyles.coverPhotoStyle}>
-                      Intereses
+                      {strings.interests}
                     </ZText>
                   </TouchableOpacity>
 
@@ -760,7 +760,7 @@ const barState = {
                       color={clr.white}
                       align={'center'}
                       style={localStyles.coverPhotoStyle}>
-                      Interacción
+                      {strings.interaction}
                     </ZText>
                   </TouchableOpacity>
                 </ScrollView>
@@ -775,11 +775,11 @@ const barState = {
                       type={'b20'}
                       color={colors.primary}
                       align={'center'}>
-                      {pageNumber === 1 ? 'Género'
-                      : pageNumber === 2 ? 'Edad'
-                      : pageNumber === 3 ? 'Sección'
-                      : pageNumber === 4 ? 'Intereses'
-                      : 'Interacción'}
+                      {pageNumber === 1 ? strings.gender
+                      : pageNumber === 2 ? strings.age
+                      : pageNumber === 3 ? strings.section
+                      : pageNumber === 4 ? strings.interests
+                      : strings.interaction}
                     </ZText>
                   </View>
     
@@ -798,7 +798,7 @@ const barState = {
                         containerStyle={{backgroundColor: colors.backgroundColor}}
                         itemTextStyle={{color: colors.textColor}}
                         activeColor={colors.primary}
-                        placeholder={'Escoge una sección'}
+                        placeholder={strings.chooseSection}
                         placeholderStyle={[localStyles.placeholderStyle, {backgroundColor: colors.backgroundColor, color: colors.textColor}]}
                         selectedTextStyle={[localStyles.selectedTextStyle, {color: colors.textColor}]}
                         inputSearchStyle={[localStyles.inputSearchStyle, {backgroundColor: colors.backgroundColor}]}
@@ -807,7 +807,7 @@ const barState = {
                         maxHeight={300}
                         labelField="label"
                         valueField="value"
-                        searchPlaceholder="Buscar..."
+                        searchPlaceholder={`${strings.search}...`}
                         value={value}
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}
