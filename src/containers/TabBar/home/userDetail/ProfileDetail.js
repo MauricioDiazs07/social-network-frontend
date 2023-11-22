@@ -92,7 +92,7 @@ export default function ProfileDetail({navigation, route}) {
               {userName}
             </ZText>
             <ZText type="s14" align={'center'} style={styles.mt10}>
-              {'CEO de empresa'}
+              {masterData.description}
             </ZText>
           </View>
         </View>
