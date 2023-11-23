@@ -203,7 +203,23 @@ const PostComments = props => {
     const colors = useSelector(state => state.theme.theme);
   
     const [likes, setLikes] = useState(item['likes']['count']);
-    const [isLiked, setIsLiked] = useState(item['likes']['like']);
+    const [isLiked, setIsLiked] = useState(false);
+
+    useEffect(() => {
+      checkIfLiked();
+    });
+
+    const checkIfLiked = async () => {
+      let userID = await getAsyncStorageData(PROFILE_ID);
+
+      item['likes']['data'].every(element => {
+        if (element['profile_id'] == userID) {
+          setIsLiked(true);
+          return false;
+        }
+        return true;
+      });
+    }
   
     const onPressLike = () => {
       // TODO: add catch in order to remove like if petition is not resolved

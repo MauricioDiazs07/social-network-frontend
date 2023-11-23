@@ -294,7 +294,7 @@ const Home = () => {
             .then((resp) => {
               let new_posts = resp["POST"];
               if (new_posts.length > 0) {
-                let new_posts_t = transformfPosts(userID, false);
+                let new_posts_t = transformfPosts(new_posts, false);
                 setPostData([...postData, ...new_posts_t]);
               } else {
                 setIsNewPosts(false);
