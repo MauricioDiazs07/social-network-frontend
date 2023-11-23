@@ -124,6 +124,7 @@ export default {
     moreOption: 'Más opciones',
     municipality: 'Municipio',
     noResultFoundDesc: 'Lo sentimos, la palabra clave no ha sido encontrada. Intenta de nuevo o realiza la búsqueda con otras palabras',
+    noPosts: 'No hay más publicaciones para mostrar.\nRecarga la página para ver las publicaciones más recientes.',
     occupation: 'Ocupación',
     or: 'o',
     orContinueWith: 'o continuar con',

@@ -39,7 +39,7 @@ import { USER_LEVEL, THEME, PROFILE_ID, PROFILE_PHOTO } from '../../../common/co
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
 import { changeThemeAction } from '../../../redux/action/themeAction';
 import { colors as clr } from '../../../themes';
-import { getPosts } from '../../../api/feed/posts';
+import { getFeed } from '../../../api/feed/posts';
 import { transformfHistoy, transformFeed } from '../../../utils/_support_functions';
 import { SearchingPosts } from '../../../assets/svgs';
 import { getGeneralData,
@@ -54,13 +54,11 @@ const LogOutSheetRef = createRef();
 const onPressLogOutBtn = () => LogOutSheetRef?.current?.show();
 const onPressCancel = () => LogOutSheetRef?.current?.hide();
 let user_access = '';
-let pageIsLoading = true;
 
 const getUserLevel = async () => {
   await AsyncStorage.getItem(USER_LEVEL)
     .then((data) => {
       user_access = JSON.parse(data);
-      pageIsLoading = false;
     }).catch(err => console.log("ERROR:", err));
 };
 
@@ -229,6 +227,8 @@ const Home = () => {
   const [postData, setPostData] = useState([]);
   const [historyData, setHistoryData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isLastPost, setIsLastPost] = useState(true);
+  const [isNewPosts, setIsNewPosts] = useState(true);
   // charts variables
   const [pageNumber, setPageNumber] = useState(1);
   const [isChartLoading, setIsChartLoading] = useState(false);
@@ -246,21 +246,10 @@ const Home = () => {
   
   useEffect(() => {
     initApp();
-    getAsyncStorageData(PROFILE_ID).then(profile => {
-      getPosts(profile)
-      .then(resp => {
-        const new_posts = transformFeed(resp['POST']);
-        const new_history = transformfHistoy(resp['HISTORY'])
-        setPostData(new_posts);
-        setHistoryData(new_history)
-        setIsLoaded(true);
-      });
-    });
   }, []);
 
   const initApp = async () => {
     let user_level = await getAsyncStorageData(USER_LEVEL);
-
     if (user_level !== "master") {
       getPostsList();
     } else {
@@ -271,12 +260,52 @@ const Home = () => {
   const getPostsList = async () => {
     let userID = await getAsyncStorageData(PROFILE_ID);
     let userInfo = await getMasterData(userID);
-    let new_posts = transformfPosts(userInfo, userID);
-    let new_history = transformfHistoy(userInfo['HISTORY']);
 
-    setPostData(new_posts);
-    setHistoryData(new_history);
+    let feed_ = await getFeed(userID, []);
+    if (feed_["HISTORY"].length > 0) {
+      const new_history = transformfHistoy(feed_['HISTORY']);
+      setHistoryData(new_history);
+    }
+    if (feed_["POST"].length > 0) {
+      let new_posts = transformfPosts(userInfo, userID, feed_["POST"]);
+      setPostData(new_posts);
+    }
+
     setIsLoaded(true);
+  }
+
+  const getPostsIDs = () => {
+    let postsIDs = [];
+    postData.forEach((post) => {
+      postsIDs.push(post["id"]);
+    });
+
+    return postsIDs;
+  }
+
+  const appendNewPosts = async () => {
+    let userID = await getAsyncStorageData(PROFILE_ID);
+    let postsID = getPostsIDs();
+    let userInfo = await getMasterData(userID);
+
+    if (isLastPost && isNewPosts) {
+      setIsLastPost(false);
+
+      await getFeed(userID, postsID)
+            .then((resp) => {
+              let new_posts = resp["POST"];
+              if (new_posts.length > 0) {
+                let new_posts_t = transformfPosts(userInfo, userID, new_posts);
+                setPostData([...postData, ...new_posts_t]);
+              } else {
+                setIsNewPosts(false);
+              }
+
+              setTimeout(() => {
+                setIsLastPost(true);
+              }, 2000);
+            });
+    }
   }
 
   const getData = async (index = 1) => {
@@ -583,6 +612,12 @@ const barState = {
     setPieChartLabel(text);
   }
 
+  const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
+    const paddingToBottom = 20;
+    return layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom;
+  };
+      
   return (
     <ZSafeAreaView>
       <ZHeader
@@ -591,20 +626,47 @@ const barState = {
         rightIcon={rightHeaderIcon}
         isLeftIcon={leftHeaderIcon}
       />
-      {!pageIsLoading ? (
-        <View style={{flex: 1}}>
-          {user_access !== "master" && (<ScrollView 
+      <View style={{flex: 1}}>
+          {user_access !== "master" && (
+          <ScrollView 
             refreshControl={
               <RefreshControl onRefresh={onRefresh} />
-            }>
+            }
+            onScroll={({nativeEvent}) => {
+              if (isCloseToBottom(nativeEvent)) {
+                appendNewPosts();
+              }
+            }}
+          >
             {postData.length > 0 ? (
-              <FlashList
-                data={postData}
-                keyExtractor={item => item.id}
-                renderItem={({item}) => <UserPost item={item} dataLength={postData.length}/>}
-                ListHeaderComponent={headerStory}
-                showsVerticalScrollIndicator={false}
-              />
+              <View>
+                <FlashList
+                  data={postData}
+                  keyExtractor={item => item.id}
+                  renderItem={({item}) => <UserPost item={item} dataLength={postData.length}/>}
+                  ListHeaderComponent={headerStory}
+                  showsVerticalScrollIndicator={false}
+                />
+
+                {isNewPosts ? (
+                  <View style={localStyles.loadingPosts}>
+                    <ActivityIndicator size="large" color={colors.primary} />
+                  </View>) :
+                (
+                  <View style={[localStyles.noPosts, styles.m20]}>
+                    <ZText
+                        type={'b16'}
+                        color={clr.white}
+                        align={'center'}
+                        style={[localStyles.coverPhotoStyle]}
+                      >
+                        {strings.noPosts}
+                    </ZText>
+                  </View>
+                )}
+
+              </View>
+              
             ) : !isLoaded ?
             (<View>
               {headerStory()}
@@ -909,12 +971,6 @@ const barState = {
             </View>
           )}
         </View>
-      ) : (
-        <View style={localStyles.loadingPosts}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
-      )}
-
 
       <LogOut
         SheetRef={LogOutSheetRef}
@@ -1022,6 +1078,9 @@ const localStyles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
   },
+  noPosts: {
+    height: getHeight(50),
+  }
 });
 
 export default Home;

@@ -4,6 +4,7 @@ import { URL_API,
          GET_SHARE,
          EDIT_POST,
          DELETE_POST,
+         GET_FEED,
  } from "../../utils/api_constants";
 
 const getPosts = async (profile_id) => {
@@ -86,7 +87,27 @@ const deletePost = async (post_id) => {
     });
 
     const resp = await response.json();
-    console.log("DEELETE RESP", resp);
+    if (response.ok) {
+        return resp;
+    }
+}
+
+const getFeed = async (userID, postsList) => {
+    let obj_ = {
+        profile_id: userID,
+        page_size: 5,
+        post_history: postsList
+    };
+
+    const response = await fetch (URL_API + GET_FEED, {
+        method: 'POST',
+        body: JSON.stringify(obj_),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+    });
+
+    const resp = await response.json();
     if (response.ok) {
         return resp;
     }
@@ -98,4 +119,5 @@ export {
     getShare,
     editPost,
     deletePost,
+    getFeed,
 }
