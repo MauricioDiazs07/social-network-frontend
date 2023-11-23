@@ -259,7 +259,6 @@ const Home = () => {
 
   const getPostsList = async () => {
     let userID = await getAsyncStorageData(PROFILE_ID);
-    let userInfo = await getMasterData(userID);
 
     let feed_ = await getFeed(userID, []);
     if (feed_["HISTORY"].length > 0) {
@@ -267,7 +266,7 @@ const Home = () => {
       setHistoryData(new_history);
     }
     if (feed_["POST"].length > 0) {
-      let new_posts = transformfPosts(userInfo, userID, feed_["POST"]);
+      let new_posts = transformfPosts(feed_["POST"], false);
       setPostData(new_posts);
     }
 
@@ -295,7 +294,7 @@ const Home = () => {
             .then((resp) => {
               let new_posts = resp["POST"];
               if (new_posts.length > 0) {
-                let new_posts_t = transformfPosts(userInfo, userID, new_posts);
+                let new_posts_t = transformfPosts(userID, false);
                 setPostData([...postData, ...new_posts_t]);
               } else {
                 setIsNewPosts(false);

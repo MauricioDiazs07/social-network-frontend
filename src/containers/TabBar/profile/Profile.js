@@ -42,7 +42,7 @@ export default function Profile({navigation}) {
     getAsyncStorageData(PROFILE_ID).then(profileId => {
       getMasterData(profileId).then(idResp => {
         setMasterData(idResp);
-        const postFeeds = transformfPosts(idResp, profileId, idResp['post']);
+        const postFeeds = transformfPosts(idResp['post']);
         setFeeds(postFeeds);
       });
     });

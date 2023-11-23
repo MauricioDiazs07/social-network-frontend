@@ -72,11 +72,8 @@ const getAccessLevel = lvl => {
   return 'master';
 }
 
-const transformfPosts = (post, userID, posts_) => {
+const transformfPosts = (posts_, isMasterData = true) => {
   const new_posts = [];
-  const namePost = post['name'];
-  const profileImagePost = post['profile_photo'];
-  const descriptionPost = post['description'];
 
   posts_.forEach(element => {
     const images = [];
@@ -85,12 +82,16 @@ const transformfPosts = (post, userID, posts_) => {
       images.push(mult['archive_url']);
     });
 
+    let name = !isMasterData ? element['name'] : '';
+    let profileImg = !isMasterData ? element['profileImage'] : '';
+    let profileId = !isMasterData ? element['profileId'] : '';
+
     const obj = {
       id: element['id'],
-      description: descriptionPost,
-      name: namePost,
-      profileImage: profileImagePost,
-      profileId: userID,
+      description: element['text'],
+      name: name,
+      profileImage: profileImg,
+      profileId: profileId,
       subtitle: element['creationDate'],
       text: element['text'],
       image: images,
