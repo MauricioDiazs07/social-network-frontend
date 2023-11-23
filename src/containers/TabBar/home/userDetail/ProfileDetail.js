@@ -47,7 +47,7 @@ export default function ProfileDetail({navigation, route}) {
       // const feeds = transformFeed(resp);
       // setHistoryData(new_history);
       // setFeeds(feeds);
-      const postFeeds = transformfPosts(resp);
+      const postFeeds = transformfPosts(resp, profileId, resp['post']);
       setFeeds(postFeeds);
     })
   }, []);
