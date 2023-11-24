@@ -66,6 +66,6 @@ yarn-error.log
 # constants file
 src/utils/api_constants.js
 
-package.json
-package-lock.json
-yarn.lock
+/package.json
+/package-lock.json
+/yarn.lock
