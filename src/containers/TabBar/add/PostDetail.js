@@ -15,14 +15,15 @@ import {Snackbar, Button} from '@react-native-material/core';
 import ImagePicker from 'react-native-image-crop-picker';
 import { FlashList } from '@shopify/flash-list';
 import {useNavigation} from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+ 
 // Local import
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import ZHeader from '../../../components/common/ZHeader';
 import ZCircle from '../../../components/common/ZCircle';
 import strings from '../../../i18n/strings';
 import {styles} from '../../../themes';
-import {ACCESS_TOKEN, getHeight, moderateScale} from '../../../common/constants';
+import {ACCESS_TOKEN, getHeight, moderateScale, USER_LEVEL} from '../../../common/constants';
 import typography from '../../../themes/typography';
 import ZText from '../../../components/common/ZText';
 import ZButton from '../../../components/common/ZButton';
@@ -35,6 +36,7 @@ import { getColor } from '../../../utils/_support_functions';
 import { colors } from 'react-native-swiper-flatlist/src/themes';
 import { getInterests } from '../../../api/auth/auth';
 import { isNotEmptyString } from '../../../utils/_support_functions';
+import { displayNotifications } from '../../../api/feed/interaction';
 
 export default function PostDetail() {
   const colors = useSelector(state => state.theme.theme);
@@ -43,7 +45,7 @@ export default function PostDetail() {
   const numColumns = 3;
   const size = width / numColumns;
   const textLimit = 255;
-
+  
   const ProfilePictureSheetRef = createRef();
 
   const [text, setText] = React.useState('');
@@ -57,6 +59,7 @@ export default function PostDetail() {
   const [idInterests, setIdInterests] = React.useState("");
   const [isPostDisabled, setIsPostDisabled] = React.useState(true);
   const [isInterestsEmpty, setIsInterestsEmpty] = React.useState(false);
+  const [isUserLevel, setIsUserLevel] = React.useState('');
 
   useEffect(() => {
     if (
@@ -101,6 +104,17 @@ export default function PostDetail() {
       }
     } 
     getInterestList();
+    
+  const getUserLevel = async () => {
+    try {
+      const data = await AsyncStorage.getItem(USER_LEVEL);
+      setIsUserLevel(JSON.parse(data));
+    } catch (error) {
+      console.error("User level error: ", error);
+    }
+  };
+    getUserLevel();
+
   }, []);
 
   useEffect(() => {
@@ -217,11 +231,14 @@ export default function PostDetail() {
             index: 0,
             routes: [{name: StackNav.TabBar}],
           });
+          if (isUserLevel !== 'user') {
+            displayNotifications('Nuevo Post', 'Echa un vistazo para mantenerte al día con las últimas noticias.')
+          }          
         }
       })
       .catch(err => console.log('Post error:', err));
   };
-  
+
   return (
     <ZSafeAreaView>
       <ZHeader title={strings.post} />

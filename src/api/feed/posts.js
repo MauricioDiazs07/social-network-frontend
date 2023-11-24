@@ -86,7 +86,6 @@ const deletePost = async (post_id) => {
     });
 
     const resp = await response.json();
-    console.log("DEELETE RESP", resp);
     if (response.ok) {
         return resp;
     }

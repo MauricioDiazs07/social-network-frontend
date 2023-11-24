@@ -5,7 +5,10 @@ import { URL_API,
     USER_DATA,
     MASTER_DATA,
     PROFILE_DATA,
+    FIREBASE_SERVER_KEY,
+    FIREBASE_API_REST
 } from "../../utils/api_constants";
+import messaging from '@react-native-firebase/messaging';
 
 const addLike = async (profile_id,share_id,share_type) => {
     const response = await fetch(URL_API + LIKE, {
@@ -99,11 +102,46 @@ const getMasterData = async (profile_id) => {
     }
 }
 
+const subscribeToTopic = () => {
+    messaging()
+    .subscribeToTopic('newPost')
+    .then(() => console.log('Subscribed to topic!'));
+}
+
+const displayNotifications = async (title, body) => {
+    const requestBody = {
+      to: '/topics/newPost',
+      notification: {
+        title,
+        body,
+      },
+    };
+
+    try {
+        const response = await fetch(FIREBASE_API_REST, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `key=${FIREBASE_SERVER_KEY}`,
+            },
+            body: JSON.stringify(requestBody),
+        });
+    
+        if (response.ok) { 
+            console.log('Notification success');
+        } 
+    } catch (error) {
+        console.error('Firebase error:', error);
+    }
+}
+
 export {
     addLike,
     disLike,
     addComment,
     getUserData,
     getMasterData,
-    getProfileData
+    getProfileData,
+    subscribeToTopic,
+    displayNotifications
 }
