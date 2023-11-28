@@ -72,7 +72,7 @@ export default function ProfileDetail({navigation, route}) {
         showsVerticalScrollIndicator={false}
         style={localStyles.root}>
         <View style={styles.itemsCenter}>
-          <TouchableOpacity onPress={onPressEditProfile} style={styles.mt25}>
+          <TouchableOpacity style={styles.mt25}>
             {!!userImage?.length ? (
               <Image
                 source={{
@@ -96,8 +96,8 @@ export default function ProfileDetail({navigation, route}) {
             </ZText>
           </View>
         </View>
-        <View style={styles.rowSpaceBetween}>
-          <ZButton
+        <View style={styles.itemsCenter}>
+          {/* <ZButton
             title={strings.follow}
             onPress={onPressEditProfile}
             color={colors.white}
@@ -115,7 +115,7 @@ export default function ProfileDetail({navigation, route}) {
                 color={colors.white}
               />
             }
-          />
+          /> */}
           <ZButton
             title={strings.message}
             color={colors.primary}

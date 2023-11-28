@@ -1,4 +1,5 @@
 import { months, states, municipalities } from "./constants";
+import { subscribeToTopic } from "../api/feed/interaction";
 
 const translateBirthday = (date) => {
     let day = date.getDate();
@@ -168,6 +169,7 @@ const transformProfileHistory = (post) => {
 
 const transformFeed = (post) => {
   const new_posts = [];
+  const profiles_list = [];
 
   post.forEach(element => {
     const images = [];
@@ -189,7 +191,12 @@ const transformFeed = (post) => {
       comments: element['comments']
     };
     new_posts.push(obj);
+    if (!profiles_list.includes(element['profileId'])) {
+      profiles_list.push(element['profileId']);
+    }    
   });
+  profiles_list.forEach(profile => subscribeToTopic());
+  
   return new_posts;
 }
 

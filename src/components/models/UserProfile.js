@@ -86,7 +86,7 @@ export default function UserProfile(props) {
         ))}
       </View>
       <View style={localStyles.editProfileContainer}>
-        <ZButton
+        {/* <ZButton
           title={isFollow ? strings.follow : strings.following}
           color={isFollow ? colors.white : colors.primary}
           onPress={onPressFollow}
@@ -104,7 +104,7 @@ export default function UserProfile(props) {
               color={isFollow ? colors.white : colors.primary}
             />
           }
-        />
+        /> */}
         <ZButton
           title={strings.message}
           color={colors.primary}
