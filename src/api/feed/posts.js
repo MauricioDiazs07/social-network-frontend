@@ -39,10 +39,11 @@ const createPost = async (form) => {
     }
 }
 
-const getShare = async (postId) => {
+const getShare = async (profileID, postId) => {
     const response = await fetch(URL_API + GET_SHARE, {
         method: 'POST',
         body: JSON.stringify({
+            profile_id: profileID,
             share_id: postId,
             share_type: 'POST'
         }),

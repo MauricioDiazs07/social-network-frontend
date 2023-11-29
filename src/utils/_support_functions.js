@@ -96,12 +96,15 @@ const transformfPosts = (posts_, isMasterData = true) => {
       subtitle: element['creationDate'],
       text: element['text'],
       image: images,
+      multimedia: {
+        data: images
+      },
       postType: 'POST',
       likes: element['likes'],
       comments: element['comments'],
       views: element['likes'],
       poster: images[0]
-    };
+    }; 
 
     new_posts.push(obj);
     

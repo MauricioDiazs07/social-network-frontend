@@ -66,12 +66,13 @@ const PostComments = props => {
   });
 
   const getPostInfo = async () => {
-    const resp = await getShare(item['id']);
+    setIsLoading(false);
+    let profileID = await getAsyncStorageData(PROFILE_ID);
+    const resp = await getShare(profileID, item['id']);
     setItem(resp);
     setComments(resp['comments']['data']);
     setCountComments(item['comments']['count']);
     
-    setIsLoading(false);
   }
 
   const onFocusInput = () => setChatStyle(FocusedStyle);
