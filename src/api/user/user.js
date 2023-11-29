@@ -25,9 +25,13 @@ const getUserDataByPhone = async (phone_no) => {
     return resp;
 }
 
-const updateUserData = async (profile_id, email, phone_number, profile_photo) => {
-
-    const form = new FormData()
+const updateUserData = async (
+    profile_id,
+    email,
+    phone_number,
+    profile_photo
+) => {
+    const form = new FormData();
     form.append('profile_id',profile_id)
     form.append('email',email)
     form.append('phone_number', phone_number)
