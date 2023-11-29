@@ -487,91 +487,91 @@ const Home = () => {
     setBarChartLegend(true);
   }
 
-/* Charts states */
-const pieState = {
-  legend: {
-    enabled: true,
-    textSize: 15,
-    form: 'CIRCLE',
-    textColor: processColor(colors.textColor),
-
-    horizontalAlignment: "CENTER",
-    verticalAlignment: "BOTTOM",
-    orientation: "VERTICAL",
-    wordWrapEnabled: true
-  },
-  data: {
-      dataSets: [{
-          values: pieData,
-          label: '',
-          config: {
-            colors: [processColor('#FF38E4'), processColor('#478BFF'), processColor('#38FF6D')],
-            valueTextSize: 20,
-            valueTextColor: processColor(colors.textColor),
-            sliceSpace: 2,
-            selectionShift: 13,
-            valueFormatter: "#.#'%'",
-            valueLineColor: processColor(colors.textColor),
-            valueLinePart1Length: 0.5
-          }
-        }],
-  },
-  highlights: [{x:2}],
-  description: {
-    text: '',
-    textSize: 15,
-    textColor: processColor('darkgray'),
-  }
-};
-
-const barState = {
-  legend: {
-    enabled: barChartLegend,
-    textSize: 14,
-    form: "SQUARE",
-    formSize: 14,
-    xEntrySpace: 10,
-    yEntrySpace: 5,
-    wordWrapEnabled: true,
-    textColor: processColor(colors.textColor)
-  },
-  data: {
-    dataSets: barChartData,
-    config: barChartConfig
-  },
-  highlights: [{x: 3}, {x: 6}],
-  xAxis: {
-    valueFormatter: barChartLabels,
-    granularityEnabled: true,
-    granularity : 1,
-    textColor: processColor(colors.textColor),
-    labelRotationAngle: 60,
-    position: 'BOTTOM',
-    drawGridLines: false,
-    drawAxisLine: false
-  },
-  yAxis: {
-    right: {
-      enabled: false
-    },
-    left: {
+  /* Charts states */
+  const pieState = {
+    legend: {
       enabled: true,
+      textSize: 15,
+      form: 'CIRCLE',
+      textColor: processColor(colors.textColor),
+
+      horizontalAlignment: "CENTER",
+      verticalAlignment: "BOTTOM",
+      orientation: "VERTICAL",
+      wordWrapEnabled: true
+    },
+    data: {
+        dataSets: [{
+            values: pieData,
+            label: '',
+            config: {
+              colors: [processColor('#FF38E4'), processColor('#478BFF'), processColor('#38FF6D')],
+              valueTextSize: 20,
+              valueTextColor: processColor(colors.textColor),
+              sliceSpace: 2,
+              selectionShift: 13,
+              valueFormatter: "#.#'%'",
+              valueLineColor: processColor(colors.textColor),
+              valueLinePart1Length: 0.5
+            }
+          }],
+    },
+    highlights: [{x:2}],
+    description: {
+      text: '',
+      textSize: 15,
+      textColor: processColor('darkgray'),
+    }
+  };
+
+  const barState = {
+    legend: {
+      enabled: barChartLegend,
+      textSize: 14,
+      form: "SQUARE",
+      formSize: 14,
+      xEntrySpace: 10,
+      yEntrySpace: 5,
+      wordWrapEnabled: true,
+      textColor: processColor(colors.textColor)
+    },
+    data: {
+      dataSets: barChartData,
+      config: barChartConfig
+    },
+    highlights: [{x: 3}, {x: 6}],
+    xAxis: {
+      valueFormatter: barChartLabels,
       granularityEnabled: true,
       granularity : 1,
       textColor: processColor(colors.textColor),
-      drawGridLines: true,
-      gridLineWidth: 1,
-      drawAxisLine: true,
-      drawLabels: true,
-      labelCount: 1,
-      position: "OUTSIDE_CHART",
-      textSize: 10 
+      labelRotationAngle: 60,
+      position: 'BOTTOM',
+      drawGridLines: false,
+      drawAxisLine: false
+    },
+    yAxis: {
+      right: {
+        enabled: false
+      },
+      left: {
+        enabled: true,
+        granularityEnabled: true,
+        granularity : 1,
+        textColor: processColor(colors.textColor),
+        drawGridLines: true,
+        gridLineWidth: 1,
+        drawAxisLine: true,
+        drawLabels: true,
+        labelCount: 1,
+        position: "OUTSIDE_CHART",
+        textSize: 10 
+      }
+    },
+    description: {
+      text: ''
     }
-  },
-  description: {
-    text: ''
-  }
-};
+  };
 
   const onRefresh = () => navigation.reset({
                                           index: 0,
@@ -1040,9 +1040,6 @@ const localStyles = StyleSheet.create({
     ...styles.m5,
   },
   imgContainer: {
-    // flex: 1,
-    // ...styles.rowSpaceBetween,
-    // ...styles.wrap,
     ...styles.flexRow,
     ...styles.mb10,
   },
