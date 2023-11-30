@@ -5,6 +5,7 @@ import { URL_API,
          EDIT_POST,
          DELETE_POST,
          GET_FEED,
+         GET_POSTS_INTERESTS,
  } from "../../utils/api_constants";
 
 const getPosts = async (profile_id) => {
@@ -114,6 +115,28 @@ const getFeed = async (userID, postsList) => {
     }
 }
 
+const getPostsInterests = async (userID, postsList, interestsId) => {
+    let obj_ = {
+        profile_id: userID,
+        page_size: 5,
+        post_history: postsList,
+        interest_id: interestsId
+    };
+
+    const response = await fetch (URL_API + GET_POSTS_INTERESTS, {
+        method: 'POST',
+        body: JSON.stringify(obj_),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+    });
+
+    const resp = await response.json();
+    if (response.ok) {
+        return resp;
+    }
+}
+
 export {
     getPosts,
     createPost,
@@ -121,4 +144,5 @@ export {
     editPost,
     deletePost,
     getFeed,
+    getPostsInterests,
 }

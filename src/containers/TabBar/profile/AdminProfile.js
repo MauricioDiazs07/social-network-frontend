@@ -12,25 +12,26 @@ import CountryPicker, {
 } from 'react-native-country-picker-modal';
 
 // Local import
-import {getUserData} from '../../../api/feed/interaction';
 import ZSafeAreaView from '../../../components/common/ZSafeAreaView';
 import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import images from '../../../assets/images';
 import {styles} from '../../../themes';
-import {getHeight, moderateScale, PROFILE_ID} from '../../../common/constants';
+import {getHeight, moderateScale, PROFILE_ID, PROFILE_PHOTO} from '../../../common/constants';
 import ZInput from '../../../components/common/ZInput';
 import ZKeyBoardAvoidWrapper from '../../../components/common/ZKeyBoardAvoidWrapper';
 import {StackNav} from '../../../navigation/NavigationKeys';
 import ProfilePicture from '../../../components/models/ProfilePicture';
 import ZButton from '../../../components/common/ZButton';
-import { validateNotEmptyContact, validateNotNecessaryEmail } from '../../../utils/validators';
+import { validateNotEmptyContact,
+         validateNotNecessaryEmail,
+         validateName } from '../../../utils/validators';
 import { getAsyncStorageData, setAsyncStorageData } from '../../../utils/helpers';
-import {updateUserData} from '../../../api/user/user';
+import { getProfileData } from '../../../api/feed/interaction';
+import { updateAdminProfile } from '../../../api/admin/admin';
 
 const UserProfile = props => {
   const {navigation} = props;
-  const headerTitle = '';
 
   // TODO: fetch from API
   const [userData, setUserData] = useState({
@@ -42,11 +43,12 @@ const UserProfile = props => {
     municipality: '',
     email: '',
     phoneNo: '',
+    description: '',
   });
 
   useEffect(() => {
     getAsyncStorageData(PROFILE_ID).then(profile => {
-      getUserData(profile).then(resp => {
+      getProfileData(profile).then(resp => {
         const user = {
           img: resp['profile_photo'],
           username: resp['name'],
@@ -56,10 +58,13 @@ const UserProfile = props => {
           municipality: resp['municipality'],
           email: resp['email'],
           phoneNo: resp['phone_number'],
+          description: resp['description'],
         };
         setUserData(user);
         setEmail(resp['email']);
         setPhoneNo(resp['phone_number']);
+        setDescription(resp['description']);
+        setName(resp['name']);
       });
     });
   }, []);
@@ -80,19 +85,21 @@ const UserProfile = props => {
 
   const [email, setEmail] = useState(userData.email);
   const [phoneNo, setPhoneNo] = useState(userData.phoneNo);
+  const [description, setDescription] = useState(userData.description);
+  const [name, setName] = useState(userData.name);
   const [emailError, setEmailError] = React.useState('');
 
   const [emailInputStyle, setEmailInputStyle] = useState(BlurredStyle);
-  const [phoneNoInputStyle, setPhoneNoInputStyle] = useState(BlurredStyle);
+  const [descriptionInputStyle, setDescriptionInputStyle] = useState(BlurredStyle);
+  const [nameInputStyle, setNameInputStyle] = useState(BlurredStyle);
   const [emailIcon, setEmailIcon] = useState(BlurredIconStyle);
-  const [chevronDown, setChevronDown] = useState(BlurredIconStyle);
+  const [descriptionIcon, setDescriptionIcon] = useState(BlurredIconStyle);
+  const [nameIcon, setNameIcon] = useState(BlurredIconStyle);
 
   const [selectImage, setSelectImage] = useState('');
-  const [callingCodeLib, setCallingCodeLib] = useState(+91);
-  const [countryCodeLib, setCountryCodeLib] = useState('MX');
-  const [visiblePiker, setVisiblePiker] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [contactError, setContactError] = useState(false);
+  const [nameError, setNameError] = useState(false);
 
   const onFocusInput = onHighlight => onHighlight(FocusedStyle);
   const onFocusIcon = onHighlight => onHighlight(FocusedIconStyle);
@@ -101,9 +108,14 @@ const UserProfile = props => {
 
   useEffect(() => {
     if (
-      ((userData.email !== email || userData.phoneNo !== phoneNo) &&
+      ((
+        userData.email !== email || 
+        userData.phoneNo !== phoneNo ||
+        userData.username !== name ||
+        userData.description !== description) &&
         !emailError &&
-        !contactError) ||
+        !contactError &&
+        !nameError) ||
       !!selectImage.path
     ) {
       setIsSubmitDisabled(false);
@@ -114,7 +126,12 @@ const UserProfile = props => {
     userData.email,
     userData,
     userData.phoneNo,
+    userData.username,
+    userData.description,
+    email,
     phoneNo,
+    name,
+    description,
     emailError,
     contactError,
     selectImage,
@@ -129,14 +146,24 @@ const UserProfile = props => {
     onBlurIcon(setEmailIcon);
   };
 
-  const onFocusPhoneNo = () => {
-    onFocusInput(setPhoneNoInputStyle);
-    onFocusIcon(setChevronDown);
+  const onFocusDescription = () => {
+    onFocusInput(setDescriptionInputStyle);
+    onFocusIcon(setDescriptionIcon);
   };
 
-  const onBlurPhoneNo = () => {
-    onBlurInput(setPhoneNoInputStyle);
-    onBlurIcon(setChevronDown);
+  const onBlurDescription = () => {
+    onBlurInput(setDescriptionInputStyle);
+    onBlurIcon(setDescriptionIcon);
+  };
+
+  const onFocusName = () => {
+    onFocusInput(setNameInputStyle);
+    onFocusIcon(setNameIcon);
+  };
+
+  const onBlurName = () => {
+    onBlurInput(setNameInputStyle);
+    onBlurIcon(setNameIcon);
   };
 
   const onChangedEmail = text => {
@@ -146,24 +173,18 @@ const UserProfile = props => {
     const msg_email = validateNotNecessaryEmail(text.trim()).msg;
     setEmailError(msg_email);
   };
-  const onChangedPhoneNo = text => {
-    const {msg} = validateNotEmptyContact(email, text.trim());
-    setPhoneNo(text);
-    setContactError(msg);
+  const onChangedDescription = text => {
+    setDescription(text);
+  };
+  const onChangedName = text => {
+    const {msg} = validateName(text.trim());
+    setName(text);
+    setNameError(msg);
   };
 
   useEffect(() => {
     ProfilePictureSheetRef?.current?.hide();
   }, [selectImage]);
-
-  const onSelectCountry = country => {
-    setCountryCodeLib(country.cca2);
-    setCallingCodeLib('+' + country.callingCode[0]);
-    closeCountryPicker();
-  };
-
-  const openCountryPicker = () => setVisiblePiker(true);
-  const closeCountryPicker = () => setVisiblePiker(false);
 
   const onPressCamera = () => {
     ImagePicker.openCamera({
@@ -188,31 +209,25 @@ const UserProfile = props => {
     <Ionicons name="mail" size={moderateScale(20)} color={emailIcon} />
   );
 
-  const countryIcon = () => {
-    return (
-      <View style={styles.rowSpaceBetween}>
-        <FlagButton
-          value={callingCodeLib}
-          onOpen={openCountryPicker}
-          withEmoji={true}
-          countryCode={countryCodeLib}
-          withCallingCodeButton={true}
-          containerButtonStyle={localStyles.countryPickerButton}
-        />
-        <Ionicons
-          name="chevron-down-outline"
-          size={moderateScale(20)}
-          color={chevronDown}
-        />
-      </View>
-    );
-  };
+  const DescriptionIcon = () => (
+    <Ionicons name="text" size={moderateScale(20)} color={descriptionIcon} />
+  );
+
+  const NameIcon = () => (
+    <Ionicons name="card-outline" size={moderateScale(20)} color={nameIcon} />
+  );
 
   const onPressContinue = () => {
     getAsyncStorageData(PROFILE_ID).then(profile_id => {
-      updateUserData(profile_id, email, phoneNo, selectImage).then(resp => {
+      updateAdminProfile(
+        profile_id,
+        name,
+        email,
+        description,
+        selectImage
+      ).then(resp => {
         if (selectImage != '') {
-          setAsyncStorageData('PROFILE_PHOTO', resp['profile_photo']);
+          setAsyncStorageData(PROFILE_PHOTO, resp['profile_photo']);
         }
 
         navigation.navigate(StackNav.TabBar);
@@ -259,40 +274,40 @@ const UserProfile = props => {
         {/* info containers */}
         <ZInput
           placeHolder={'Nombre'}
-          keyBoardType={'email-address'}
-          _value={email}
-          _errorText={emailError}
-          autoCapitalize={'none'}
-          toGetTextFieldValue={onChangedEmail}
-          rightAccessory={() => <EmailIcon />}
+          keyBoardType={'default'}
+          _value={name}
+          _errorText={nameError}
+          autoCapitalize={'words'}
+          toGetTextFieldValue={onChangedName}
+          rightAccessory={() => <NameIcon />}
           inputContainerStyle={[
             {backgroundColor: colors.inputBg},
             localStyles.inputContainerStyle,
-            emailInputStyle,
+            nameInputStyle,
           ]}
-          _onFocus={onFocusEmail}
-          onBlur={onBlurEmail}
-        />
-
-        <ZInput
-          placeHolder={'Correo'}
-          keyBoardType={'email-address'}
-          _value={email}
-          _errorText={emailError}
-          autoCapitalize={'none'}
-          toGetTextFieldValue={onChangedEmail}
-          rightAccessory={() => <EmailIcon />}
-          inputContainerStyle={[
-            {backgroundColor: colors.inputBg},
-            localStyles.inputContainerStyle,
-            emailInputStyle,
-          ]}
-          _onFocus={onFocusEmail}
-          onBlur={onBlurEmail}
+          _onFocus={onFocusName}
+          onBlur={onBlurName}
         />
 
         <ZInput
           placeHolder={'Descripción'}
+          keyBoardType={'default'}
+          _value={description}
+          autoCapitalize={'none'}
+          toGetTextFieldValue={onChangedDescription}
+          rightAccessory={() => <DescriptionIcon />}
+          multiline={true}
+          inputContainerStyle={[
+            {backgroundColor: colors.inputBg},
+            localStyles.descriptionContainerStyle,
+            descriptionInputStyle,
+          ]}
+          _onFocus={onFocusDescription}
+          onBlur={onBlurDescription}
+        />
+
+        <ZInput
+          placeHolder={'Email'}
           keyBoardType={'email-address'}
           _value={email}
           _errorText={emailError}
@@ -307,26 +322,7 @@ const UserProfile = props => {
           _onFocus={onFocusEmail}
           onBlur={onBlurEmail}
         />
-
-        <ZInput
-          placeHolder={strings.phoneNumber}
-          keyBoardType={'number-pad'}
-          _value={phoneNo}
-          _errorText={contactError}
-          _maxLength={10}
-          toGetTextFieldValue={onChangedPhoneNo}
-          insideLeftIcon={countryIcon}
-          inputContainerStyle={[
-            {backgroundColor: colors.inputBg},
-            localStyles.inputContainerStyle,
-            phoneNoInputStyle,
-          ]}
-          _onFocus={onFocusPhoneNo}
-          onBlur={onBlurPhoneNo}
-        />
-
       
-
         {/* form inputs */}
       </ZKeyBoardAvoidWrapper>
       {!isSubmitDisabled && (
@@ -349,22 +345,6 @@ const UserProfile = props => {
         onPressGallery={onPressGallery}
         SheetRef={ProfilePictureSheetRef}
       />
-      <CountryPicker
-        countryCode={'MX'}
-        withFilter={true}
-        visible={visiblePiker}
-        withFlag={true}
-        withFlagButton={true}
-        onSelect={country => onSelectCountry(country)}
-        withCallingCode={true}
-        withAlphaFilter={true}
-        withCountryNameButton={true}
-        onClose={closeCountryPicker}
-        renderFlagButton={() => {
-          return null;
-        }}
-        theme={colors.dark ? DARK_THEME : DEFAULT_THEME}
-      />
     </ZSafeAreaView>
   );
 };
@@ -384,6 +364,12 @@ const localStyles = StyleSheet.create({
   },
   inputContainerStyle: {
     height: getHeight(60),
+    borderRadius: moderateScale(12),
+    borderWidth: moderateScale(1),
+    ...styles.ph15,
+  },
+  descriptionContainerStyle: {
+    height: getHeight(100),
     borderRadius: moderateScale(12),
     borderWidth: moderateScale(1),
     ...styles.ph15,

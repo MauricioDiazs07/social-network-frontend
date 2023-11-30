@@ -128,7 +128,7 @@ export default function TabBarNavigation({navigation}) {
             tabBarIcon: ({focused}) => (
               <View>
                 {user_access !== "master" ? (<TabText
-                  text={strings.shorts}
+                  text={strings.library}
                   focused={focused}
                   icon={focused ? <Inbox_Dark /> : <Inbox_Light />}
                 />) : <View></View>}

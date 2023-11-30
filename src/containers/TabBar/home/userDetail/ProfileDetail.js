@@ -14,7 +14,7 @@ import {useSelector} from 'react-redux';
 // Local import
 import ZSafeAreaView from '../../../../components/common/ZSafeAreaView';
 import ZHeader from '../../../../components/common/ZHeader';
-import {getHeight, moderateScale} from '../../../../common/constants';
+import {PROFILE_ID, getHeight, moderateScale} from '../../../../common/constants';
 import {styles} from '../../../../themes';
 import ZText from '../../../../components/common/ZText';
 import images from '../../../../assets/images';
@@ -24,7 +24,8 @@ import {StackNav} from '../../../../navigation/NavigationKeys';
 import SuccessModal from '../../../../components/models/SuccessModal';
 import FeedComponent from '../../../../components/FeedComponent';
 import { getMasterData } from '../../../../api/feed/interaction';
-import {transformpHistoy, transformfPosts, transformFeed } from '../../../../utils/_support_functions';
+import {transformpHistoy, transformfPosts } from '../../../../utils/_support_functions';
+import { getAsyncStorageData } from '../../../../utils/helpers';
 
 export default function ProfileDetail({navigation, route}) {
   const {userName, userImage, profileId} = route.params;
@@ -39,27 +40,33 @@ export default function ProfileDetail({navigation, route}) {
   });
 
   const [feeds, setFeeds] = useState([]);
+  const [isSameProfile, setIsSameProfile] = useState(false);
 
   useEffect(() => {
     getMasterData(profileId).then(resp =>{
       setMasterData(resp);
       const new_history = transformpHistoy(resp);
-      // const feeds = transformFeed(resp);
-      // setHistoryData(new_history);
-      // setFeeds(feeds);
       const postFeeds = transformfPosts(resp['post']);
       setFeeds(postFeeds);
-    })
+    });
+    getProfileID();
   }, []);
 
-  const onPressEditProfile = () => navigation.navigate(StackNav.UserNetwork);
   const onPressModalClose = () => setModalVisible(false);
 
-  const onPressMessage = () =>
+  const getProfileID = async () => {
+    await getAsyncStorageData(PROFILE_ID)
+    .then(resp => {
+      setIsSameProfile(resp === profileId);
+    });
+  }
+
+  const onPressMessage = () => {
     navigation.navigate(StackNav.Chat, {
       userName: userName,
       userImage: userImage,
-    });
+      profileId: profileId,
+    });}
 
     const renderReelItem = ({item}) => (
       <FeedComponent data={item} from={'user'}/>
@@ -96,26 +103,7 @@ export default function ProfileDetail({navigation, route}) {
             </ZText>
           </View>
         </View>
-        <View style={styles.itemsCenter}>
-          {/* <ZButton
-            title={strings.follow}
-            onPress={onPressEditProfile}
-            color={colors.white}
-            textType="b14"
-            style={styles.ml5}
-            containerStyle={[
-              localStyles.buttonContainer,
-              {borderColor: colors.primary},
-            ]}
-            bgColor={colors.primary}
-            frontIcon={
-              <Ionicons
-                name="person-add-outline"
-                size={moderateScale(18)}
-                color={colors.white}
-              />
-            }
-          /> */}
+        {!isSameProfile && (<View style={styles.itemsCenter}>
           <ZButton
             title={strings.message}
             color={colors.primary}
@@ -135,7 +123,7 @@ export default function ProfileDetail({navigation, route}) {
               />
             }
           />
-        </View>
+        </View>)}
         <View
           style={[
             localStyles.mainContainer,
