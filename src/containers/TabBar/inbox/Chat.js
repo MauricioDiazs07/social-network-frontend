@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import React, {memo, useEffect, useState} from 'react';
 import Feather from 'react-native-vector-icons/Feather';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useSelector} from 'react-redux';
 
 // Local import
@@ -20,12 +19,14 @@ import {getHeight, moderateScale} from '../../../common/constants';
 import ZText from '../../../components/common/ZText';
 import ZInput from '../../../components/common/ZInput';
 import {StackNav} from '../../../navigation/NavigationKeys';
-import {checkPlatform} from '../../../utils/helpers';
-import {chatData} from '../../../api/constant';
+import {checkPlatform, getAsyncStorageData} from '../../../utils/helpers';
+import { getChats, sendChat } from '../../../api/chats/chats';
+import { PROFILE_ID } from '../../../common/constants';
 
 export default function Chat({navigation, route}) {
   const userName = route.params?.userName;
   const userImage = route.params?.userImage;
+  const profileAdminId = route.params.profileId;
   const colors = useSelector(state => state.theme.theme);
   const BlurredStyle = {
     backgroundColor: colors.inputBg,
@@ -39,6 +40,11 @@ export default function Chat({navigation, route}) {
   const [addChat, setAddChat] = useState('');
   const [chatStyle, setChatStyle] = useState(BlurredStyle);
   const [isDisable, setIsDisable] = useState(true);
+  const [chatData, setChatData] = useState([]);
+
+  useEffect(() => {
+    getInitChats();
+  }, []);
 
   useEffect(() => {
     if (addChat.length > 0) {
@@ -54,49 +60,22 @@ export default function Chat({navigation, route}) {
 
   const onchangeComment = text => setAddChat(text);
 
-  const onPressCall = () =>
-    navigation.navigate(StackNav.Call, {
-      userName: userName,
-      userImage: userImage,
+  const getInitChats = async () => {
+    await getAsyncStorageData(PROFILE_ID)
+    .then(async (resp) => {
+      let chats = await getChats(resp, profileAdminId);
+      setChatData(chats['chats']);
     });
+  }
 
-  const RightIcon = () => {
-    return (
-      <View style={styles.rowCenter}>
-        <TouchableOpacity onPress={onPressCall} style={styles.pr10}>
-          <Ionicons
-            name="call-outline"
-            size={moderateScale(30)}
-            color={colors.textColor}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons
-            name="ellipsis-horizontal-circle-outline"
-            size={moderateScale(30)}
-            color={colors.textColor}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  // This is show Day like today or tomorrow
-  const RenderTimeList = ({title}) => {
-    return (
-      <View
-        style={[
-          localStyles.timeContainer,
-          {
-            backgroundColor: colors.lightGray,
-          },
-        ]}>
-        <ZText color={colors.grayScale6} type="r14">
-          {title}
-        </ZText>
-      </View>
-    );
-  };
+  const sendMessage = async () => {
+    setAddChat('');
+    await getAsyncStorageData(PROFILE_ID)
+    .then(async (resp) => {
+      await sendChat(resp, profileAdminId, addChat);
+    });
+    await getInitChats();
+  }
 
   const SenderMessage = memo(({item, index}) => {
     return (
@@ -113,12 +92,17 @@ export default function Chat({navigation, route}) {
             alignSelf: item.type == 'sender' ? 'flex-end' : 'flex-start',
           },
         ]}>
-        <ZText style={styles.flex} color={colors.grayScale6} type="m16">
+        <ZText 
+          style={styles.flex}
+          color={colors.grayScale6}
+          type="m16"
+          align={item.type == 'sender' ? 'right' : 'left'}
+        >
           {item.message}
         </ZText>
-        <ZText color={colors.grayScale6} style={styles.pl10} type="r12">
+        {/* <ZText color={colors.grayScale6} style={styles.pl10} type="r12">
           {item.time}
-        </ZText>
+        </ZText> */}
       </View>
     );
   });
@@ -148,7 +132,6 @@ export default function Chat({navigation, route}) {
       <ZHeader
         title={userName}
         isLeftIcon={<UserProfile />}
-        rightIcon={<RightIcon />}
       />
       <KeyboardAvoidingView
         keyboardVerticalOffset={
@@ -188,9 +171,11 @@ export default function Chat({navigation, route}) {
               {
                 backgroundColor: colors.primary,
               },
-            ]}>
+            ]}
+            onPress={sendMessage}
+            >
             <Feather
-              name={isDisable ? 'mic' : 'send'}
+              name={'send'}
               size={moderateScale(24)}
               color={colors.white}
             />
