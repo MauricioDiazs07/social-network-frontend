@@ -2,6 +2,7 @@ import {
     URL_API,
     GET_CHATS,
     SEND_CHAT,
+    GET_ACTIVE_CHATS,
  } from "../../utils/api_constants";
 
 const getChats = async (sender_id, receiver_id) => {
@@ -45,7 +46,27 @@ const sendChat = async (
     }
 }
 
+const getActiveChats = async (
+    sender_id
+) => {
+    const response = await fetch(URL_API + GET_ACTIVE_CHATS, {
+        method: "POST", 
+        body: JSON.stringify({
+            sender_id: sender_id
+        }),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+
+    const resp = await response.json();
+    if (response.ok){
+        return resp;
+    }
+}
+
 export {
     getChats,
     sendChat,
+    getActiveChats,
 };

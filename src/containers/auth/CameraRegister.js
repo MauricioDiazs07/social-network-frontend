@@ -45,7 +45,6 @@ const CameraRegister = props => {
   const [img, setImg] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSnackbarVisible, setIsSnackbarVisible] = React.useState(false);
-  const [isReadingError, setIsReadingError] = React.useState(false);
 
   var user_ = {
     'name': '',
@@ -263,7 +262,6 @@ const CameraRegister = props => {
               console.log(resp);
               setIsLoading(false);
               if (!('name' in resp)) {
-                setIsReadingError(true);
                 setIsSnackbarVisible(true);
                 return;
               }
@@ -284,7 +282,6 @@ const CameraRegister = props => {
             })
             .catch(err => {
               console.log(err);
-              setIsReadingError(true);
               setIsLoading(false);
               setIsSnackbarVisible(true);
             });
@@ -313,7 +310,6 @@ const CameraRegister = props => {
       .then(resp => {
         setIsLoading(false);
         if (!('name' in resp)) {
-          setIsReadingError(true);
           setIsSnackbarVisible(true);
           return;
         }
@@ -331,32 +327,10 @@ const CameraRegister = props => {
         });
       })
       .catch(err => {
-        setIsReadingError(true);
         setIsLoading(false);
         setIsSnackbarVisible(true);
       });
   };
-
-  const onPressContinue = () => {
-    navigation.navigate(StackNav.SetUpProfile, {
-      title: headerTitle,
-      userCred: {
-        phone: phoneNumberRegister,
-        password: passwordRegister,
-      },
-      identification_photo: img,
-      user: {
-        'name': '',
-        'gender': '',
-        'state': '',
-        'municipality': '',
-        'address': '',
-        'birthday': '',
-        'curp': '',
-        'section': ''
-      }
-    });
-  }
 
   const closeSnackBar = () => setIsSnackbarVisible(false);
 
@@ -406,23 +380,6 @@ const CameraRegister = props => {
               {strings.chooseFromGallery}
             </ZText>
           </TouchableOpacity>
-
-          {isReadingError && (<TouchableOpacity
-            style={[
-              localStyles.contextContainer,
-              {borderColor: colors.textColor},
-            ]}
-            onPress={onPressContinue}>
-            <Ionicons
-              name={'arrow-forward-circle'}
-              size={moderateScale(26)}
-              color={colors.textColor}
-              style={styles.mr5}
-            />
-            <ZText type={'s18'} style={styles.ml10}>
-              {strings.continueRegister}
-            </ZText>
-          </TouchableOpacity>)}
         </View>
       </View>
       <View

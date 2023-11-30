@@ -64,9 +64,9 @@ const isNotEmptyString = str_ => {
 }
 
 const getAccessLevel = lvl => {
-  if (lvl === 1) {
+  if (lvl == 1) {
     return 'user';
-  } else if (lvl === 2) {
+  } else if (lvl == 2) {
     return 'admin';
   }
 

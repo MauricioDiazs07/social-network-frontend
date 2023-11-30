@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {memo} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
 
@@ -19,10 +19,25 @@ import {styles} from '../../../themes';
 import {moderateScale} from '../../../common/constants';
 import ZText from '../../../components/common/ZText';
 import {StackNav} from '../../../navigation/NavigationKeys';
-import {messageDataList} from '../../../api/constant';
+import { getAsyncStorageData } from '../../../utils/helpers';
+import { PROFILE_ID } from '../../../common/constants';
+import { getActiveChats } from '../../../api/chats/chats';
 
 export default function Message({navigation}) {
   const colors = useSelector(state => state.theme.theme);
+
+  const [messageDataList, setMessageDataList] = useState([]);
+
+  useEffect(() => {
+    getActiveChats_();
+  }, []);
+
+  const getActiveChats_ = async () => {
+    let profileID = await getAsyncStorageData(PROFILE_ID);
+    let activeChats = await getActiveChats(profileID);
+    
+    setMessageDataList(activeChats['active_chats']);
+  }
   
   const RenderHeader = ({title}) => {
     return (
@@ -81,6 +96,7 @@ export default function Message({navigation}) {
     navigation.navigate(StackNav.Chat, {
       userName: item.name,
       userImage: item.imageUrl,
+      profileId: item.receiver_id
     });
 
   return (

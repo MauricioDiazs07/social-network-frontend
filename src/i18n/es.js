@@ -92,7 +92,7 @@ export default {
     helpCenter: 'Centro de ayuda',
     home: 'Inicio',
     inbox: 'Inbox',
-    INEFailed: 'No se pudo leer la foto. Puede intentarlo nuevamente o continuar con el registro.',
+    INEFailed: 'No se pudo leer la foto. Por favor, inténtelo nuevamente.',
     interaction: 'Interacción',
     interests: 'Intereses',
     interestsDescription: 'Escoge tus intereses para poder mostrar mejor contenido en el feed',

@@ -97,7 +97,7 @@ const deletePost = async (post_id) => {
 const getFeed = async (userID, postsList) => {
     let obj_ = {
         profile_id: userID,
-        page_size: 5,
+        page_size: 6,
         post_history: postsList
     };
 
