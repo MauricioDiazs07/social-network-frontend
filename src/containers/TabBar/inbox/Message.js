@@ -6,8 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {memo, useState} from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, {memo} from 'react';
 import {useSelector} from 'react-redux';
 import FastImage from 'react-native-fast-image';
 
@@ -18,72 +17,13 @@ import ZHeader from '../../../components/common/ZHeader';
 import strings from '../../../i18n/strings';
 import {styles} from '../../../themes';
 import {moderateScale} from '../../../common/constants';
-import ZInput from '../../../components/common/ZInput';
-import {Control} from '../../../assets/svgs';
 import ZText from '../../../components/common/ZText';
-import {messageDataList, recenltyDataList} from '../../../api/constant';
 import {StackNav} from '../../../navigation/NavigationKeys';
+import {messageDataList} from '../../../api/constant';
 
 export default function Message({navigation}) {
   const colors = useSelector(state => state.theme.theme);
-  const [search, setSearch] = useState('');
-  const [searchInputStyle, setSearchInputStyle] = useState(BlurredStyle);
-  const [searchIconStyle, setSearchIconStyle] = useState(BlurredIconStyle);
-
-  const BlurredStyle = {
-    backgroundColor: colors.inputBg,
-    borderColor: colors.btnColor1,
-  };
-  const FocusedStyle = {
-    backgroundColor: colors.inputFocusColor,
-    borderColor: colors.primary,
-  };
-
-  const BlurredIconStyle = colors.placeHolderColor;
-  const FocusedIconStyle = colors.primary;
-
-  const onHighlightInput = () => {
-    setSearchInputStyle(FocusedStyle);
-    setSearchIconStyle(FocusedIconStyle);
-  };
-  const onUnHighlightInput = () => {
-    setSearchInputStyle(BlurredStyle);
-    setSearchIconStyle(BlurredIconStyle);
-  };
-
-  const onSearchInput = text => setSearch(text);
-
-  const SearchIcon = () => {
-    return (
-      <Ionicons
-        name="search-outline"
-        size={moderateScale(20)}
-        color={searchIconStyle}
-      />
-    );
-  };
-
-  const RightIcon = () => {
-    return (
-      <View style={styles.rowCenter}>
-        <TouchableOpacity style={styles.pr10}>
-          <Ionicons
-            name="add-circle-outline"
-            size={moderateScale(30)}
-            color={colors.textColor}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons
-            name="ellipsis-horizontal-circle-outline"
-            size={moderateScale(30)}
-            color={colors.textColor}
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
+  
   const RenderHeader = ({title}) => {
     return (
       <View>
@@ -93,34 +33,6 @@ export default function Message({navigation}) {
       </View>
     );
   };
-
-  const RenderStroyItem = memo(({item}) => {
-    return (
-      <TouchableOpacity
-        style={localStyles.storyContainer}
-        onPress={() => onPressMessage(item)}>
-        <FastImage
-          source={{uri: item?.imageUrl}}
-          style={[
-            localStyles.userImage,
-            {
-              borderColor: colors.dark ? colors.primary : colors.grayScale4,
-            },
-          ]}
-        />
-        <ZText
-          type="s14"
-          align={'center'}
-          nunberOfLines={1}
-          style={styles.mt5}
-          color={colors.textColor}>
-          {item.name.length > 10
-            ? item.name.substring(0, 10) + '...'
-            : item.name}
-        </ZText>
-      </TouchableOpacity>
-    );
-  });
 
   const RenderMessageItem = memo(({item}) => {
     return (
@@ -173,41 +85,13 @@ export default function Message({navigation}) {
 
   return (
     <ZSafeAreaView>
-      <ZHeader title={strings.messages} rightIcon={<RightIcon />} />
+      <ZHeader title={strings.messages} />
       <ScrollView
         style={styles.ph20}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.pb20}
         bounces={false}>
-        <ZInput
-          placeHolder={strings.search}
-          _value={search}
-          keyBoardType={'default'}
-          autoCapitalize={'none'}
-          insideLeftIcon={() => <SearchIcon />}
-          toGetTextFieldValue={onSearchInput}
-          inputContainerStyle={[
-            {backgroundColor: colors.inputBg},
-            localStyles.inputContainerStyle,
-            searchInputStyle,
-          ]}
-          inputBoxStyle={styles.ph15}
-          _onFocus={onHighlightInput}
-          onBlur={onUnHighlightInput}
-          rightAccessory={() => <Control />}
-        />
-        <RenderHeader title={strings.recently} />
-        <FlatList
-          data={recenltyDataList}
-          renderItem={({item, index}) => (
-            <RenderStroyItem item={item} key={index} />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={localStyles.flatListStoryContainer}
-        />
-
+          
         <FlatList
           data={messageDataList}
           renderItem={({item, index}) => (

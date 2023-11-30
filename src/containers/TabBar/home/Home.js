@@ -153,6 +153,8 @@ const RightHeaderIcons = React.memo(() => {
     }
   };
 
+  const onPressChats = () => navigation.navigate(StackNav.Message);
+
   const onPressThemeBtn = async () => {
     if (isDark) {
       await setAsyncStorageData(THEME, 'dark');
@@ -167,23 +169,39 @@ const RightHeaderIcons = React.memo(() => {
 
   return (
     <View style={localStyles.headerRightIcon}>
-      {userAccess !== "master" && (<TouchableOpacity 
-        onPress={onPressProfileIcon}
-        style={localStyles.rightBtns}
-      >
-        {colors.dark ? (
-          <Profile_Dark
-            width={moderateScale(28)}
-            height={moderateScale(28)}
-          />
-        ) : (
-          <Profile_Light
-            width={moderateScale(28)}
-            height={moderateScale(28)}
-          />
-        )}
-
-      </TouchableOpacity>)}
+      {userAccess !== "master" && (
+        <View 
+          style={localStyles.headerRightIcon}
+          >
+          <TouchableOpacity 
+            onPress={onPressProfileIcon}
+            style={localStyles.rightBtns}
+          >
+            {colors.dark ? (
+              <Profile_Dark
+                width={moderateScale(28)}
+                height={moderateScale(28)}
+              />
+            ) : (
+              <Profile_Light
+                width={moderateScale(28)}
+                height={moderateScale(28)}
+              />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={onPressChats}
+            style={localStyles.rightBtns}
+          >
+            <MaterialIcon
+                name="chat-outline"
+              size={moderateScale(30)}
+              color={colors.dark ? colors.white : colors.darkColor}
+              style={localStyles.editIcon}
+            />  
+          </TouchableOpacity>
+        </View>
+      )}
 
       <TouchableOpacity
         onPress={onPressThemeBtn}
@@ -989,8 +1007,8 @@ const localStyles = StyleSheet.create({
   },
   headerRightIcon: {
     ...styles.rowSpaceBetween,
-    width: '20%',
-    ...styles.mr20,
+    // width: '20%',
+    marginRight: moderateScale(0),
   },
   itemContainer: {
     alignItems: 'center',
